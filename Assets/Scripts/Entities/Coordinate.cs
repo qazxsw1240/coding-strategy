@@ -1,3 +1,6 @@
+#nullable enable
+
+
 namespace CodingStrategy.Entities
 {
     public readonly struct Coordinate
