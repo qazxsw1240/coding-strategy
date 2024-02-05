@@ -36,5 +36,11 @@ namespace CodingStrategy.Entities
 
         public static Coordinate operator *(Coordinate rhs, int scala) =>
             new Coordinate(scala * rhs._x, scala * rhs._y);
+
+        public static bool operator ==(Coordinate lhs, Coordinate rhs) =>
+            lhs.X == rhs.X && lhs.Y == rhs.Y;
+
+        public static bool operator !=(Coordinate lhs, Coordinate rhs) =>
+            lhs.X != rhs.X || lhs.Y != rhs.Y;
     }
 }
