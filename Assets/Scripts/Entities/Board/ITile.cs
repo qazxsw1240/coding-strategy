@@ -8,8 +8,8 @@ namespace CodingStrategy.Entities.Board
 
     public interface ITile
     {
-        public abstract IObstacle? Obstacle { get; }
+        public abstract IObstacle? Obstacle { get; set; }
 
-        public abstract IRobot? Robot { get; }
+        public abstract IRobot? Robot { get; set; }
     }
 }
