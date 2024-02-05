@@ -13,7 +13,7 @@ namespace CodingStrategy.Entities.Robot
 
         public abstract RobotDirection Direction { get; }
 
-        public abstract int HeathPoint { get; }
+        public abstract int HealthPoint { get; }
 
         public abstract int EnergyPoint { get; }
 
