@@ -3,6 +3,8 @@
 
 namespace CodingStrategy.Entities
 {
+    using System;
+
     public readonly struct Coordinate
     {
         public static readonly Coordinate Unit = new Coordinate(0, 0);
@@ -20,10 +22,12 @@ namespace CodingStrategy.Entities
 
         public int Y => _y;
 
-        public override string ToString()
-        {
-            return $"Coordinate({_x}, {_y})";
-        }
+        public override bool Equals(object? obj) =>
+            obj != null && obj is Coordinate coord && this == coord;
+
+        public override int GetHashCode() => HashCode.Combine(_x, _y);
+
+        public override string ToString() => $"Coordinate({_x}, {_y})";
 
         public static Coordinate operator +(Coordinate lhs, Coordinate rhs) =>
             new Coordinate(lhs._x + rhs._x, lhs._y + rhs._y);
