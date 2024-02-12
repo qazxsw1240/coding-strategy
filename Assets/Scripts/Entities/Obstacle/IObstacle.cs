@@ -3,7 +3,7 @@
 
 namespace CodingStrategy.Entities.Obstacle
 {
-    public interface IObstacle
+    public interface IObstacle : IPlaceable
     {
     }
 }

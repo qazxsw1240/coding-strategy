@@ -3,13 +3,11 @@
 
 namespace CodingStrategy.Entities.Robot
 {
-    public interface IRobotDelegate
+    public interface IRobotDelegate : IPlaceable
     {
         public abstract string Id { get; }
 
         public abstract IAlgorithm Algorithm { get; }
-
-        public abstract Coordinate Position { get; set; }
 
         public abstract RobotDirection Direction { get; set; }
 
