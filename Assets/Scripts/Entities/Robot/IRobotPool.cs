@@ -3,8 +3,7 @@
 
 namespace CodingStrategy.Entities.Robot
 {
-    public interface IRobotPool
+    public interface IRobotPool : IObjectPool<IRobotDelegate>
     {
-        public abstract IRobotDelegate this[string id] { get; }
     }
 }
