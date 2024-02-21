@@ -10,7 +10,7 @@ namespace CodingStrategy.Entities
     {
         public abstract T this[string id] { get; set; }
 
-        public abstract void Add(Func<string, T> generator);
+        public abstract void Add(string id, Func<string, T> generator);
 
         public abstract void Remove(string id);
 
