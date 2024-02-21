@@ -9,12 +9,16 @@ namespace CodingStrategy.Entities.Board
 
     public interface IBoardDelegate
     {
-        public abstract ITile this[Coordinate coordinate] { get; set; }
-
         public abstract IList<IRobot> Robots { get; }
 
         public abstract bool Place(IRobotDelegate robot, Coordinate coordinate);
 
         public abstract bool Place(IObstacle obstacle, Coordinate coordinate);
+
+        public abstract IBoardDelegate Clone();
+
+        public abstract ITile[,] AsArray();
+
+        public abstract void UpdateTiles(ITile[,] tiles);
     }
 }
