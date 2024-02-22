@@ -4,7 +4,7 @@
 namespace CodingStrategy.Entities.Board
 {
     using System.Collections.Generic;
-    using CodingStrategy.Entities.Obstacle;
+    using CodingStrategy.Entities.BadSector;
     using CodingStrategy.Entities.Robot;
     using UnityEngine.Events;
 
@@ -18,7 +18,7 @@ namespace CodingStrategy.Entities.Board
 
         public abstract bool Place(IRobotDelegate robot, Coordinate coordinate);
 
-        public abstract bool Place(IObstacle obstacle, Coordinate coordinate);
+        public abstract bool Place(IBadSector badSector, Coordinate coordinate);
 
         public abstract IBoardDelegate Clone();
 
