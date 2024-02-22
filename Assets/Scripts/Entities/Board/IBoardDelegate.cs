@@ -10,7 +10,7 @@ namespace CodingStrategy.Entities.Board
 
     public interface IBoardDelegate
     {
-        public abstract IReadOnlyList<IRobot> Robots { get; }
+        public abstract IReadOnlyList<IRobotDelegate> Robots { get; }
 
         public abstract bool AddRobot(IRobotDelegate robotDelegate);
 
