@@ -26,9 +26,9 @@ namespace CodingStrategy.Entities.Board
 
         public abstract void UpdateTiles(ITile[,] tiles);
 
-        public abstract UnityEvent<IRobotDelegate> OnRobotAdded { get; }
+        public abstract UnityEvent<IRobotDelegate> OnRobotAdd { get; }
 
-        public abstract UnityEvent<IRobotDelegate> OnRobotRemoved { get; }
+        public abstract UnityEvent<IRobotDelegate> OnRobotRemove { get; }
 
         public abstract UnityEvent<IRobotDelegate, Coordinate, Coordinate> OnRobotChangePosition { get; }
 
