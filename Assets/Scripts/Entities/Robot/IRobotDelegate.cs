@@ -5,7 +5,7 @@ namespace CodingStrategy.Entities.Robot
 {
     public interface IRobotDelegate : IPlaceable
     {
-        public abstract string Id { get; }
+        public abstract int Id { get; }
 
         public abstract IAlgorithm Algorithm { get; }
 

@@ -7,7 +7,7 @@ namespace CodingStrategy.Entities.Robot
 
     public class RobotDelegateImpl : IRobotDelegate
     {
-        private readonly string _id;
+        private readonly int _id;
         private readonly IAlgorithm _algorithm;
 
         private RobotDirection _direction;
@@ -20,7 +20,7 @@ namespace CodingStrategy.Entities.Robot
         private readonly UnityEvent<Coordinate> _onPositionChanged;
 
         public RobotDelegateImpl(
-            string id,
+            int id,
             IAlgorithm algorithm,
             RobotDirection direction,
             Coordinate position,
@@ -40,7 +40,7 @@ namespace CodingStrategy.Entities.Robot
             _onPositionChanged = new UnityEvent<Coordinate>();
         }
 
-        public string Id => _id;
+        public int Id => _id;
 
         public IAlgorithm Algorithm => _algorithm;
 
