@@ -24,11 +24,11 @@ namespace CodingStrategy.Entities.Board
 
         public abstract Coordinate GetPosition(IBadSectorDelegate badSectorDelegate);
 
-        public abstract bool Place(IRobotDelegate robot, Coordinate coordinate);
+        public abstract bool Place(IRobotDelegate robotDelegate, Coordinate position);
 
-        public abstract bool Rotate(IRobotDelegate robot, RobotDirection robotDirection);
+        public abstract bool Rotate(IRobotDelegate robotDelegate, RobotDirection direction);
 
-        public abstract bool Place(IBadSector badSector, Coordinate coordinate);
+        public abstract bool Place(IBadSectorDelegate badSectorDelegate, Coordinate position);
 
         public abstract ITile[,] AsArray();
 
