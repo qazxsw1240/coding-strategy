@@ -12,11 +12,11 @@ namespace CodingStrategy.Entities.Board
     {
         public abstract IReadOnlyList<IRobotDelegate> Robots { get; }
 
-        public abstract bool Add(IRobotDelegate robotDelegate);
+        public abstract bool Add(IRobotDelegate robotDelegate, Coordinate position, RobotDirection direction);
 
         public abstract bool Remove(IRobotDelegate robotDelegate);
 
-        public abstract bool Add(IBadSectorDelegate badSectorDelegate);
+        public abstract bool Add(IBadSectorDelegate badSectorDelegate, Coordinate position);
 
         public abstract bool Remove(IBadSectorDelegate badSectorDelegate);
 
