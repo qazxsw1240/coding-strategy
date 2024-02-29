@@ -5,6 +5,7 @@ namespace CodingStrategy.Entities.Board
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using CodingStrategy.Entities.BadSector;
     using CodingStrategy.Entities.Robot;
     using UnityEngine.Events;
@@ -46,7 +47,7 @@ namespace CodingStrategy.Entities.Board
             _badSectorChangePositionEvents = new UnityEvent<IBadSectorDelegate, Coordinate, Coordinate>();
         }
 
-        public IReadOnlyList<IRobotDelegate> Robots => new List<IRobotDelegate>();
+        public IReadOnlyList<IRobotDelegate> Robots => _robotPositions.Keys.ToList();
 
         public UnityEvent<IRobotDelegate> OnRobotAdd => _robotAddEvents;
 
