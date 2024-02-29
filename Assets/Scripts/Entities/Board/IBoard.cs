@@ -8,10 +8,6 @@ namespace CodingStrategy.Entities.Board
 
     public interface IBoard
     {
-        public abstract ITile this[Coordinate coordinate] { get; }
-
-        public abstract ITile[,] Tiles { get; }
-
         public abstract IReadOnlyList<IRobot> Robots { get; }
     }
 }
