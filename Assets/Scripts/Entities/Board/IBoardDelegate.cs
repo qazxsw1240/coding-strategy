@@ -30,7 +30,7 @@ namespace CodingStrategy.Entities.Board
 
         public abstract bool Place(IBadSectorDelegate badSectorDelegate, Coordinate position);
 
-        public abstract ITile[,] AsArray();
+        public abstract ITileDelegate[,] AsArray();
 
         public abstract UnityEvent<IRobotDelegate> OnRobotAdd { get; }
 
