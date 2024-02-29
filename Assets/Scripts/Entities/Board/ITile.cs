@@ -9,8 +9,8 @@ namespace CodingStrategy.Entities.Board
 
     public interface ITile
     {
-        public abstract IList<IBadSector> Obstacle { get; set; }
+        public abstract IBadSector? BadSector { get; set; }
 
-        public abstract IList<IRobot> Robot { get; set; }
+        public abstract ISet<IRobot> Robot { get; set; }
     }
 }
