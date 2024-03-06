@@ -129,6 +129,12 @@ namespace CodingStrategy.Entities.Board
             return _badSectorPositions[badSectorDelegate].Position;
         }
 
+        public RobotDirection GetDirection(IRobotDelegate robotDelegate)
+        {
+            CheckIfRobotDelegateExists(robotDelegate);
+            return _robotPositions[robotDelegate].Direction;
+        }
+
         public bool Place(IRobotDelegate robotDelegate, Coordinate position)
         {
             if (!IsRobotDelegateExist(robotDelegate))

@@ -24,6 +24,8 @@ namespace CodingStrategy.Entities.Board
 
         public abstract Coordinate GetPosition(IBadSectorDelegate badSectorDelegate);
 
+        public abstract RobotDirection GetDirection(IRobotDelegate robotDelegate);
+
         public abstract bool Place(IRobotDelegate robotDelegate, Coordinate position);
 
         public abstract bool Rotate(IRobotDelegate robotDelegate, RobotDirection direction);
