@@ -3,11 +3,15 @@
 
 namespace CodingStrategy.Entities.Robot
 {
-    public interface IRobotDelegate : IPlaceable
+    using UnityEngine.Events;
+
+    public interface IRobotDelegate
     {
         public abstract int Id { get; }
 
         public abstract IAlgorithm Algorithm { get; }
+
+        public abstract Coordinate Position { get; set; }
 
         public abstract RobotDirection Direction { get; set; }
 
@@ -19,8 +23,24 @@ namespace CodingStrategy.Entities.Robot
 
         public abstract int AttackPoint { get; set; }
 
+        public abstract bool Move(int count);
+
+        public abstract bool Move(Coordinate position);
+
         public abstract bool Rotate(int count);
 
-        public abstract bool Move(int count);
+        public abstract bool Rotate(RobotDirection direction);
+
+        public abstract UnityEvent<IRobotDelegate, Coordinate, Coordinate> OnRobotChangePosition { get; }
+
+        public abstract UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> OnRobotChangeDirection { get; }
+
+        public abstract UnityEvent<IRobotDelegate, int, int> OnHealthPointChange { get; }
+
+        public abstract UnityEvent<IRobotDelegate, int, int> OnEnergyPointChange { get; }
+
+        public abstract UnityEvent<IRobotDelegate, int, int> OnArmorPointChange { get; }
+
+        public abstract UnityEvent<IRobotDelegate, int, int> OnAttackPointChange { get; }
     }
 }
