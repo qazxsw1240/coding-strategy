@@ -1,8 +1,6 @@
-using System;
-using Unity.VisualScripting;
-
 namespace CodingStrategy.Entities.Shop
 {
+    using System;
     public class CommandListsByGrade
     {
         private readonly CommandListImpl _commandListGrade1;
