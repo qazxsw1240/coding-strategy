@@ -17,6 +17,7 @@ namespace CodingStrategy.Entities
         /// 명령어의 정보입니다.
         /// </summary>
         public abstract ICommandInfo Info { get; }
+        public abstract int Grade { get; }
 
         /// <summary>
         /// 명령어를 실행합니다. 정상적으로 실행을 완료하면 true를 반환하고, 실패했다면 false를 반환합니다.
