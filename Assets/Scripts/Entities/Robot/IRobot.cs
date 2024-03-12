@@ -3,6 +3,8 @@
 
 namespace CodingStrategy.Entities.Robot
 {
+    using UnityEngine.Events;
+
     public interface IRobot
     {
         public abstract int Id { get; }
@@ -21,8 +23,24 @@ namespace CodingStrategy.Entities.Robot
 
         public abstract int AttackPoint { get; }
 
+        public abstract bool Move(int count);
+
+        public abstract bool Move(Coordinate position);
+
         public abstract bool Rotate(int count);
 
-        public abstract bool Move(int count);
+        public abstract bool Rotate(RobotDirection direction);
+
+        public abstract UnityEvent<Coordinate, Coordinate> OnRobotChangePosition { get; }
+
+        public abstract UnityEvent<RobotDirection, RobotDirection> OnRobotChangeDirection { get; }
+
+        public abstract UnityEvent<int, int> OnHealthPointChange { get; }
+
+        public abstract UnityEvent<int, int> OnEnergyPointChange { get; }
+
+        public abstract UnityEvent<int, int> OnArmorPointChange { get; }
+
+        public abstract UnityEvent<int, int> OnAttackPointChange { get; }
     }
 }
