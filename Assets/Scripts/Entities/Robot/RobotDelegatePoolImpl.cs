@@ -7,11 +7,11 @@ namespace CodingStrategy.Entities.Robot
     using System.Collections;
     using System.Collections.Generic;
 
-    public class RobotPoolImpl : IRobotPool
+    public class RobotDelegatePoolImpl : IRobotDelegatePool
     {
         private readonly IDictionary<string, IRobotDelegate> _pool;
 
-        public RobotPoolImpl()
+        public RobotDelegatePoolImpl()
         {
             _pool = new Dictionary<string, IRobotDelegate>();
         }
