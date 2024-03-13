@@ -21,7 +21,6 @@ namespace CodingStrategy.Entities.Player
             get => _pool[id];
             set => _pool[id] = value;
         }
-        IPlayerDelegate IObjectPool<IPlayerDelegate>.this[string id] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public void Add(string id, Func<string, IPlayerDelegate> generator)
         {
