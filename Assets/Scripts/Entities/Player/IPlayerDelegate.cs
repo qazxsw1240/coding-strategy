@@ -11,7 +11,7 @@ namespace CodingStrategy.Entities.Player
         public abstract int Level { get; set; }    
         public abstract int Exp { get; set; }
         public abstract int Currency { get; set; }
-        public abstract IRobot Robot { get; }
+        public abstract IRobotDelegate Robot { get; }
         public abstract IAlgorithm Algorithm { get; }
     }
 }
