@@ -7,7 +7,7 @@ namespace CodingStrategy.Entities.Robot
 
     public class Robot : IRobot
     {
-        private readonly IRobotDelegate _delegate;
+        private IRobotDelegate _delegate;
         private readonly UnityEvent<Coordinate, Coordinate> _robotChangePositionEvents;
         private readonly UnityEvent<RobotDirection, RobotDirection> _robotChangeDirectionEvents;
         private readonly UnityEvent<int, int> _healthPointChangeEvents;
@@ -63,6 +63,16 @@ namespace CodingStrategy.Entities.Robot
         public UnityEvent<int, int> OnArmorPointChange => _armorPointChangeEvents;
 
         public UnityEvent<int, int> OnAttackPointChange => _attackPointChangeEvents;
+
+        public IRobotDelegate Delegate
+        {
+            get => _delegate;
+            set
+            {
+                _delegate = value;
+                AttachListeners();
+            }
+        }
 
         private void AttachListeners()
         {
