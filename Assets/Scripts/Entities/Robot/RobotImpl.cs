@@ -5,7 +5,7 @@ namespace CodingStrategy.Entities.Robot
 {
     using UnityEngine.Events;
 
-    public class Robot : IRobot
+    public class RobotImpl : IRobot
     {
         private IRobotDelegate _delegate;
         private readonly UnityEvent<Coordinate, Coordinate> _robotChangePositionEvents;
@@ -15,7 +15,7 @@ namespace CodingStrategy.Entities.Robot
         private readonly UnityEvent<int, int> _armorPointChangeEvents;
         private readonly UnityEvent<int, int> _attackPointChangeEvents;
 
-        public Robot(IRobotDelegate robotDelegate)
+        public RobotImpl(IRobotDelegate robotDelegate)
         {
             _delegate = robotDelegate;
             _robotChangePositionEvents = new UnityEvent<Coordinate, Coordinate>();
