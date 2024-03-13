@@ -23,8 +23,7 @@ namespace CodingStrategy.Entities
         protected AbstractCommand(string id, string name, int enhancedLevel, int grade)
         {
             _id = id;
-            _info = new CommandInfoImpl(name, enhancedLevel);
-            _grade = grade;
+            _info = new CommandInfoImpl(name, enhancedLevel, grade);
         }
 
         public virtual string Id
@@ -34,8 +33,6 @@ namespace CodingStrategy.Entities
         }
 
         public virtual ICommandInfo Info => _info;
-
-        public int Grade => _grade;
 
         public abstract bool Invoke(params object[] args);
 
