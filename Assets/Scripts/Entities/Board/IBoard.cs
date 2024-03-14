@@ -15,15 +15,15 @@ namespace CodingStrategy.Entities.Board
 
         public abstract bool Remove(IRobot robotDelegate);
 
-        public abstract Coordinate GetPosition(IRobotDelegate robotDelegate);
+        public abstract Coordinate GetPosition(IRobot robotDelegate);
 
-        public abstract RobotDirection GetDirection(IRobotDelegate robotDelegate);
+        public abstract RobotDirection GetDirection(IRobot robotDelegate);
 
-        public abstract bool Place(IRobotDelegate robotDelegate, Coordinate position);
+        public abstract bool Place(IRobot robotDelegate, Coordinate position);
 
-        public abstract bool Rotate(IRobotDelegate robotDelegate, RobotDirection direction);
+        public abstract bool Rotate(IRobot robotDelegate, RobotDirection direction);
 
-        public abstract ITileDelegate[,] AsArray();
+        public abstract ITile[,] AsArray();
 
         public abstract UnityEvent<IRobot> OnRobotAdd { get; }
 
