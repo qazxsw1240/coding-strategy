@@ -9,6 +9,8 @@ namespace CodingStrategy.Entities.Robot
     {
         public abstract int Id { get; }
 
+        public abstract IRobotDelegate Delegate { get; }
+
         public abstract IAlgorithm Algorithm { get; }
 
         public abstract Coordinate Position { get; }
