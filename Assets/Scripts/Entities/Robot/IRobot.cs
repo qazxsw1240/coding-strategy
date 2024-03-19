@@ -5,10 +5,8 @@ namespace CodingStrategy.Entities.Robot
 {
     using UnityEngine.Events;
 
-    public interface IRobot
+    public interface IRobot : IGameEntity
     {
-        public abstract int Id { get; }
-
         public abstract IRobotDelegate Delegate { get; }
 
         public abstract IAlgorithm Algorithm { get; }
