@@ -15,7 +15,7 @@ namespace CodingStrategy.Entities.Robot
             new Coordinate(0, -1),
             new Coordinate(-1, 0) };
 
-        private readonly int _id;
+        private readonly string _id;
         private readonly IBoardDelegate _boardDelegate;
         private readonly IAlgorithm _algorithm;
 
@@ -32,7 +32,7 @@ namespace CodingStrategy.Entities.Robot
         private readonly UnityEvent<IRobotDelegate, int, int> _attackPointChangeEvents;
 
         public RobotDelegateImpl(
-            int id,
+            string id,
             IBoardDelegate boardDelegate,
             IAlgorithm algorithm,
             int healthPoint,
@@ -58,7 +58,7 @@ namespace CodingStrategy.Entities.Robot
             _boardDelegate.OnRobotChangeDirection.AddListener(InvokeRobotChangeDirectionEvents);
         }
 
-        public int Id => _id;
+        public string Id => _id;
 
         public IAlgorithm Algorithm => _algorithm;
 
@@ -136,6 +136,8 @@ namespace CodingStrategy.Entities.Robot
         }
 
         public bool Rotate(RobotDirection direction) => _boardDelegate.Rotate(this, direction);
+
+        public int CompareTo(IGameEntity other) => _id.CompareTo(other);
 
         public UnityEvent<IRobotDelegate, Coordinate, Coordinate> OnRobotChangePosition => _robotChangePositionEvents;
 

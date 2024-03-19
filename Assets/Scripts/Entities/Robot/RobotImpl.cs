@@ -28,7 +28,7 @@ namespace CodingStrategy.Entities.Robot
             AttachListeners();
         }
 
-        public int Id => _delegate.Id;
+        public string Id => _delegate.Id;
 
         public IRobotDelegate Delegate => _delegate;
 
@@ -53,6 +53,8 @@ namespace CodingStrategy.Entities.Robot
         public bool Rotate(int count) => _delegate.Rotate(count);
 
         public bool Rotate(RobotDirection direction) => _delegate.Rotate(direction);
+
+        public int CompareTo(IGameEntity other) => _delegate.CompareTo(other);
 
         public UnityEvent<Coordinate, Coordinate> OnRobotChangePosition => _robotChangePositionEvents;
 
