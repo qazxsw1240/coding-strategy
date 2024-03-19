@@ -189,17 +189,9 @@ namespace CodingStrategy.Entities.Board
             return 0 <= x && x < _width && 0 <= y && y < _height;
         }
 
-        private bool IsRobotDelegateExist(IRobotDelegate robotDelegate)
-        {
-            int id = robotDelegate.Id;
-            return _robotPositions.ContainsKey(robotDelegate);
-        }
+        private bool IsRobotDelegateExist(IRobotDelegate robotDelegate) => _robotPositions.ContainsKey(robotDelegate);
 
-        private bool IsBadSectorDelegateExist(IBadSectorDelegate badSectorDelegate)
-        {
-            string id = badSectorDelegate.Id;
-            return _badSectorPositions.ContainsKey(badSectorDelegate);
-        }
+        private bool IsBadSectorDelegateExist(IBadSectorDelegate badSectorDelegate) => _badSectorPositions.ContainsKey(badSectorDelegate);
 
         private void CheckIfRobotDelegateExists(IRobotDelegate robotDelegate)
         {
