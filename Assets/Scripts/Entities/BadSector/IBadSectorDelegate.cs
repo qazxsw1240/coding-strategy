@@ -5,10 +5,8 @@ using CodingStrategy.Entities.Robot;
 
 namespace CodingStrategy.Entities.BadSector
 {
-    public interface IBadSectorDelegate
+    public interface IBadSectorDelegate : IGameEntity
     {
-        public abstract string Id { get; }
-
         public abstract IRobotDelegate Installer { get; }
 
         public abstract Coordinate Position { get; }
