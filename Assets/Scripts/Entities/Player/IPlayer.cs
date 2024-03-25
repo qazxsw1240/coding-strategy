@@ -5,7 +5,7 @@ namespace CodingStrategy.Entities.Player
     using CodingStrategy.Entities.Robot;
     public interface IPlayer
     {
-        public abstract int Id { get; }
+        public abstract string Id { get; }
         public abstract int HealthPoint { get; }
         public abstract int Level { get; }    
         public abstract int Exp { get; }
