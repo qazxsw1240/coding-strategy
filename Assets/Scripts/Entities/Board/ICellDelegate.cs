@@ -7,7 +7,7 @@ namespace CodingStrategy.Entities.Board
     using CodingStrategy.Entities.BadSector;
     using CodingStrategy.Entities.Robot;
 
-    public interface ITileDelegate
+    public interface ICellDelegate
     {
         public abstract IBadSectorDelegate? BadSector { get; set; }
 

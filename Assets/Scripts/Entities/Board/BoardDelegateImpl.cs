@@ -115,7 +115,7 @@ namespace CodingStrategy.Entities.Board
             return true;
         }
 
-        public ITileDelegate[,] AsArray() => CreateTileArray();
+        public ICellDelegate[,] AsArray() => CreateCellArray();
 
         public Coordinate GetPosition(IRobotDelegate robotDelegate)
         {
@@ -221,14 +221,14 @@ namespace CodingStrategy.Entities.Board
             return null;
         }
 
-        private ITileDelegate[,] CreateTileArray()
+        private ICellDelegate[,] CreateCellArray()
         {
-            ITileDelegate[,] tiles = new ITileDelegate[_width, _height];
+            ICellDelegate[,] tiles = new ICellDelegate[_width, _height];
             for (int i = 0; i < _width; i++)
             {
                 for (int j = 0; j < _height; j++)
                 {
-                    tiles[i, j] = new TileDelegateImpl();
+                    tiles[i, j] = new CellDelegateImpl();
                 }
             }
             foreach ((IRobotDelegate robotDelegate, RobotPosition robotPosition) in _robotPositions)
@@ -266,14 +266,14 @@ namespace CodingStrategy.Entities.Board
             }
         }
 
-        private sealed class TileDelegateImpl : ITileDelegate
+        private sealed class CellDelegateImpl : ICellDelegate
         {
             private IBadSectorDelegate? _badSector;
             private readonly ISet<IRobotDelegate> _robotDelegates;
 
-            public TileDelegateImpl() : this(null, new HashSet<IRobotDelegate>()) { }
+            public CellDelegateImpl() : this(null, new HashSet<IRobotDelegate>()) { }
 
-            public TileDelegateImpl(IBadSectorDelegate? badSector, ISet<IRobotDelegate> robotDelegates)
+            public CellDelegateImpl(IBadSectorDelegate? badSector, ISet<IRobotDelegate> robotDelegates)
             {
                 _badSector = badSector;
                 _robotDelegates = robotDelegates;
