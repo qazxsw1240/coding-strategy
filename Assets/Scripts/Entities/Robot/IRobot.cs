@@ -3,8 +3,10 @@
 
 namespace CodingStrategy.Entities.Robot
 {
+    using System;
     using UnityEngine.Events;
 
+    [Obsolete("Deprecated", true)]
     public interface IRobot : IGameEntity
     {
         public abstract IRobotDelegate Delegate { get; }

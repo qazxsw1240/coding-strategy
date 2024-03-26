@@ -3,10 +3,12 @@
 
 namespace CodingStrategy.Entities.Board
 {
+    using System;
     using System.Collections.Generic;
     using CodingStrategy.Entities.Robot;
     using UnityEngine.Events;
 
+    [Obsolete("Deprecated", true)]
     public interface IBoard
     {
         public abstract IReadOnlyList<IRobot> Robots { get; }

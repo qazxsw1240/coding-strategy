@@ -7,6 +7,7 @@ namespace CodingStrategy.Entities.Robot
     using System.Collections;
     using System.Collections.Generic;
 
+    [Obsolete("Deprecated", true)]
     public class RobotPoolImpl : IRobotPool
     {
         private readonly IDictionary<string, IRobot> _pool;
