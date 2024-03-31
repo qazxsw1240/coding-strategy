@@ -1,44 +1,29 @@
-#nullable enable
-
-
 namespace CodingStrategy.Entities.Player
 {
-    using System;
-    using System.Collections;
     using System.Collections.Generic;
 
     public class PlayerPoolImpl : IPlayerPool
     {
         private readonly IDictionary<string, IPlayerDelegate> _pool;
-
-        public PlayerPoolImpl()
+        public PlayerPoolImpl(
+            IPlayerDelegate Player1,
+            IPlayerDelegate Player2,
+            IPlayerDelegate Player3,
+            IPlayerDelegate Player4
+            )
         {
-            _pool = new Dictionary<string, IPlayerDelegate>();
+            _pool = new Dictionary<string, IPlayerDelegate>
+            {
+                { Player1.Id, Player1 },
+                { Player2.Id, Player2 },
+                { Player3.Id, Player3 },
+                { Player4.Id, Player4 }
+            };
         }
-
         public IPlayerDelegate this[string id]
         {
             get => _pool[id];
-            set => _pool[id] = value;
         }
-
-        public void Add(string id, Func<string, IPlayerDelegate> generator)
-        {
-            IPlayerDelegate obj = generator(id);
-            _pool[id] = obj;
-        }
-
-        public void Clear() => _pool.Clear();
-
-        public IEnumerator<IPlayerDelegate> GetEnumerator() => _pool.Values.GetEnumerator();
-
-        public void Remove(string id) => _pool.Remove(id);
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        IEnumerator<IPlayerDelegate> IEnumerable<IPlayerDelegate>.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
+        public IDictionary<string, IPlayerDelegate> PlayerPool => _pool;
     }
 }
