@@ -49,6 +49,11 @@ namespace CodingStrategy.Runtime
                     continue;
                 }
 
+                if (!_statements.ContainsKey(robotDelegate))
+                {
+                    _statements[robotDelegate] = new Stack<IStatement>();
+                }
+
                 Stack<IStatement> statements = _statements[robotDelegate];
 
                 try
@@ -94,7 +99,7 @@ namespace CodingStrategy.Runtime
 
         private void CheckExecutionQueueValidity()
         {
-            if (IsQueueEmpty())
+            if (!IsQueueEmpty())
             {
                 throw new RuntimeException("Queue is not empty");
             }
