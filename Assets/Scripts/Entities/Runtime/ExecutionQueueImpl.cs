@@ -36,6 +36,8 @@ namespace CodingStrategy.Runtime
 
         public IStatement Dequeue() => _statements.Dequeue();
 
+        public bool Remove(IStatement item) => throw new NotImplementedException();
+
         public bool TryDequeue(out IStatement statement) => _statements.TryDequeue(out statement);
 
         public void Clear() => _statements.Clear();
@@ -45,5 +47,6 @@ namespace CodingStrategy.Runtime
         public IEnumerator<IStatement> GetEnumerator() => _statements.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
     }
 }
