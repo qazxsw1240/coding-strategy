@@ -5,6 +5,9 @@ namespace CodingStrategy.Entities.Shop
     using System.Collections.Generic;
     public class CommandListImpl : ICommandList
     {
+        /// <summary>
+        /// 명령어를 저장하는 실제 리스트입니다.
+        /// </summary>
         private readonly List<ICommand> _commandList;
         private Random _random;
 
@@ -16,7 +19,7 @@ namespace CodingStrategy.Entities.Shop
         public ICommand this[int index]
         {
             get => _commandList[index];
-            set => throw new System.NotImplementedException();
+            set => _commandList[index] = value;
         }
         public int Count => _commandList.Count;
 
@@ -66,16 +69,23 @@ namespace CodingStrategy.Entities.Shop
         {
             _commandList.RemoveAt(index);
         }
-
+        /// <summary>
+        /// 확률에 따라 랜덤으로 명령어를 추출하여 반환합니다.
+        /// </summary>
+        /// <returns>추출한 명령어를 반환합니다.</returns>
         public ICommand SelectRandomCommand()
         {
+            // 리스트가 비어있을 경우 null을 반환합니다.
             if (_commandList.Count == 0)
             {
                 return null;
             }
+
+            // 리스트에서 명령어를 랜덤으로 추출합니다.
             int randomIndex = _random.Next(_commandList.Count);
             ICommand selectedCommand = _commandList[randomIndex];
             _commandList.RemoveAt(randomIndex);
+
             return selectedCommand;
         }
 
