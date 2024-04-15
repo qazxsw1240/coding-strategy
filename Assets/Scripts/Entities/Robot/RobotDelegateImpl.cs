@@ -5,6 +5,7 @@ namespace CodingStrategy.Entities.Robot
 {
     using System;
     using CodingStrategy.Entities.Board;
+    using CodingStrategy.Runtime;
     using UnityEngine.Events;
 
     public class RobotDelegateImpl : IRobotDelegate
@@ -136,6 +137,23 @@ namespace CodingStrategy.Entities.Robot
         }
 
         public bool Rotate(RobotDirection direction) => _boardDelegate.Rotate(this, direction);
+
+        public bool Attack(IRobotAttackStrategy strategy, params Coordinate[] relativePositions)
+        {
+            Coordinate currentPosition = Position;
+            int checksum = 0;
+            foreach (Coordinate relativePosition in relativePositions)
+            {
+                Coordinate targetPosition = currentPosition + relativePosition;
+                ICellDelegate cellDelegate = _boardDelegate[targetPosition];
+                foreach (IRobotDelegate robotDelegate in cellDelegate.Robot)
+                {
+                    robotDelegate.HealthPoint = strategy.CalculateAttackPoint(this, robotDelegate);
+                    checksum++;
+                }
+            }
+            return checksum != 0;
+        }
 
         public int CompareTo(IGameEntity other) => _id.CompareTo(other);
 

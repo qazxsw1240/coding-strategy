@@ -3,6 +3,7 @@
 
 namespace CodingStrategy.Entities.Robot
 {
+    using CodingStrategy.Runtime;
     using UnityEngine.Events;
 
     public interface IRobotDelegate : IGameEntity
@@ -28,6 +29,8 @@ namespace CodingStrategy.Entities.Robot
         public abstract bool Rotate(int count);
 
         public abstract bool Rotate(RobotDirection direction);
+
+        public abstract bool Attack(IRobotAttackStrategy strategy, params Coordinate[] relativePosition);
 
         public abstract UnityEvent<IRobotDelegate, Coordinate, Coordinate> OnRobotChangePosition { get; }
 
