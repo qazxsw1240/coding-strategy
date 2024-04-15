@@ -148,7 +148,7 @@ namespace CodingStrategy.Entities.Robot
                 ICellDelegate cellDelegate = _boardDelegate[targetPosition];
                 foreach (IRobotDelegate robotDelegate in cellDelegate.Robot)
                 {
-                    robotDelegate.HealthPoint = strategy.CalculateAttackPoint(this, robotDelegate);
+                    robotDelegate.HealthPoint -= strategy.CalculateAttackPoint(this, robotDelegate);
                     checksum++;
                 }
             }
