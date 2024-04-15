@@ -12,6 +12,8 @@ namespace CodingStrategy.Entities.Board
     {
         public abstract IReadOnlyList<IRobotDelegate> Robots { get; }
 
+        public abstract ICellDelegate this[Coordinate coordinate] { get; }
+
         public abstract bool Add(IRobotDelegate robotDelegate, Coordinate position, RobotDirection direction);
 
         public abstract bool Remove(IRobotDelegate robotDelegate);

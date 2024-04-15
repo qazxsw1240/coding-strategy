@@ -61,6 +61,29 @@ namespace CodingStrategy.Entities.Board
 
         public UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> OnRobotChangeDirection => _robotChangeDirectionEvents;
 
+        public ICellDelegate this[Coordinate coordinate]
+        {
+            get
+            {
+                ICellDelegate cellDelegate = new CellDelegateImpl();
+                foreach ((IRobotDelegate robotDelegate, RobotPosition robotPosition) in _robotPositions)
+                {
+                    if (robotPosition.Position == coordinate)
+                    {
+                        cellDelegate.Robot.Add(robotDelegate);
+                    }
+                }
+                foreach ((IBadSectorDelegate badSectorDelegate, BadSectorPosition badSectorPosition) in _badSectorPositions)
+                {
+                    if (badSectorPosition.Position == coordinate)
+                    {
+                        cellDelegate.BadSector = badSectorDelegate;
+                    }
+                }
+                return cellDelegate;
+            }
+        }
+
         public bool Add(IRobotDelegate robotDelegate, Coordinate position, RobotDirection direction)
         {
             if (IsRobotDelegateExist(robotDelegate))
