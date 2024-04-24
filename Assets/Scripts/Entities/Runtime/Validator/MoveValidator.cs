@@ -1,10 +1,10 @@
 #nullable enable
 
 
-using CodingStrategy.Entities.Board;
-
-namespace CodingStrategy.Runtime.Validator
+namespace CodingStrategy.Entities.Runtime.Validator
 {
+    using Board;
+
     public class MoveValidator : IExecutionValidator
     {
         public bool IsValid(IBoardDelegate boardDelegate)
@@ -17,6 +17,7 @@ namespace CodingStrategy.Runtime.Validator
                     return false;
                 }
             }
+
             return true;
         }
     }

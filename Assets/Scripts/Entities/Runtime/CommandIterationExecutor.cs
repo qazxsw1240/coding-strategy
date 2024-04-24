@@ -1,10 +1,9 @@
 #nullable enable
 
 
-namespace CodingStrategy.Runtime
+namespace CodingStrategy.Entities.Runtime
 {
     using System.Collections.Generic;
-    using CodingStrategy.Entities;
     using CodingStrategy.Entities.Board;
 
     public class CommandIterationExecutor : ILifeCycle
@@ -32,7 +31,8 @@ namespace CodingStrategy.Runtime
         public bool Execute()
         {
             IExecutionValidator validator = _enumerator.Current;
-            RobotStatementExecutor executor = new RobotStatementExecutor(_boardDelegate, _executionQueuePool, validator);
+            RobotStatementExecutor executor =
+                new RobotStatementExecutor(_boardDelegate, _executionQueuePool, validator);
             executor.Initialize();
             while (executor.MoveNext())
             {
@@ -41,6 +41,7 @@ namespace CodingStrategy.Runtime
                     return false;
                 }
             }
+
             executor.Terminate();
             return true;
         }

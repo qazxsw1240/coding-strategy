@@ -1,11 +1,11 @@
 #nullable enable
 
 
-namespace CodingStrategy.Runtime
+namespace CodingStrategy.Entities.Runtime
 {
     using System.Collections;
     using System.Collections.Generic;
-    using CodingStrategy.Entities.Robot;
+    using Robot;
 
     public class ExecutionQueuePool : IDictionary<IRobotDelegate, IExecutionQueue>
     {
@@ -41,15 +41,18 @@ namespace CodingStrategy.Runtime
 
         public bool ContainsKey(IRobotDelegate robotDelegate) => ContainsKey(robotDelegate);
 
-        public void CopyTo(KeyValuePair<IRobotDelegate, IExecutionQueue>[] array, int arrayIndex) => CopyTo(array, arrayIndex);
+        public void CopyTo(KeyValuePair<IRobotDelegate, IExecutionQueue>[] array, int arrayIndex) =>
+            CopyTo(array, arrayIndex);
 
-        public IEnumerator<KeyValuePair<IRobotDelegate, IExecutionQueue>> GetEnumerator() => _executionQueues.GetEnumerator();
+        public IEnumerator<KeyValuePair<IRobotDelegate, IExecutionQueue>> GetEnumerator() =>
+            _executionQueues.GetEnumerator();
 
         public bool Remove(IRobotDelegate robotDelegate) => _executionQueues.Remove(robotDelegate);
 
         public bool Remove(KeyValuePair<IRobotDelegate, IExecutionQueue> pair) => _executionQueues.Remove(pair);
 
-        public bool TryGetValue(IRobotDelegate key, out IExecutionQueue value) => _executionQueues.TryGetValue(key, out value);
+        public bool TryGetValue(IRobotDelegate key, out IExecutionQueue value) =>
+            _executionQueues.TryGetValue(key, out value);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

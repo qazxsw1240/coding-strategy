@@ -1,10 +1,10 @@
 #nullable enable
 
 
-namespace CodingStrategy.Runtime.Statement
+namespace CodingStrategy.Entities.Runtime.Statement
 {
     using System;
-    using CodingStrategy.Entities.Robot;
+    using Robot;
 
     public class RotateStatement : IStatement
     {
@@ -17,6 +17,7 @@ namespace CodingStrategy.Runtime.Statement
             {
                 throw new ArgumentException();
             }
+
             _robotDelegate = robotDelegate;
             _direction = direction;
         }

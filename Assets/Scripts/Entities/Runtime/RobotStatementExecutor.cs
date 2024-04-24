@@ -1,14 +1,11 @@
 #nullable enable
 
 
-namespace CodingStrategy.Runtime
+namespace CodingStrategy.Entities.Runtime
 {
-    using System;
     using System.Collections.Generic;
-    using CodingStrategy.Entities;
-    using CodingStrategy.Entities.Board;
-    using CodingStrategy.Entities.Robot;
-    using Unity.VisualScripting;
+    using Board;
+    using Robot;
 
     public class RobotStatementExecutor : ILifeCycle
     {
@@ -94,6 +91,7 @@ namespace CodingStrategy.Runtime
                     return false;
                 }
             }
+
             return true;
         }
 

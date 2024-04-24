@@ -4,8 +4,8 @@
 namespace CodingStrategy.Entities.Board
 {
     using System.Collections.Generic;
-    using CodingStrategy.Entities.BadSector;
-    using CodingStrategy.Entities.Robot;
+    using BadSector;
+    using Robot;
     using UnityEngine.Events;
 
     /// <summary>

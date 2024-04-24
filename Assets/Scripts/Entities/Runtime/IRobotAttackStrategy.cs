@@ -1,9 +1,9 @@
 #nullable enable
 
 
-namespace CodingStrategy.Runtime
+namespace CodingStrategy.Entities.Runtime
 {
-    using CodingStrategy.Entities.Robot;
+    using Robot;
 
     /// <summary>
     /// 로봇의 공격과 피해를 계산하는 데에 활용되는 인터페이스입니다.

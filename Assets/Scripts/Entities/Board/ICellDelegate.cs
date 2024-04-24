@@ -4,8 +4,8 @@
 namespace CodingStrategy.Entities.Board
 {
     using System.Collections.Generic;
-    using CodingStrategy.Entities.BadSector;
-    using CodingStrategy.Entities.Robot;
+    using BadSector;
+    using Robot;
 
     /// <summary>
     /// 셀의 정보를 담고 있는 딜리게이트입니다.

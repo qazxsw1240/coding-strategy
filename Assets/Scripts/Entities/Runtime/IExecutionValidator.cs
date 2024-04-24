@@ -1,9 +1,9 @@
 #nullable enable
 
 
-namespace CodingStrategy.Runtime
+namespace CodingStrategy.Entities.Runtime
 {
-    using CodingStrategy.Entities.Board;
+    using Board;
 
     /// <summary>
     /// IStatement 실행 후 IBoardDelegate 상태가 유효한지 검사합니다.

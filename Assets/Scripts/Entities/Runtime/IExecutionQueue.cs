@@ -1,10 +1,8 @@
 #nullable enable
 
 
-
-namespace CodingStrategy.Runtime
+namespace CodingStrategy.Entities.Runtime
 {
-    using System.Collections;
     using System.Collections.Generic;
 
     /// <summary>

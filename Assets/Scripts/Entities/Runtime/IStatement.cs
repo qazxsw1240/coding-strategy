@@ -1,7 +1,7 @@
 #nullable enable
 
 
-namespace CodingStrategy.Runtime
+namespace CodingStrategy.Entities.Runtime
 {
     /// <summary>
     /// ExecutorQueue가 실행할 명령문 인스턴스입니다.

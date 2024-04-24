@@ -6,8 +6,8 @@ namespace CodingStrategy.Entities.Board
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using CodingStrategy.Entities.BadSector;
-    using CodingStrategy.Entities.Robot;
+    using BadSector;
+    using Robot;
     using UnityEngine.Events;
 
     public class BoardDelegateImpl : IBoardDelegate

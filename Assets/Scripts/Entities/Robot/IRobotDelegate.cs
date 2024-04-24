@@ -1,9 +1,10 @@
 #nullable enable
 
 
+using CodingStrategy.Entities.Runtime;
+
 namespace CodingStrategy.Entities.Robot
 {
-    using CodingStrategy.Runtime;
     using UnityEngine.Events;
 
     /// <summary>

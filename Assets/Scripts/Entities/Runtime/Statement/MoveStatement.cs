@@ -1,10 +1,10 @@
 #nullable enable
 
 
-namespace CodingStrategy.Runtime.Statement
+namespace CodingStrategy.Entities.Runtime.Statement
 {
     using System;
-    using CodingStrategy.Entities.Robot;
+    using Robot;
     using UnityEngine;
 
     public class MoveStatement : IStatement
@@ -19,6 +19,7 @@ namespace CodingStrategy.Runtime.Statement
             {
                 throw new ArgumentException();
             }
+
             _robotDelegate = robotDelegate;
             _direction = direction;
             _isEdge = isEdge;
@@ -36,10 +37,7 @@ namespace CodingStrategy.Runtime.Statement
 
         public IStatement Reverse
         {
-            get
-            {
-                return _isEdge ? this : new MoveStatement(_robotDelegate, -1, _isEdge);
-            }
+            get { return _isEdge ? this : new MoveStatement(_robotDelegate, -1, _isEdge); }
         }
     }
 }

@@ -4,17 +4,19 @@
 namespace CodingStrategy.Entities.Robot
 {
     using System;
-    using CodingStrategy.Entities.Board;
-    using CodingStrategy.Runtime;
+    using Board;
+    using Runtime;
     using UnityEngine.Events;
 
     public class RobotDelegateImpl : IRobotDelegate
     {
-        private static readonly Coordinate[] Vectors = new Coordinate[] {
+        private static readonly Coordinate[] Vectors = new Coordinate[]
+        {
             new Coordinate(0, 1),
             new Coordinate(1, 0),
             new Coordinate(0, -1),
-            new Coordinate(-1, 0) };
+            new Coordinate(-1, 0)
+        };
 
         private readonly string _id;
         private readonly IBoardDelegate _boardDelegate;
@@ -121,7 +123,7 @@ namespace CodingStrategy.Entities.Robot
 
         public bool Move(int count)
         {
-            Coordinate vector = Vectors[(int)Direction];
+            Coordinate vector = Vectors[(int) Direction];
             Coordinate destination = Position + (vector * count);
             return Move(destination);
         }
@@ -132,7 +134,7 @@ namespace CodingStrategy.Entities.Robot
         {
             int range = Enum.GetValues(typeof(RobotDirection)).Length;
             RobotDirection direction = Direction;
-            RobotDirection nextDirection = (RobotDirection)(((int)direction + count + range) % range);
+            RobotDirection nextDirection = (RobotDirection) (((int) direction + count + range) % range);
             return Rotate(nextDirection);
         }
 
@@ -152,6 +154,7 @@ namespace CodingStrategy.Entities.Robot
                     checksum++;
                 }
             }
+
             return checksum != 0;
         }
 
@@ -159,7 +162,8 @@ namespace CodingStrategy.Entities.Robot
 
         public UnityEvent<IRobotDelegate, Coordinate, Coordinate> OnRobotChangePosition => _robotChangePositionEvents;
 
-        public UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> OnRobotChangeDirection => _robotChangeDirectionEvents;
+        public UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> OnRobotChangeDirection =>
+            _robotChangeDirectionEvents;
 
         public UnityEvent<IRobotDelegate, int, int> OnHealthPointChange => _healthPointChangeEvents;
 
@@ -169,7 +173,8 @@ namespace CodingStrategy.Entities.Robot
 
         public UnityEvent<IRobotDelegate, int, int> OnAttackPointChange => _attackPointChangeEvents;
 
-        private void InvokeRobotChangePositionEvents(IRobotDelegate robotDelegate, Coordinate previousPosition, Coordinate newPosition)
+        private void InvokeRobotChangePositionEvents(IRobotDelegate robotDelegate, Coordinate previousPosition,
+            Coordinate newPosition)
         {
             if (robotDelegate == this)
             {
@@ -177,7 +182,8 @@ namespace CodingStrategy.Entities.Robot
             }
         }
 
-        private void InvokeRobotChangeDirectionEvents(IRobotDelegate robotDelegate, RobotDirection previousDirection, RobotDirection newDirection)
+        private void InvokeRobotChangeDirectionEvents(IRobotDelegate robotDelegate, RobotDirection previousDirection,
+            RobotDirection newDirection)
         {
             if (robotDelegate == this)
             {

@@ -1,15 +1,11 @@
 #nullable enable
 
 
-namespace CodingStrategy.Runtime
+namespace CodingStrategy.Entities.Runtime
 {
     using System.Collections.Generic;
-    using System.Linq;
-    using CodingStrategy.Entities;
-    using CodingStrategy.Entities.Board;
-    using CodingStrategy.Entities.Robot;
-    using Photon.Pun;
-    using Photon.Realtime;
+    using Board;
+    using Robot;
 
     public class RuntimeExecutor : ILifeCycle
     {
@@ -62,6 +58,7 @@ namespace CodingStrategy.Runtime
                 {
                     continue;
                 }
+
                 ICommand command = algorithm[_currentCountdown % capacity];
                 // execute command
             }
@@ -75,6 +72,7 @@ namespace CodingStrategy.Runtime
             {
                 executionQueue.Clear();
             }
+
             _executionQueuePool.Clear();
         }
     }
