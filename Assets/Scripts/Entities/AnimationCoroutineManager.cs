@@ -41,6 +41,16 @@ namespace CodingStrategy.Entities
             _animations.Enqueue(coroutine);
         }
 
+        public void ApplyAnimations()
+        {
+            if (!_idle)
+            {
+                return;
+            }
+
+            _idle = false;
+        }
+
         private IEnumerator StartParallelCoroutines()
         {
             _idle = false;
