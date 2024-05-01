@@ -28,6 +28,10 @@ Shader "ExampleShader"
         _Parallax("Scale", Range(0.005, 0.08)) = 0.005
         _ParallaxMap("Height Map", 2D) = "black" {}
 
+        _RimColor("Rim Color", Color) = (1,1,1,1)
+        _RimAmount("Rim Amount", Range(0, 1)) = 0.716
+        _RimThreshold("Rim Threshold", Range(0, 1)) = 0.1	
+
         _OcclusionStrength("Strength", Range(0.0, 1.0)) = 1.0
         _OcclusionMap("Occlusion", 2D) = "white" {}
 
@@ -141,11 +145,120 @@ Shader "ExampleShader"
             #pragma instancing_options renderinglayer
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
-            #pragma vertex LitPassVertex
-            #pragma fragment LitPassFragment
-
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitForwardPass.hlsl"
+
+            #pragma vertex LitPassVertex
+            //#pragma fragment LitPassFragment
+            #pragma fragment MyLitPassFragment
+
+            half3 MyCalculateBlinnPhong(Light light, InputData inputData, SurfaceData surfaceData)
+            {
+                half3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
+                //half3 lightColor = LightingLambert(attenuatedLightColor, light.direction, inputData.normalWS);
+                //half3 lightColor = attenuatedLightColor * saturate(dot(inputData.normalWS, light.direction));
+                half3 lightColor = attenuatedLightColor * (dot(inputData.normalWS, light.direction) > 0 ? 1 : 0);
+
+                lightColor *= surfaceData.albedo;
+
+                #if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
+                half smoothness = exp2(10 * surfaceData.smoothness + 1);
+
+                lightColor += LightingSpecular(attenuatedLightColor, light.direction, inputData.normalWS, inputData.viewDirectionWS, half4(surfaceData.specular, 1), smoothness);
+                #endif
+
+                return lightColor;
+            }
+
+            half4 MyUniversalFragmentBlinnPhong(InputData inputData, SurfaceData surfaceData)
+            {
+                #if defined(DEBUG_DISPLAY)
+                half4 debugColor;
+
+                if (CanDebugOverrideOutputColor(inputData, surfaceData, debugColor))
+                {
+                    return debugColor;
+                }
+                #endif
+
+                uint meshRenderingLayers = GetMeshRenderingLightLayer();
+                half4 shadowMask = CalculateShadowMask(inputData);
+                AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor(inputData, surfaceData);
+                Light mainLight = GetMainLight(inputData, shadowMask, aoFactor);
+
+                MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI, aoFactor);
+
+                inputData.bakedGI *= surfaceData.albedo;
+
+                LightingData lightingData = CreateLightingData(inputData, surfaceData);
+                if (IsMatchingLightLayer(mainLight.layerMask, meshRenderingLayers))
+                {
+                    lightingData.mainLightColor += MyCalculateBlinnPhong(mainLight, inputData, surfaceData);
+                }
+
+                #if defined(_ADDITIONAL_LIGHTS)
+                uint pixelLightCount = GetAdditionalLightsCount();
+
+                #if USE_CLUSTERED_LIGHTING
+                for (uint lightIndex = 0; lightIndex < min(_AdditionalLightsDirectionalCount, MAX_VISIBLE_LIGHTS); lightIndex++)
+                {
+                    Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
+                    if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
+                    {
+                        lightingData.additionalLightsColor += MyCalculateBlinnPhong(light, inputData, surfaceData);
+                    }
+                }
+                #endif
+
+                LIGHT_LOOP_BEGIN(pixelLightCount)
+                    Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
+                    if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
+                    {
+                        lightingData.additionalLightsColor += MyCalculateBlinnPhong(light, inputData, surfaceData);
+                    }
+                LIGHT_LOOP_END
+                #endif
+
+                #if defined(_ADDITIONAL_LIGHTS_VERTEX)
+                lightingData.vertexLightingColor += inputData.vertexLighting;
+                #endif
+
+                return CalculateFinalColor(lightingData, surfaceData.alpha);
+            }
+
+            half4 MyLitPassFragment(Varyings input) : SV_Target
+            {
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+
+            #if defined(_PARALLAXMAP)
+            #if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
+                half3 viewDirTS = input.viewDirTS;
+            #else
+                half3 viewDirWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
+                half3 viewDirTS = GetViewDirectionTangentSpace(input.tangentWS, input.normalWS, viewDirWS);
+            #endif
+                ApplyPerPixelDisplacement(viewDirTS, input.uv);
+            #endif
+
+                SurfaceData surfaceData;
+                InitializeStandardLitSurfaceData(input.uv, surfaceData);
+
+                InputData inputData;
+                InitializeInputData(input, surfaceData.normalTS, inputData);
+                SETUP_DEBUG_TEXTURE_DATA(inputData, input.uv, _BaseMap);
+
+            #ifdef _DBUFFER
+                ApplyDecalToSurfaceData(input.positionCS, surfaceData, inputData);
+            #endif
+
+                half4 color = MyUniversalFragmentBlinnPhong(inputData, surfaceData);
+
+                color.rgb = MixFog(color.rgb, inputData.fogCoord);
+                color.a = OutputAlpha(color.a, _Surface);
+
+                return color;
+            }
             ENDHLSL
         }
 
