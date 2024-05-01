@@ -29,7 +29,7 @@ namespace CodingStrategy.Entities.Player
         /// <summary>
         /// 플레이어의 로봇입니다.
         /// </summary>
-        public abstract IRobot Robot { get; }
+        public abstract IRobotDelegate Robot { get; }
         /// <summary>
         /// 플레이어의 알고리즘입니다.
         /// </summary>

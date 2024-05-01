@@ -5,9 +5,9 @@ namespace CodingStrategy.Entities.Player
     {
         private readonly string _id;
         private readonly IPlayerDelegate _playerDelegate;
-        private readonly IRobot _robot;
+        private readonly IRobotDelegate _robot;
         private readonly IAlgorithm _algorithm;
-        public PlayerImpl(string id, IPlayerDelegate playerDelegate, IRobot robot, IAlgorithm algorithm)
+        public PlayerImpl(string id, IPlayerDelegate playerDelegate, IRobotDelegate robot, IAlgorithm algorithm)
         {
             _id = id;
             _playerDelegate = playerDelegate;
@@ -19,7 +19,7 @@ namespace CodingStrategy.Entities.Player
         public int Level => _playerDelegate.Level;
         public int Exp => _playerDelegate.Exp;
         public int Currency => _playerDelegate.Currency;
-        public IRobot Robot => _robot;
+        public IRobotDelegate Robot => _robot;
         public IAlgorithm Algorithm => _algorithm;
     }
 }
