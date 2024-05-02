@@ -73,7 +73,7 @@ namespace CodingStrategy.Entities.Board
                 {
                     if (robotPosition.Position == coordinate)
                     {
-                        cellDelegate.Robot.Add(robotDelegate);
+                        cellDelegate.Placeables.Add(robotDelegate);
                     }
                 }
 
@@ -82,7 +82,7 @@ namespace CodingStrategy.Entities.Board
                 {
                     if (badSectorPosition.Position == coordinate)
                     {
-                        cellDelegate.BadSector = badSectorDelegate;
+                        cellDelegate.Placeables.Add(badSectorDelegate);
                     }
                 }
 
