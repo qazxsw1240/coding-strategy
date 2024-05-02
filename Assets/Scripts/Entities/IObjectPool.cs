@@ -6,11 +6,11 @@ namespace CodingStrategy.Entities
     using System;
     using System.Collections.Generic;
 
-    public interface IObjectPool<T> : IEnumerable<T>
+    public interface IObjectPool<TEntity> : IEnumerable<TEntity> where TEntity : IGameEntity
     {
-        public abstract T this[string id] { get; set; }
+        public abstract TEntity this[string id] { get; set; }
 
-        public abstract void Add(string id, Func<string, T> generator);
+        public abstract void Add(string id, Func<string, TEntity> generator);
 
         public abstract void Remove(string id);
 
