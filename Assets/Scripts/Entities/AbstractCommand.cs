@@ -1,6 +1,9 @@
 #nullable enable
 
 
+using System.Collections.Generic;
+using CodingStrategy.Entities.Runtime;
+
 namespace CodingStrategy.Entities
 {
     /// <summary>
@@ -37,6 +40,8 @@ namespace CodingStrategy.Entities
         public abstract bool Invoke(params object[] args);
 
         public abstract bool Revoke(params object[] args);
+
+        public abstract IList<IStatement> GetCommandStatements();
 
         public abstract ICommand Copy(bool keepStatus = true);
     }
