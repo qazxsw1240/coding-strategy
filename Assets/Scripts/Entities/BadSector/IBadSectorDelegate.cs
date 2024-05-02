@@ -5,11 +5,11 @@ using CodingStrategy.Entities.Robot;
 
 namespace CodingStrategy.Entities.BadSector
 {
-    public interface IBadSectorDelegate : IGameEntity
+    public interface IBadSectorDelegate : IGameEntity, IPlaceable
     {
         public abstract IRobotDelegate Installer { get; }
 
-        public abstract Coordinate Position { get; }
+        public new abstract Coordinate Position { get; }
 
         public abstract void Remove();
 

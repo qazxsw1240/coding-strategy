@@ -10,7 +10,7 @@ namespace CodingStrategy.Entities.Robot
     /// <summary>
     /// 로봇의 정보를 관리하는 딜리게이트입니다.
     /// </summary>
-    public interface IRobotDelegate : IGameEntity
+    public interface IRobotDelegate : IGameEntity, IPlaceable
     {
         /// <summary>
         /// 로봇이 지닌 알고리즘입니다. 알고리즘에는 턴마다 실행할 명령어가 순서대로 저장돼 있습니다.
@@ -20,7 +20,7 @@ namespace CodingStrategy.Entities.Robot
         /// <summary>
         /// 로봇이 위치한 좌표입니다.
         /// </summary>
-        public abstract Coordinate Position { get; set; }
+        public new abstract Coordinate Position { get; set; }
 
         /// <summary>
         /// 로봇이 바라보고 있는 방향입니다.
