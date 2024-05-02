@@ -20,10 +20,10 @@ namespace CodingStrategy.Entities.Player
         /// </summary>
         /// <param name="requiredExp">현재 게임에서 생성된 레벨별 필요 경험치 객체를 매개 변수로 입력합니다.</param>
         /// <param name="playerPoolImpl">현재 게임에서 생성된 플레이어 풀 객체를 매개 변수로 입력합니다.</param>
-        public LevelController(IRequiredExp requiredExp, PlayerPoolImpl playerPoolImpl)
+        public LevelController(IRequiredExp requiredExp, IPlayerPool playerPool)
         {
             _requiredExp=requiredExp;
-            _playerPool=playerPoolImpl;
+            _playerPool=playerPool;
         }
 
         /// <summary>
