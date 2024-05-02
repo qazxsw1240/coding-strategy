@@ -17,6 +17,7 @@ namespace CodingStrategy.Entities.Player
         public IPlayerDelegate this[string id]
         {
             get => _pool[id];
+            set => _pool[id] = value;
         }
         public IDictionary<string, IPlayerDelegate> PlayerPool => _pool;
         /// <summary>
