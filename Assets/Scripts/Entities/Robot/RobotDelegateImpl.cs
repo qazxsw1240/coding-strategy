@@ -1,6 +1,8 @@
 #nullable enable
 
 
+using System.Linq;
+
 namespace CodingStrategy.Entities.Robot
 {
     using System;
@@ -148,7 +150,7 @@ namespace CodingStrategy.Entities.Robot
             {
                 Coordinate targetPosition = currentPosition + relativePosition;
                 ICellDelegate cellDelegate = _boardDelegate[targetPosition];
-                foreach (IRobotDelegate robotDelegate in cellDelegate.Robot)
+                foreach (IRobotDelegate robotDelegate in cellDelegate.Placeables.Where(p => p is IRobotDelegate).Cast<IRobotDelegate>())
                 {
                     robotDelegate.HealthPoint -= strategy.CalculateAttackPoint(this, robotDelegate);
                     checksum++;
