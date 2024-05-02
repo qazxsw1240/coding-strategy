@@ -4,6 +4,7 @@
 namespace CodingStrategy.Entities
 {
     using System;
+    
     /// <summary>
     /// 게임에 배치되는 요소입니다. IGameEntity는 ID로 인스턴스를 구분합니다.
     /// </summary>
