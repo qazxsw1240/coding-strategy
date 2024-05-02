@@ -307,11 +307,14 @@ namespace CodingStrategy.Entities.Board
                 get => _badSector;
                 set => _badSector = value;
             }
+
             public ISet<IRobotDelegate> Robot
             {
                 get => _robotDelegates;
                 set => throw new NotSupportedException();
             }
+
+            public IReadOnlyList<IPlaceable> Placeables => new List<IPlaceable>();
         }
     }
 }

@@ -21,5 +21,10 @@ namespace CodingStrategy.Entities.Board
         /// 셀에 배치된 로봇 컬렉션입니다.
         /// </summary>
         public abstract ISet<IRobotDelegate> Robot { get; set; }
+
+        /// <summary>
+        /// 셀에 설치된 Placeable 객체를 리스트로 반환합니다.
+        /// </summary>
+        public abstract IReadOnlyList<IPlaceable> Placeables { get; }
     }
 }
