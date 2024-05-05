@@ -1,6 +1,9 @@
 #nullable enable
 
 
+using System.Linq;
+using CodingStrategy.Entities.Robot;
+
 namespace CodingStrategy.Entities.Runtime.Validator
 {
     using Board;
@@ -12,7 +15,7 @@ namespace CodingStrategy.Entities.Runtime.Validator
             ICellDelegate[,] cellDelegates = boardDelegate.AsArray();
             foreach (ICellDelegate cellDelegate in cellDelegates)
             {
-                if (cellDelegate.Robot.Count > 1)
+                if (cellDelegate.Placeables.Count(p => p is IRobotDelegate) > 1)
                 {
                     return false;
                 }

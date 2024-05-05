@@ -13,7 +13,7 @@ namespace CodingStrategy.Entities.Player
         /// <summary>
         /// 플레이어 아이디로 해당 플레이어의 상태에 접근합니다.
         /// </summary>
-        public abstract IPlayerDelegate this[string id] { get; set; }
+        public abstract IPlayerDelegate this[string id] { get; }
         /// <summary>
         /// 플레이어 풀에 플레이어를 추가합니다.
         /// </summary>
