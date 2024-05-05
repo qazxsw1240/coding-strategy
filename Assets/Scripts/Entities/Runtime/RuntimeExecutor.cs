@@ -5,6 +5,7 @@ namespace CodingStrategy.Entities.Runtime
 {
     using System.Collections.Generic;
     using Board;
+    using Player;
     using Robot;
 
     public class RuntimeExecutor : ILifeCycle
@@ -13,6 +14,8 @@ namespace CodingStrategy.Entities.Runtime
         private readonly int _countdown;
         private readonly ExecutionQueuePool _executionQueuePool;
         private readonly IList<IExecutionValidator> _validators;
+        private readonly IPlayerPool _playerPool;
+        private readonly LevelController _levelController;
 
         private int _currentCountdown;
 
@@ -22,6 +25,8 @@ namespace CodingStrategy.Entities.Runtime
             _countdown = countdown;
             _executionQueuePool = new ExecutionQueuePool();
             _validators = new List<IExecutionValidator>();
+            _playerPool = new PlayerPoolImpl();
+            _levelController = new LevelController(new RequiredExpImpl(), _playerPool);
 
             _currentCountdown = 0;
         }
@@ -34,6 +39,9 @@ namespace CodingStrategy.Entities.Runtime
             // Initialize ExecutionQueue
             _executionQueuePool.Clear();
             // Initialize players' data
+            /*
+            _playerPool["id"]=new PlayerDelegateImpl("id", hp, level, exp, currency, RobotDelegate, new Algorithm(level));
+            */
         }
 
         public bool MoveNext()
