@@ -17,22 +17,16 @@ namespace CodingStrategy.Entities.Player
         public IPlayerDelegate this[string id]
         {
             get => _pool[id];
+            set
+            {
+                if(_pool.Count == MaxPlayers)
+                {
+                    throw new Exception();
+                }
+                _pool.Add(id, value);
+            }
         }
         public IDictionary<string, IPlayerDelegate> PlayerPool => _pool;
-        /// <summary>
-        /// 플레이어 풀에 플레이어를 추가합니다.
-        /// </summary>
-        /// <param name="id">플레이어 아이디입니다.</param>
-        /// <param name="player">플레이어 정보 대리자입니다.</param>
-        /// <exception cref="Exception"></exception>
-        public void Add(string id, IPlayerDelegate player)
-        {
-            if(_pool.Count == MaxPlayers)
-            {
-                throw new Exception();
-            }
-            _pool.Add(id, player);
-        }
         /// <summary>
         /// 플레이어 풀에서 특정 플레이어를 제거합니다.
         /// </summary>
