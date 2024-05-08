@@ -1,6 +1,7 @@
 #nullable enable
 
 
+using System;
 using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Board;
 using CodingStrategy.Entities.Robot;
@@ -8,6 +9,7 @@ using UnityEngine.Events;
 
 namespace CodingStrategy.Entities
 {
+    [Obsolete]
     public interface IRuntimeDelegateController
     {
         public abstract IBoardDelegate BoardDelegate { get; }
