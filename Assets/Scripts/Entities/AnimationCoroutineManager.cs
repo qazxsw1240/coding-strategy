@@ -12,49 +12,42 @@ namespace CodingStrategy.Entities
     /// </summary>
     public class AnimationCoroutineManager : MonoBehaviour
     {
-        private readonly Queue<IEnumerator> _animations;
+        private readonly Queue<IEnumerator> _animations = new Queue<IEnumerator>();
 
-        private bool _idle;
-
-        public AnimationCoroutineManager()
-        {
-            _animations = new Queue<IEnumerator>();
-            _idle = true;
-        }
+        private Coroutine? _coroutine;
 
         public void Start()
         {
             _animations.Clear();
-            _idle = true;
         }
 
-        public void Update()
-        {
-            if (_idle)
-            {
-                StartCoroutine(StartParallelCoroutines());
-            }
-        }
-
+        /// <summary>
+        /// 코루틴 애니메이션을 큐에 추가합니다.
+        /// </summary>
+        /// <param name="coroutine">큐에 추가할 코루틴 애니메이션입니다.</param>
         public void AddAnimation(IEnumerator coroutine)
         {
             _animations.Enqueue(coroutine);
         }
 
-        public void ApplyAnimations()
+        /// <summary>
+        /// 큐에 저장된 코루틴 애니메이션을 실행합니다.
+        /// </summary>
+        /// <returns>저장된 애니메이션을 완료하기를 기다리는 코루틴을 반환합니다.</returns>
+        public Coroutine ApplyAnimations()
         {
-            if (!_idle)
+            if (_coroutine != null)
             {
-                return;
+                return _coroutine;
             }
 
-            _idle = false;
+            _coroutine = StartCoroutine(StartParallelCoroutines());
+
+            return _coroutine;
         }
 
         private IEnumerator StartParallelCoroutines()
         {
-            _idle = false;
-
             IList<Coroutine> coroutines = new List<Coroutine>();
 
             while (_animations.TryDequeue(out IEnumerator coroutine))
@@ -67,7 +60,7 @@ namespace CodingStrategy.Entities
                 yield return coroutine;
             }
 
-            _idle = true;
+            _coroutine = null;
         }
     }
 }
