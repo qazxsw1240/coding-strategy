@@ -1,27 +1,28 @@
 #nullable enable
 
 
+using System.Collections;
+
 namespace CodingStrategy.Entities.Runtime
 {
     using System.Collections.Generic;
-    using CodingStrategy.Entities.Board;
 
-    public class CommandIterationExecutor : ILifeCycle
+    public class CommandIterationExecutor : LifeCycleMonoBehaviourBase, ILifeCycle
     {
-        private readonly IBoardDelegate _boardDelegate;
-        private readonly ExecutionQueuePool _executionQueuePool;
-        private readonly IReadOnlyList<IExecutionValidator> _validators;
-        private readonly IEnumerator<IExecutionValidator> _enumerator;
+        private IList<IExecutionValidator> _validators = null!;
+        private IEnumerator<IExecutionValidator> _enumerator = null!;
+        private RobotStatementExecutor _executor = null!;
 
-        public CommandIterationExecutor(
-            IBoardDelegate boardDelegate,
-            ExecutionQueuePool executionQueuePool,
-            IReadOnlyList<IExecutionValidator> validators)
+        public RuntimeExecutorContext Context { get; set; }
+
+        public IList<IExecutionValidator> Validators
         {
-            _boardDelegate = boardDelegate;
-            _executionQueuePool = executionQueuePool;
-            _validators = validators;
-            _enumerator = _validators.GetEnumerator();
+            get => _validators;
+            set
+            {
+                _validators = value;
+                _enumerator = value.GetEnumerator();
+            }
         }
 
         public void Initialize() => _enumerator.Reset();
@@ -30,22 +31,40 @@ namespace CodingStrategy.Entities.Runtime
 
         public bool Execute()
         {
-            IExecutionValidator validator = _enumerator.Current;
-            RobotStatementExecutor executor =
-                new RobotStatementExecutor(_boardDelegate, _executionQueuePool, validator);
-            executor.Initialize();
-            while (executor.MoveNext())
-            {
-                if (!executor.Execute())
-                {
-                    return false;
-                }
-            }
-
-            executor.Terminate();
+            IExecutionValidator validator = _enumerator.Current!;
+            _executor = gameObject.AddComponent<RobotStatementExecutor>();
+            _executor.Validator = validator;
+            _executor.Context = Context;
             return true;
         }
 
         public void Terminate() => _enumerator.Dispose();
+
+        protected override IEnumerator OnAfterInitialization()
+        {
+            yield return null;
+        }
+
+        protected override IEnumerator OnBeforeExecution()
+        {
+            yield return null;
+        }
+
+        protected override IEnumerator OnAfterFailExecution()
+        {
+            yield return null;
+        }
+
+        protected override IEnumerator OnAfterExecution()
+        {
+            yield return null; // _executor.Start() 대기
+            yield return _executor.Coroutine;
+        }
+
+        protected override IEnumerator OnAfterTermination()
+        {
+            Destroy(_executor);
+            yield return null;
+        }
     }
 }

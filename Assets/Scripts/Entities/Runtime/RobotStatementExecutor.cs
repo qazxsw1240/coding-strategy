@@ -3,26 +3,23 @@
 
 namespace CodingStrategy.Entities.Runtime
 {
+    using System.Linq;
+    using System.Collections;
     using System.Collections.Generic;
-    using Board;
     using Robot;
 
-    public class RobotStatementExecutor : ILifeCycle
+    public class RobotStatementExecutor : LifeCycleMonoBehaviourBase, ILifeCycle
     {
-        private readonly IBoardDelegate _boardDelegate;
-        private readonly ExecutionQueuePool _executionQueuePool;
-        private readonly IExecutionValidator _validator;
-        private readonly IDictionary<IRobotDelegate, Stack<IStatement>> _statements;
+        private readonly IDictionary<IRobotDelegate, Stack<IStatement>> _statements =
+            new Dictionary<IRobotDelegate, Stack<IStatement>>();
 
-        public RobotStatementExecutor(
-            IBoardDelegate boardDelegate,
-            ExecutionQueuePool executionQueuePool,
-            IExecutionValidator validator)
+        public IExecutionValidator Validator { get; set; } = null!;
+
+        public RuntimeExecutorContext Context { get; set; } = null!;
+
+        public void Awake()
         {
-            _boardDelegate = boardDelegate;
-            _executionQueuePool = executionQueuePool;
-            _validator = validator;
-            _statements = new Dictionary<IRobotDelegate, Stack<IStatement>>();
+            LifeCycle = this;
         }
 
         public void Initialize()
@@ -31,13 +28,14 @@ namespace CodingStrategy.Entities.Runtime
             InitializeStacks();
         }
 
-        public bool MoveNext() => !IsQueueEmpty();
+        public bool MoveNext() => true;
 
         public bool Execute()
         {
-            IDictionary<IRobotDelegate, bool> problematicRobots = new Dictionary<IRobotDelegate, bool>();
+            IDictionary<IRobotDelegate, bool> problematicRobots =
+                new Dictionary<IRobotDelegate, bool>();
 
-            foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in _executionQueuePool)
+            foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in Context.ExecutionQueuePool)
             {
                 problematicRobots[robotDelegate] = false;
 
@@ -57,7 +55,7 @@ namespace CodingStrategy.Entities.Runtime
                 {
                     statements.Push(statement);
                     statement.Execute();
-                    if (!_validator.IsValid(_boardDelegate))
+                    if (!Validator.IsValid(Context.BoardDelegate))
                     {
                         throw new ExecutionException();
                     }
@@ -73,7 +71,7 @@ namespace CodingStrategy.Entities.Runtime
             {
                 if (hasProblems)
                 {
-                    _executionQueuePool.Remove(robotDelegate);
+                    Context.ExecutionQueuePool.Remove(robotDelegate);
                 }
             }
 
@@ -84,15 +82,7 @@ namespace CodingStrategy.Entities.Runtime
 
         private bool IsQueueEmpty()
         {
-            foreach (IExecutionQueue executionQueue in _executionQueuePool.Values)
-            {
-                if (executionQueue.Count != 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return Context.ExecutionQueuePool.Values.All(executionQueue => executionQueue.Count == 0);
         }
 
         private void CheckExecutionQueueValidity()
@@ -105,19 +95,45 @@ namespace CodingStrategy.Entities.Runtime
 
         private void InitializeStacks()
         {
-            foreach (IRobotDelegate robotDelegate in _executionQueuePool.Keys)
+            foreach (IRobotDelegate robotDelegate in Context.ExecutionQueuePool.Keys)
             {
                 _statements[robotDelegate] = new Stack<IStatement>();
             }
         }
 
-        private void RollbackCommands(IExecutionQueue executionQueue, Stack<IStatement> statements)
+        private void RollbackCommands(IExecutionQueue executionQueue,
+            Stack<IStatement> statements)
         {
             executionQueue.Clear();
             while (statements.TryPop(out IStatement statement))
             {
                 executionQueue.Enqueue(statement.Reverse);
             }
+        }
+
+        protected override IEnumerator OnAfterInitialization()
+        {
+            yield return null;
+        }
+
+        protected override IEnumerator OnBeforeExecution()
+        {
+            yield return null;
+        }
+
+        protected override IEnumerator OnAfterFailExecution()
+        {
+            yield return null;
+        }
+
+        protected override IEnumerator OnAfterExecution()
+        {
+            yield return Context.AnimationCoroutineManager.ApplyAnimations();
+        }
+
+        protected override IEnumerator OnAfterTermination()
+        {
+            yield return null;
         }
     }
 }

@@ -3,32 +3,37 @@
 
 namespace CodingStrategy.Entities.Runtime
 {
+    using System.Collections;
     using System.Collections.Generic;
+    using UnityEngine;
     using Board;
     using Player;
     using Robot;
 
-    public class RuntimeExecutor : ILifeCycle
+    public class RuntimeExecutor : LifeCycleMonoBehaviourBase, ILifeCycle
     {
-        private readonly IBoardDelegate _boardDelegate;
-        private readonly int _countdown;
-        private readonly ExecutionQueuePool _executionQueuePool;
-        private readonly IList<IExecutionValidator> _validators;
-        private readonly IPlayerPool _playerPool;
-        private readonly LevelController _levelController;
+        private int _countdown = 20;
 
-        private int _currentCountdown;
+        private ExecutionQueuePool _executionQueuePool =
+            new ExecutionQueuePool();
 
-        public RuntimeExecutor(IBoardDelegate boardDelegate, int countdown)
+        private IList<IExecutionValidator> _validators =
+            new List<IExecutionValidator>();
+
+        private LevelController _levelController = null!;
+
+        private int _currentCountdown = 0;
+
+        public IBoardDelegate BoardDelegate { private get; set; } = null!;
+
+        public IRobotDelegatePool RobotDelegatePool { private get; set; } =
+            null!;
+
+        public IPlayerPool PlayerPool { private get; set; } = null!;
+
+        public void Awake()
         {
-            _boardDelegate = boardDelegate;
-            _countdown = countdown;
-            _executionQueuePool = new ExecutionQueuePool();
-            _validators = new List<IExecutionValidator>();
-            _playerPool = new PlayerPoolImpl();
-            _levelController = new LevelController(new RequiredExpImpl(), _playerPool);
-
-            _currentCountdown = 0;
+            LifeCycle = this;
         }
 
         public void Initialize()
@@ -38,22 +43,23 @@ namespace CodingStrategy.Entities.Runtime
             // Inject abnormality code
             // Initialize ExecutionQueue
             _executionQueuePool.Clear();
-            // Initialize players' data
-            /*
-            _playerPool["id"]=new PlayerDelegateImpl("id", hp, level, exp, currency, RobotDelegate, new Algorithm(level));
-            */
+            foreach (IPlayerDelegate playerDelegate in PlayerPool.PlayerPool.Values)
+            {
+                IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
+                _executionQueuePool[robotDelegate] = new ExecutionQueueImpl();
+            }
         }
 
         public bool MoveNext()
         {
             // Check deadlock
-            return _executionQueuePool.Count != 0 && ++_currentCountdown <= _countdown;
+            return !IsDeadlock() && ++_currentCountdown <= _countdown;
         }
 
         public bool Execute()
         {
             // Check deadlock
-            if (_executionQueuePool.Count == 0)
+            if (IsDeadlock())
             {
                 return false;
             }
@@ -68,8 +74,20 @@ namespace CodingStrategy.Entities.Runtime
                 }
 
                 ICommand command = algorithm[_currentCountdown % capacity];
-                // execute command
+                foreach (IStatement statement in command.GetCommandStatements())
+                {
+                    executionQueue.Add(statement);
+                }
             }
+
+            ILifeCycle commandIterationExecutor = gameObject.AddComponent<CommandIterationExecutor>();
+            commandIterationExecutor.Initialize();
+            while (commandIterationExecutor.MoveNext())
+            {
+                commandIterationExecutor.Execute();
+            }
+
+            commandIterationExecutor.Terminate();
 
             return true;
         }
@@ -82,6 +100,36 @@ namespace CodingStrategy.Entities.Runtime
             }
 
             _executionQueuePool.Clear();
+        }
+
+        protected override IEnumerator OnAfterInitialization()
+        {
+            yield return null;
+        }
+
+        protected override IEnumerator OnBeforeExecution()
+        {
+            yield return null;
+        }
+
+        protected override IEnumerator OnAfterFailExecution()
+        {
+            yield return null;
+        }
+
+        protected override IEnumerator OnAfterExecution()
+        {
+            yield return null;
+        }
+
+        protected override IEnumerator OnAfterTermination()
+        {
+            yield return null;
+        }
+
+        private bool IsDeadlock()
+        {
+            return _executionQueuePool.Count == 0;
         }
     }
 }
