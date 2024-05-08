@@ -10,11 +10,6 @@ namespace CodingStrategy.Entities
     {
         private Coroutine? _coroutine;
 
-        protected LifeCycleMonoBehaviourBase(ILifeCycle lifeCycle)
-        {
-            LifeCycle = lifeCycle;
-        }
-
         public void Start()
         {
             _coroutine = StartCoroutine(StartLifeCycleCoroutine());
@@ -22,7 +17,7 @@ namespace CodingStrategy.Entities
 
         public bool HasCoroutine => _coroutine != null;
 
-        public ILifeCycle LifeCycle { get; }
+        public ILifeCycle LifeCycle { get; set; } = null!;
 
         protected abstract IEnumerator OnAfterInitialization();
 
@@ -36,6 +31,8 @@ namespace CodingStrategy.Entities
 
         private IEnumerator StartLifeCycleCoroutine()
         {
+            Debug.Log($"Start LifeCycle: {LifeCycle.GetType().Name}");
+
             LifeCycle.Initialize();
 
             yield return OnAfterInitialization();
@@ -56,6 +53,8 @@ namespace CodingStrategy.Entities
             LifeCycle.Terminate();
 
             yield return OnAfterTermination();
+
+            Debug.Log($"Ends LifeCycle: {LifeCycle.GetType().Name}");
 
             _coroutine = null;
         }
