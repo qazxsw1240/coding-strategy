@@ -13,8 +13,8 @@ namespace CodingStrategy.Entities
     /// </summary>
     public class AnimationCoroutineManager : MonoBehaviour
     {
-        private readonly IDictionary<GameObject, Queue<IEnumerator>> _animationQueues =
-            new Dictionary<GameObject, Queue<IEnumerator>>();
+        private readonly IDictionary<object, Queue<IEnumerator>> _animationQueues =
+            new Dictionary<object, Queue<IEnumerator>>();
 
         private Coroutine? _coroutine;
 
@@ -24,11 +24,12 @@ namespace CodingStrategy.Entities
         }
 
         /// <summary>
-        /// 코루틴 애니메이션을 큐에 추가합니다.
+        /// 코루틴 애니메이션을 큐에 추가합니다. 각 큐는 오브젝트를 기준으로 삼아,
+        /// 한 오브젝트에 할당된 큐는 한 번에 하나의 애니메이션만 실행합니다.
         /// </summary>
-        /// <param name="target">애니메이션을 적용할 게임 오브젝트입니다.</param>
+        /// <param name="target">애니메이션 큐의 기준이 되는 오브젝트입니다.</param>
         /// <param name="coroutine">큐에 추가할 코루틴 애니메이션입니다.</param>
-        public void AddAnimation(GameObject target, IEnumerator coroutine)
+        public void AddAnimation(object target, IEnumerator coroutine)
         {
             if (!_animationQueues.TryGetValue(target, out Queue<IEnumerator> animationQueue))
             {
@@ -58,12 +59,12 @@ namespace CodingStrategy.Entities
         private IEnumerator StartParallelCoroutines()
         {
             Queue<Coroutine> coroutines = new Queue<Coroutine>();
-            HashSet<GameObject> emptyTargets = new HashSet<GameObject>();
+            HashSet<object> emptyTargets = new HashSet<object>();
 
             while (_animationQueues.Count != 0)
             {
                 emptyTargets.Clear();
-                foreach ((GameObject target, Queue<IEnumerator> animationQueue) in _animationQueues)
+                foreach ((object target, Queue<IEnumerator> animationQueue) in _animationQueues)
                 {
                     if (animationQueue.TryDequeue(out IEnumerator coroutine))
                     {
@@ -80,7 +81,7 @@ namespace CodingStrategy.Entities
                     yield return coroutine;
                 }
 
-                foreach (GameObject target in emptyTargets)
+                foreach (object target in emptyTargets)
                 {
                     _animationQueues.Remove(target);
                 }
