@@ -5,7 +5,6 @@ namespace CodingStrategy.Entities.Runtime
 {
     using System.Collections;
     using System.Collections.Generic;
-    using UnityEngine;
     using Board;
     using Player;
     using Robot;
@@ -14,11 +13,9 @@ namespace CodingStrategy.Entities.Runtime
     {
         private int _countdown = 20;
 
-        private ExecutionQueuePool _executionQueuePool =
-            new ExecutionQueuePool();
+        private ExecutionQueuePool _executionQueuePool = new ExecutionQueuePool();
 
-        private IList<IExecutionValidator> _validators =
-            new List<IExecutionValidator>();
+        private IList<IExecutionValidator> _validators = new List<IExecutionValidator>();
 
         private LevelController _levelController = null!;
 
@@ -26,8 +23,7 @@ namespace CodingStrategy.Entities.Runtime
 
         public IBoardDelegate BoardDelegate { private get; set; } = null!;
 
-        public IRobotDelegatePool RobotDelegatePool { private get; set; } =
-            null!;
+        public IRobotDelegatePool RobotDelegatePool { private get; set; } = null!;
 
         public IPlayerPool PlayerPool { private get; set; } = null!;
 
@@ -43,7 +39,7 @@ namespace CodingStrategy.Entities.Runtime
             // Inject abnormality code
             // Initialize ExecutionQueue
             _executionQueuePool.Clear();
-            foreach (IPlayerDelegate playerDelegate in PlayerPool.PlayerPool.Values)
+            foreach (IPlayerDelegate playerDelegate in PlayerPool)
             {
                 IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
                 _executionQueuePool[robotDelegate] = new ExecutionQueueImpl();
