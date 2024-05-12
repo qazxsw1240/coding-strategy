@@ -3,6 +3,7 @@
 
 namespace CodingStrategy.Entities
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
@@ -12,22 +13,30 @@ namespace CodingStrategy.Entities
     /// </summary>
     public class AnimationCoroutineManager : MonoBehaviour
     {
-        private readonly Queue<IEnumerator> _animations = new Queue<IEnumerator>();
+        private readonly IDictionary<GameObject, Queue<IEnumerator>> _animationQueues =
+            new Dictionary<GameObject, Queue<IEnumerator>>();
 
         private Coroutine? _coroutine;
 
         public void Start()
         {
-            _animations.Clear();
+            _animationQueues.Clear();
         }
 
         /// <summary>
         /// 코루틴 애니메이션을 큐에 추가합니다.
         /// </summary>
+        /// <param name="target">애니메이션을 적용할 게임 오브젝트입니다.</param>
         /// <param name="coroutine">큐에 추가할 코루틴 애니메이션입니다.</param>
-        public void AddAnimation(IEnumerator coroutine)
+        public void AddAnimation(GameObject target, IEnumerator coroutine)
         {
-            _animations.Enqueue(coroutine);
+            if (!_animationQueues.TryGetValue(target, out Queue<IEnumerator> animationQueue))
+            {
+                animationQueue = new Queue<IEnumerator>();
+                _animationQueues[target] = animationQueue;
+            }
+
+            animationQueue.Enqueue(coroutine);
         }
 
         /// <summary>
@@ -48,17 +57,35 @@ namespace CodingStrategy.Entities
 
         private IEnumerator StartParallelCoroutines()
         {
-            IList<Coroutine> coroutines = new List<Coroutine>();
+            Queue<Coroutine> coroutines = new Queue<Coroutine>();
+            HashSet<GameObject> emptyTargets = new HashSet<GameObject>();
 
-            while (_animations.TryDequeue(out IEnumerator coroutine))
+            while (_animationQueues.Count != 0)
             {
-                coroutines.Add(StartCoroutine(coroutine));
+                emptyTargets.Clear();
+                foreach ((GameObject target, Queue<IEnumerator> animationQueue) in _animationQueues)
+                {
+                    if (animationQueue.TryDequeue(out IEnumerator coroutine))
+                    {
+                        coroutines.Enqueue(StartCoroutine(coroutine));
+                    }
+                    else
+                    {
+                        emptyTargets.Add(target);
+                    }
+                }
+
+                while (coroutines.TryDequeue(out Coroutine coroutine))
+                {
+                    yield return coroutine;
+                }
+
+                foreach (GameObject target in emptyTargets)
+                {
+                    _animationQueues.Remove(target);
+                }
             }
 
-            foreach (Coroutine coroutine in coroutines)
-            {
-                yield return coroutine;
-            }
 
             _coroutine = null;
         }
