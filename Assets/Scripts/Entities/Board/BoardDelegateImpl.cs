@@ -154,7 +154,10 @@ namespace CodingStrategy.Entities.Board
             return true;
         }
 
-        public ICellDelegate[,] AsArray() => CreateCellArray();
+        public ICellDelegate[,] AsArray()
+        {
+            return CreateCellArray();
+        }
 
         public Coordinate GetPosition(IRobotDelegate robotDelegate)
         {
@@ -176,10 +179,10 @@ namespace CodingStrategy.Entities.Board
 
         public bool Place(IRobotDelegate robotDelegate, Coordinate position)
         {
-            if (!IsRobotDelegateExist(robotDelegate))
-            {
-                return false;
-            }
+            // if (!IsRobotDelegateExist(robotDelegate))
+            // {
+            //     return false;
+            // }
 
             if (!IsPositionValid(position))
             {
@@ -233,10 +236,15 @@ namespace CodingStrategy.Entities.Board
             return 0 <= x && x < _width && 0 <= y && y < _height;
         }
 
-        private bool IsRobotDelegateExist(IRobotDelegate robotDelegate) => _robotPositions.ContainsKey(robotDelegate);
+        private bool IsRobotDelegateExist(IRobotDelegate robotDelegate)
+        {
+            return _robotPositions.ContainsKey(robotDelegate);
+        }
 
-        private bool IsBadSectorDelegateExist(IBadSectorDelegate badSectorDelegate) =>
-            _badSectorPositions.ContainsKey(badSectorDelegate);
+        private bool IsBadSectorDelegateExist(IBadSectorDelegate badSectorDelegate)
+        {
+            return _badSectorPositions.ContainsKey(badSectorDelegate);
+        }
 
         private void CheckIfRobotDelegateExists(IRobotDelegate robotDelegate)
         {
@@ -318,24 +326,18 @@ namespace CodingStrategy.Entities.Board
 
         private sealed class CellDelegateImpl : ICellDelegate
         {
-            private IBadSectorDelegate? _badSector;
             private readonly ISet<IRobotDelegate> _robotDelegates;
-            private readonly IList<IPlaceable> _placeables;
 
             public CellDelegateImpl() : this(null, new HashSet<IRobotDelegate>()) {}
 
-            public CellDelegateImpl(IBadSectorDelegate? badSector, ISet<IRobotDelegate> robotDelegates)
+            private CellDelegateImpl(IBadSectorDelegate? badSector, ISet<IRobotDelegate> robotDelegates)
             {
-                _badSector = badSector;
+                BadSector = badSector;
                 _robotDelegates = robotDelegates;
-                _placeables = new List<IPlaceable>();
+                Placeables = new List<IPlaceable>();
             }
 
-            public IBadSectorDelegate? BadSector
-            {
-                get => _badSector;
-                set => _badSector = value;
-            }
+            public IBadSectorDelegate? BadSector { get; set; }
 
             public ISet<IRobotDelegate> Robot
             {
@@ -343,7 +345,7 @@ namespace CodingStrategy.Entities.Board
                 set => throw new NotSupportedException();
             }
 
-            public IList<IPlaceable> Placeables => _placeables;
+            public IList<IPlaceable> Placeables { get; }
         }
     }
 }
