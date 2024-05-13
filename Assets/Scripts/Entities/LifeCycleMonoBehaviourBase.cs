@@ -8,9 +8,31 @@ namespace CodingStrategy.Entities
 
     public abstract class LifeCycleMonoBehaviourBase : MonoBehaviour
     {
+        public static IEnumerator AwaitLifeCycleCoroutine<TLifeCycle>(TLifeCycle lifeCycle,
+            bool removeIfComplete = true)
+            where TLifeCycle : LifeCycleMonoBehaviourBase
+        {
+            if (!lifeCycle._starts)
+            {
+                yield return null; // Start() 대기
+            }
+
+            yield return new WaitUntil(() => lifeCycle.Coroutine == null);
+
+            if (removeIfComplete)
+            {
+                Destroy(lifeCycle);
+            }
+
+            yield return null;
+        }
+
+        private bool _starts = false;
+
         public void Start()
         {
             Coroutine = StartCoroutine(StartLifeCycleCoroutine());
+            _starts = true;
         }
 
         public Coroutine? Coroutine { get; private set; }
