@@ -25,9 +25,20 @@ namespace CodingStrategy.Entities.Runtime
             }
         }
 
-        public void Initialize() => _enumerator.Reset();
+        public void Awake()
+        {
+            LifeCycle = this;
+        }
 
-        public bool MoveNext() => _enumerator.MoveNext();
+        public void Initialize()
+        {
+            _enumerator.Reset();
+        }
+
+        public bool MoveNext()
+        {
+            return _enumerator.MoveNext();
+        }
 
         public bool Execute()
         {
@@ -38,7 +49,10 @@ namespace CodingStrategy.Entities.Runtime
             return true;
         }
 
-        public void Terminate() => _enumerator.Dispose();
+        public void Terminate()
+        {
+            _enumerator.Dispose();
+        }
 
         protected override IEnumerator OnAfterInitialization()
         {

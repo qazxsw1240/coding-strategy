@@ -13,6 +13,8 @@ namespace CodingStrategy.Entities.Runtime
         private readonly IDictionary<IRobotDelegate, Stack<IStatement>> _statements =
             new Dictionary<IRobotDelegate, Stack<IStatement>>();
 
+        private readonly ISet<IRobotDelegate> _problematicRobots = new HashSet<IRobotDelegate>();
+
         public IExecutionValidator Validator { get; set; } = null!;
 
         public RuntimeExecutorContext Context { get; set; } = null!;
@@ -24,21 +26,19 @@ namespace CodingStrategy.Entities.Runtime
 
         public void Initialize()
         {
-            CheckExecutionQueueValidity();
+            // CheckExecutionQueueValidity();
             InitializeStacks();
         }
 
-        public bool MoveNext() => true;
+        public bool MoveNext()
+        {
+            return !IsQueueEmpty();
+        }
 
         public bool Execute()
         {
-            IDictionary<IRobotDelegate, bool> problematicRobots =
-                new Dictionary<IRobotDelegate, bool>();
-
             foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in Context.ExecutionQueuePool)
             {
-                problematicRobots[robotDelegate] = false;
-
                 if (!executionQueue.TryDequeue(out IStatement statement))
                 {
                     continue;
@@ -55,21 +55,33 @@ namespace CodingStrategy.Entities.Runtime
                 {
                     statements.Push(statement);
                     statement.Execute();
-                    if (!Validator.IsValid(Context.BoardDelegate))
-                    {
-                        throw new ExecutionException();
-                    }
                 }
                 catch (ExecutionException)
                 {
                     RollbackCommands(executionQueue, statements);
-                    problematicRobots[robotDelegate] = true;
+                    _problematicRobots.Add(robotDelegate);
                 }
             }
 
-            foreach ((IRobotDelegate robotDelegate, bool hasProblems) in problematicRobots)
+            IList<IRobotDelegate> invalidRobots = Validator.GetInvalidRobots(Context.BoardDelegate);
+
+            if (invalidRobots.Count == 0)
             {
-                if (hasProblems)
+                return true;
+            }
+
+            foreach (IRobotDelegate robotDelegate in invalidRobots)
+            {
+                IExecutionQueue executionQueue = Context.ExecutionQueuePool[robotDelegate];
+                Stack<IStatement> statements = _statements[robotDelegate];
+                RollbackCommands(executionQueue, statements);
+                _problematicRobots.Add(robotDelegate);
+            }
+
+            foreach (IRobotDelegate robotDelegate in _problematicRobots)
+            {
+                IExecutionQueue executionQueue = Context.ExecutionQueuePool[robotDelegate];
+                if (executionQueue.Count == 0)
                 {
                     Context.ExecutionQueuePool.Remove(robotDelegate);
                 }
@@ -78,11 +90,16 @@ namespace CodingStrategy.Entities.Runtime
             return true;
         }
 
-        public void Terminate() => CheckExecutionQueueValidity();
+        public void Terminate()
+        {
+            _problematicRobots.Clear();
+            CheckExecutionQueueValidity();
+        }
 
         private bool IsQueueEmpty()
         {
-            return Context.ExecutionQueuePool.Values.All(executionQueue => executionQueue.Count == 0);
+            return Context.ExecutionQueuePool.Count == 0 ||
+                   Context.ExecutionQueuePool.Values.All(executionQueue => executionQueue.Count == 0);
         }
 
         private void CheckExecutionQueueValidity()
@@ -128,6 +145,15 @@ namespace CodingStrategy.Entities.Runtime
 
         protected override IEnumerator OnAfterExecution()
         {
+            foreach (IRobotDelegate problematicRobot in _problematicRobots)
+            {
+                IExecutionQueue executionQueue = Context.ExecutionQueuePool[problematicRobot];
+                if (executionQueue.Count == 0)
+                {
+                    Context.ExecutionQueuePool.Remove(problematicRobot);
+                }
+            }
+
             yield return Context.AnimationCoroutineManager.ApplyAnimations();
         }
 
