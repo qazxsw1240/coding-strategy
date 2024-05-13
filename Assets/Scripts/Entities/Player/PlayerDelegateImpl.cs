@@ -1,8 +1,7 @@
-using System;
-using UnityEngine.Events;
-
 namespace CodingStrategy.Entities.Player
 {
+    using System;
+    using UnityEngine.Events;
     using Robot;
 
     public class PlayerDelegateImpl : IPlayerDelegate
@@ -81,7 +80,7 @@ namespace CodingStrategy.Entities.Player
             }
         }
 
-        public IRobotDelegate Robot { get; }
+        public IRobotDelegate Robot { get; set; }
 
         public IAlgorithm Algorithm { get; }
 

@@ -35,7 +35,7 @@ namespace CodingStrategy.Entities.Player
         public abstract int Currency { get; set; }
 
         /// 플레이어의 로봇 대리자입니다.
-        public abstract IRobotDelegate Robot { get; }
+        public abstract IRobotDelegate Robot { get; set; }
 
         /// <summary>
         /// 플레이어의 알고리즘입니다.
