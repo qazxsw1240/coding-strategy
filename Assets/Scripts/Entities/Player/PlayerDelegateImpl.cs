@@ -6,11 +6,11 @@ namespace CodingStrategy.Entities.Player
 
     public class PlayerDelegateImpl : IPlayerDelegate
     {
-        private readonly string _id;
         private int _healthPoint;
         private int _level;
         private int _exp;
         private int _currency;
+        private IRobotDelegate _robot;
 
         public PlayerDelegateImpl(
             string id,
@@ -21,7 +21,7 @@ namespace CodingStrategy.Entities.Player
             IRobotDelegate robot,
             IAlgorithm algorithm)
         {
-            _id = id;
+            Id = id;
             _healthPoint = healthPoint;
             _level = level;
             _exp = exp;
@@ -34,7 +34,7 @@ namespace CodingStrategy.Entities.Player
             OnCurrencyChange = new UnityEvent<int, int>();
         }
 
-        public string Id => _id;
+        public string Id { get; }
 
         public int HealthPoint
         {
@@ -80,7 +80,11 @@ namespace CodingStrategy.Entities.Player
             }
         }
 
-        public IRobotDelegate Robot { get; set; }
+        public IRobotDelegate Robot
+        {
+            get => _robot ?? throw new NullReferenceException("Robot not attached.");
+            set => _robot = value;
+        }
 
         public IAlgorithm Algorithm { get; }
 
