@@ -27,7 +27,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public void Execute()
         {
-            Debug.LogFormat("Try to move to {0}", _direction);
+            Debug.LogFormat("Robot {1} Tries to move to {0}", _direction, _robotDelegate.Id);
             _isEdge = !_robotDelegate.Move(_direction);
             if (_isEdge)
             {
@@ -35,9 +35,6 @@ namespace CodingStrategy.Entities.Runtime.Statement
             }
         }
 
-        public IStatement Reverse
-        {
-            get { return _isEdge ? this : new MoveStatement(_robotDelegate, -1, _isEdge); }
-        }
+        public IStatement Reverse => _isEdge ? this : new MoveStatement(_robotDelegate, -_direction, _isEdge);
     }
 }
