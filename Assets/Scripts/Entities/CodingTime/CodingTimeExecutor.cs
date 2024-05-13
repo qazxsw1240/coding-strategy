@@ -41,11 +41,21 @@ namespace CodingStrategy.Entities.CodingTime
 
         protected override IEnumerator OnAfterInitialization()
         {
+            Debug.Log("CodingTimeExecutor Started.");
             yield return null;
         }
 
         protected override IEnumerator OnBeforeExecution()
         {
+            if (_current == 1)
+            {
+                Debug.Log("1 Second Left.");
+            }
+            else
+            {
+                Debug.LogFormat("{0} Seconds Left.", _current);
+            }
+
             yield return null;
         }
 
@@ -62,6 +72,7 @@ namespace CodingStrategy.Entities.CodingTime
 
         protected override IEnumerator OnAfterTermination()
         {
+            Debug.Log("CodingTimeExecutor Terminated.");
             yield return null;
         }
     }
