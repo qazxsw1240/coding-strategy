@@ -49,6 +49,10 @@ namespace CodingStrategy.Entities.Board
             _badSectorChangePositionEvents = new UnityEvent<IBadSectorDelegate, Coordinate, Coordinate>();
         }
 
+        public int Width => _width;
+
+        public int Height => _height;
+
         public IReadOnlyList<IRobotDelegate> Robots => _robotPositions.Keys.ToList();
 
         public UnityEvent<IRobotDelegate> OnRobotAdd => _robotAddEvents;

@@ -14,6 +14,16 @@ namespace CodingStrategy.Entities.Board
     public interface IBoardDelegate
     {
         /// <summary>
+        /// 보드의 가로 크기입니다.
+        /// </summary>
+        public abstract int Width { get; }
+
+        /// <summary>
+        /// 보드의 세로 크기입니다.
+        /// </summary>
+        public abstract int Height { get; }
+
+        /// <summary>
         /// 보드에 추가된 로봇 컬렉션입니다.
         /// </summary>
         public abstract IReadOnlyList<IRobotDelegate> Robots { get; }
