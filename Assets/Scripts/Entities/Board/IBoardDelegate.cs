@@ -67,6 +67,10 @@ namespace CodingStrategy.Entities.Board
         /// <returns>성공적으로 제거하면 true, 그렇지 않으면 false를 반환합니다.</returns>
         public abstract bool Remove(IBadSectorDelegate badSectorDelegate);
 
+        public abstract bool Add(IPlaceable placeable, Coordinate position);
+
+        public abstract bool Remove(IPlaceable placeable);
+
         /// <summary>
         /// 로봇의 좌표를 반환합니다.
         /// </summary>
@@ -80,6 +84,8 @@ namespace CodingStrategy.Entities.Board
         /// <param name="badSectorDelegate">좌표를 확인할 배드섹터 딜리게이트입니다.</param>
         /// <returns>배드섹터의 좌표입니다.</returns>
         public abstract Coordinate GetPosition(IBadSectorDelegate badSectorDelegate);
+
+        public abstract Coordinate GetPosition(IPlaceable placeable);
 
         /// <summary>
         /// 로봇이 바라보는 방향을 반환합니다.
@@ -137,6 +143,10 @@ namespace CodingStrategy.Entities.Board
         /// 배드섹터가 보드에서 제거됐을 때 발생하는 이벤트입니다.
         /// </summary>
         public abstract UnityEvent<IBadSectorDelegate> OnBadSectorRemove { get; }
+
+        public abstract UnityEvent<IPlaceable> OnPlaceableAdd { get; }
+
+        public abstract UnityEvent<IPlaceable> OnPlaceableRemove { get; }
 
         /// <summary>
         /// 로봇의 위치가 바뀌었을 때 발생하는 이벤트입니다.

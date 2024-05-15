@@ -12,16 +12,9 @@ namespace CodingStrategy.Entities.Board
 
     public class BoardDelegateImpl : IBoardDelegate
     {
-        private readonly int _width;
-        private readonly int _height;
         private readonly IDictionary<IRobotDelegate, RobotPosition> _robotPositions;
         private readonly IDictionary<IBadSectorDelegate, BadSectorPosition> _badSectorPositions;
-        private readonly UnityEvent<IRobotDelegate> _robotAddEvents;
-        private readonly UnityEvent<IRobotDelegate> _robotRemoveEvents;
-        private readonly UnityEvent<IRobotDelegate, Coordinate, Coordinate> _robotChangePositionEvents;
-        private readonly UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> _robotChangeDirectionEvents;
-        private readonly UnityEvent<IBadSectorDelegate> _badSectorAddEvents;
-        private readonly UnityEvent<IBadSectorDelegate> _badSectorRemoveEvents;
+        private readonly IDictionary<IPlaceable, PlaceablePosition> _placeablePositions;
         private readonly UnityEvent<IBadSectorDelegate, Coordinate, Coordinate> _badSectorChangePositionEvents;
 
         public BoardDelegateImpl(int width, int height)
@@ -36,37 +29,43 @@ namespace CodingStrategy.Entities.Board
                 throw new ArgumentException("Cannot create board delegate with the height:" + height);
             }
 
-            _width = width;
-            _height = height;
+            Width = width;
+            Height = height;
             _robotPositions = new Dictionary<IRobotDelegate, RobotPosition>();
             _badSectorPositions = new Dictionary<IBadSectorDelegate, BadSectorPosition>();
-            _robotAddEvents = new UnityEvent<IRobotDelegate>();
-            _robotRemoveEvents = new UnityEvent<IRobotDelegate>();
-            _robotChangePositionEvents = new UnityEvent<IRobotDelegate, Coordinate, Coordinate>();
-            _robotChangeDirectionEvents = new UnityEvent<IRobotDelegate, RobotDirection, RobotDirection>();
-            _badSectorAddEvents = new UnityEvent<IBadSectorDelegate>();
-            _badSectorRemoveEvents = new UnityEvent<IBadSectorDelegate>();
+            _placeablePositions = new Dictionary<IPlaceable, PlaceablePosition>();
+            OnRobotAdd = new UnityEvent<IRobotDelegate>();
+            OnRobotRemove = new UnityEvent<IRobotDelegate>();
+            OnRobotChangePosition = new UnityEvent<IRobotDelegate, Coordinate, Coordinate>();
+            OnRobotChangeDirection = new UnityEvent<IRobotDelegate, RobotDirection, RobotDirection>();
+            OnBadSectorAdd = new UnityEvent<IBadSectorDelegate>();
+            OnBadSectorRemove = new UnityEvent<IBadSectorDelegate>();
+            OnPlaceableAdd = new UnityEvent<IPlaceable>();
+            OnPlaceableRemove = new UnityEvent<IPlaceable>();
             _badSectorChangePositionEvents = new UnityEvent<IBadSectorDelegate, Coordinate, Coordinate>();
         }
 
-        public int Width => _width;
+        public int Width { get; }
 
-        public int Height => _height;
+        public int Height { get; }
 
         public IReadOnlyList<IRobotDelegate> Robots => _robotPositions.Keys.ToList();
 
-        public UnityEvent<IRobotDelegate> OnRobotAdd => _robotAddEvents;
+        public UnityEvent<IRobotDelegate> OnRobotAdd { get; }
 
-        public UnityEvent<IBadSectorDelegate> OnBadSectorAdd => _badSectorAddEvents;
+        public UnityEvent<IBadSectorDelegate> OnBadSectorAdd { get; }
 
-        public UnityEvent<IRobotDelegate> OnRobotRemove => _robotRemoveEvents;
+        public UnityEvent<IRobotDelegate> OnRobotRemove { get; }
 
-        public UnityEvent<IBadSectorDelegate> OnBadSectorRemove => _badSectorRemoveEvents;
+        public UnityEvent<IBadSectorDelegate> OnBadSectorRemove { get; }
 
-        public UnityEvent<IRobotDelegate, Coordinate, Coordinate> OnRobotChangePosition => _robotChangePositionEvents;
+        public UnityEvent<IPlaceable> OnPlaceableAdd { get; }
 
-        public UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> OnRobotChangeDirection =>
-            _robotChangeDirectionEvents;
+        public UnityEvent<IPlaceable> OnPlaceableRemove { get; }
+
+        public UnityEvent<IRobotDelegate, Coordinate, Coordinate> OnRobotChangePosition { get; }
+
+        public UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> OnRobotChangeDirection { get; }
 
         public ICellDelegate this[Coordinate coordinate]
         {
@@ -108,7 +107,7 @@ namespace CodingStrategy.Entities.Board
 
             RobotPosition robotPosition = new RobotPosition(position, direction);
             _robotPositions[robotDelegate] = robotPosition;
-            _robotAddEvents.Invoke(robotDelegate);
+            OnRobotAdd.Invoke(robotDelegate);
             return true;
         }
 
@@ -120,7 +119,7 @@ namespace CodingStrategy.Entities.Board
             }
 
             _robotPositions.Remove(robotDelegate);
-            _robotRemoveEvents.Invoke(robotDelegate);
+            OnRobotRemove.Invoke(robotDelegate);
             return true;
         }
 
@@ -138,7 +137,7 @@ namespace CodingStrategy.Entities.Board
 
             BadSectorPosition badSectorPosition = new BadSectorPosition(position);
             _badSectorPositions[badSectorDelegate] = badSectorPosition;
-            _badSectorAddEvents.Invoke(badSectorDelegate);
+            OnBadSectorAdd.Invoke(badSectorDelegate);
             return true;
         }
 
@@ -150,7 +149,37 @@ namespace CodingStrategy.Entities.Board
             }
 
             _badSectorPositions.Remove(badSectorDelegate);
-            _badSectorRemoveEvents.Invoke(badSectorDelegate);
+            OnBadSectorRemove.Invoke(badSectorDelegate);
+            return true;
+        }
+
+        public bool Add(IPlaceable placeable, Coordinate position)
+        {
+            if (IsPlaceableExist(placeable))
+            {
+                return false;
+            }
+
+            if (IsPositionValid(position))
+            {
+                return false;
+            }
+
+            PlaceablePosition placeablePosition = new PlaceablePosition(position);
+            _placeablePositions[placeable] = placeablePosition;
+            OnPlaceableAdd.Invoke(placeable);
+            return true;
+        }
+
+        public bool Remove(IPlaceable placeable)
+        {
+            if (!IsPlaceableExist(placeable))
+            {
+                return false;
+            }
+
+            _placeablePositions.Remove(placeable);
+            OnPlaceableRemove.Invoke(placeable);
             return true;
         }
 
@@ -169,6 +198,12 @@ namespace CodingStrategy.Entities.Board
         {
             CheckIfBadSectorDelegateExists(badSectorDelegate);
             return _badSectorPositions[badSectorDelegate].Position;
+        }
+
+        public Coordinate GetPosition(IPlaceable placeable)
+        {
+            CheckIfPlaceableExists(placeable);
+            return _placeablePositions[placeable].Position;
         }
 
         public RobotDirection GetDirection(IRobotDelegate robotDelegate)
@@ -192,7 +227,7 @@ namespace CodingStrategy.Entities.Board
             RobotPosition robotPosition = _robotPositions[robotDelegate];
             Coordinate previousPosition = robotPosition.Position;
             robotPosition.Position = position;
-            _robotChangePositionEvents.Invoke(robotDelegate, previousPosition, position);
+            OnRobotChangePosition.Invoke(robotDelegate, previousPosition, position);
             return true;
         }
 
@@ -225,7 +260,7 @@ namespace CodingStrategy.Entities.Board
             RobotPosition robotPosition = _robotPositions[robotDelegate];
             RobotDirection previousDirection = robotPosition.Direction;
             robotPosition.Direction = direction;
-            _robotChangeDirectionEvents.Invoke(robotDelegate, previousDirection, direction);
+            OnRobotChangeDirection.Invoke(robotDelegate, previousDirection, direction);
             return true;
         }
 
@@ -233,7 +268,7 @@ namespace CodingStrategy.Entities.Board
         {
             int x = position.X;
             int y = position.Y;
-            return 0 <= x && x < _width && 0 <= y && y < _height;
+            return 0 <= x && x < Width && 0 <= y && y < Height;
         }
 
         private bool IsRobotDelegateExist(IRobotDelegate robotDelegate)
@@ -244,6 +279,11 @@ namespace CodingStrategy.Entities.Board
         private bool IsBadSectorDelegateExist(IBadSectorDelegate badSectorDelegate)
         {
             return _badSectorPositions.ContainsKey(badSectorDelegate);
+        }
+
+        private bool IsPlaceableExist(IPlaceable placeable)
+        {
+            return _placeablePositions.ContainsKey(placeable);
         }
 
         private void CheckIfRobotDelegateExists(IRobotDelegate robotDelegate)
@@ -263,6 +303,15 @@ namespace CodingStrategy.Entities.Board
             }
         }
 
+        private void CheckIfPlaceableExists(IPlaceable placeable)
+        {
+            if (!IsPlaceableExist(placeable))
+            {
+                throw new ArgumentException(
+                    $"The bad sector delegate {placeable.GetHashCode()} is not placed on this board.");
+            }
+        }
+
         private BadSectorPosition? GetBadSectorPosition(Coordinate position)
         {
             foreach (BadSectorPosition badSectorPosition in _badSectorPositions.Values)
@@ -278,10 +327,10 @@ namespace CodingStrategy.Entities.Board
 
         private ICellDelegate[,] CreateCellArray()
         {
-            ICellDelegate[,] tiles = new ICellDelegate[_width, _height];
-            for (int i = 0; i < _width; i++)
+            ICellDelegate[,] tiles = new ICellDelegate[Width, Height];
+            for (int i = 0; i < Width; i++)
             {
-                for (int j = 0; j < _height; j++)
+                for (int j = 0; j < Height; j++)
                 {
                     tiles[i, j] = new CellDelegateImpl();
                 }
@@ -297,6 +346,12 @@ namespace CodingStrategy.Entities.Board
             {
                 Coordinate position = badSectorPosition.Position;
                 tiles[position.X, position.Y].Placeables.Add(badSectorDelegate);
+            }
+
+            foreach ((IPlaceable placeable, PlaceablePosition placeablePosition) in _placeablePositions)
+            {
+                Coordinate position = placeablePosition.Position;
+                tiles[position.X, position.Y].Placeables.Add(placeable);
             }
 
             return tiles;
@@ -319,6 +374,16 @@ namespace CodingStrategy.Entities.Board
             public Coordinate Position;
 
             public BadSectorPosition(Coordinate position)
+            {
+                Position = position;
+            }
+        }
+
+        private sealed class PlaceablePosition
+        {
+            public Coordinate Position;
+
+            public PlaceablePosition(Coordinate position)
             {
                 Position = position;
             }
