@@ -1,6 +1,9 @@
 ﻿#nullable enable
 
 
+using System.Collections.Generic;
+using CodingStrategy.Entities.Runtime;
+
 namespace CodingStrategy.Entities.BadSector
 {
     using System;
@@ -29,7 +32,7 @@ namespace CodingStrategy.Entities.BadSector
             _boardDelegate.Remove(this);
         }
 
-        public abstract void Execute(IRobotDelegate target);
+        public abstract IList<IStatement> Execute(IRobotDelegate target);
 
         public int CompareTo(IGameEntity other)
         {

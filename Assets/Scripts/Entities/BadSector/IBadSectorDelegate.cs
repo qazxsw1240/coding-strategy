@@ -1,7 +1,9 @@
 #nullable enable
 
 
+using System.Collections.Generic;
 using CodingStrategy.Entities.Robot;
+using CodingStrategy.Entities.Runtime;
 
 namespace CodingStrategy.Entities.BadSector
 {
@@ -13,6 +15,6 @@ namespace CodingStrategy.Entities.BadSector
 
         public abstract void Remove();
 
-        public abstract void Execute(IRobotDelegate target);
+        public abstract IList<IStatement> Execute(IRobotDelegate target);
     }
 }
