@@ -10,7 +10,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
 {
     using Robot;
 
-    public class StaticStatement : IStatement
+    public class PointerStatement : IStatement
     {
         private readonly IBoardDelegate _boardDelegate;
         private readonly IRobotDelegate _robotDelegate;
@@ -18,7 +18,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         private IBadSectorDelegate? _badSectorDelegate;
 
-        public StaticStatement(
+        public PointerStatement(
             IBoardDelegate boardDelegate,
             IRobotDelegate robotDelegate,
             Func<IBoardDelegate, IRobotDelegate, IBadSectorDelegate> generator)
@@ -39,13 +39,13 @@ namespace CodingStrategy.Entities.Runtime.Statement
             }
         }
 
-        public IStatement Reverse => new StaticRollbackStatement(this);
+        public IStatement Reverse => new PointerRollbackStatement(this);
 
-        private class StaticRollbackStatement : IStatement
+        private class PointerRollbackStatement : IStatement
         {
-            private readonly StaticStatement _statement;
+            private readonly PointerStatement _statement;
 
-            public StaticRollbackStatement(StaticStatement statement)
+            public PointerRollbackStatement(PointerStatement statement)
             {
                 _statement = statement;
             }
