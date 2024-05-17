@@ -22,6 +22,8 @@ namespace CodingStrategy.Entities.Runtime
         /// <returns>큐에 가장 먼저 추가된 IStatement 인스턴스입니다.</returns>
         public abstract IStatement Dequeue();
 
+        public abstract void EnqueueFirst(IStatement statement);
+
         /// <summary>
         /// 큐에 가장 먼저 추가된 IStatement 인스턴스 삭제를 시도합니다.
         /// </summary>

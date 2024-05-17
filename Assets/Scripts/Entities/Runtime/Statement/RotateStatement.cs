@@ -27,6 +27,8 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _robotDelegate.Rotate(_direction);
         }
 
+        public StatementPhase Phase => StatementPhase.Move;
+
         public IStatement Reverse => new RotateStatement(_robotDelegate, -_direction);
     }
 }

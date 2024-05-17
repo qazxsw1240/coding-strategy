@@ -3,6 +3,7 @@
 
 namespace CodingStrategy.Entities
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
@@ -12,62 +13,82 @@ namespace CodingStrategy.Entities
     /// </summary>
     public class AnimationCoroutineManager : MonoBehaviour
     {
-        private readonly Queue<IEnumerator> _animations;
+        private readonly IDictionary<object, Queue<IEnumerator>> _animationQueues =
+            new Dictionary<object, Queue<IEnumerator>>();
 
-        private bool _idle;
-
-        public AnimationCoroutineManager()
-        {
-            _animations = new Queue<IEnumerator>();
-            _idle = true;
-        }
+        private Coroutine? _coroutine;
 
         public void Start()
         {
-            _animations.Clear();
-            _idle = true;
+            _animationQueues.Clear();
         }
 
-        public void Update()
+        /// <summary>
+        /// 코루틴 애니메이션을 큐에 추가합니다. 각 큐는 오브젝트를 기준으로 삼아,
+        /// 한 오브젝트에 할당된 큐는 한 번에 하나의 애니메이션만 실행합니다.
+        /// </summary>
+        /// <param name="target">애니메이션 큐의 기준이 되는 오브젝트입니다.</param>
+        /// <param name="coroutine">큐에 추가할 코루틴 애니메이션입니다.</param>
+        public void AddAnimation(object target, IEnumerator coroutine)
         {
-            if (_idle)
+            if (!_animationQueues.TryGetValue(target, out Queue<IEnumerator> animationQueue))
             {
-                StartCoroutine(StartParallelCoroutines());
-            }
-        }
-
-        public void AddAnimation(IEnumerator coroutine)
-        {
-            _animations.Enqueue(coroutine);
-        }
-
-        public void ApplyAnimations()
-        {
-            if (!_idle)
-            {
-                return;
+                animationQueue = new Queue<IEnumerator>();
+                _animationQueues[target] = animationQueue;
             }
 
-            _idle = false;
+            animationQueue.Enqueue(coroutine);
+        }
+
+        /// <summary>
+        /// 큐에 저장된 코루틴 애니메이션을 실행합니다.
+        /// </summary>
+        /// <returns>저장된 애니메이션을 완료하기를 기다리는 코루틴을 반환합니다.</returns>
+        public Coroutine ApplyAnimations()
+        {
+            if (_coroutine != null)
+            {
+                return _coroutine;
+            }
+
+            _coroutine = StartCoroutine(StartParallelCoroutines());
+
+            return _coroutine;
         }
 
         private IEnumerator StartParallelCoroutines()
         {
-            _idle = false;
+            Queue<Coroutine> coroutines = new Queue<Coroutine>();
+            HashSet<object> emptyTargets = new HashSet<object>();
 
-            IList<Coroutine> coroutines = new List<Coroutine>();
-
-            while (_animations.TryDequeue(out IEnumerator coroutine))
+            while (_animationQueues.Count != 0)
             {
-                coroutines.Add(StartCoroutine(coroutine));
+                emptyTargets.Clear();
+                foreach ((object target, Queue<IEnumerator> animationQueue) in _animationQueues)
+                {
+                    if (animationQueue.TryDequeue(out IEnumerator coroutine))
+                    {
+                        coroutines.Enqueue(StartCoroutine(coroutine));
+                    }
+                    else
+                    {
+                        emptyTargets.Add(target);
+                    }
+                }
+
+                while (coroutines.TryDequeue(out Coroutine coroutine))
+                {
+                    yield return coroutine;
+                }
+
+                foreach (object target in emptyTargets)
+                {
+                    _animationQueues.Remove(target);
+                }
             }
 
-            foreach (Coroutine coroutine in coroutines)
-            {
-                yield return coroutine;
-            }
 
-            _idle = true;
+            _coroutine = null;
         }
     }
 }

@@ -1,12 +1,16 @@
 namespace CodingStrategy.Entities.Player
 {
-    using CodingStrategy.Entities.Robot;
+    using System;
+    using Robot;
+
+    [Obsolete("Deprecated", true)]
     public class PlayerImpl : IPlayer
     {
         private readonly string _id;
         private readonly IPlayerDelegate _playerDelegate;
         private readonly IRobotDelegate _robot;
         private readonly IAlgorithm _algorithm;
+
         public PlayerImpl(string id, IPlayerDelegate playerDelegate, IRobotDelegate robot, IAlgorithm algorithm)
         {
             _id = id;
@@ -14,6 +18,7 @@ namespace CodingStrategy.Entities.Player
             _robot = robot;
             _algorithm = algorithm;
         }
+
         public string Id => _id;
         public int HealthPoint => _playerDelegate.HealthPoint;
         public int Level => _playerDelegate.Level;

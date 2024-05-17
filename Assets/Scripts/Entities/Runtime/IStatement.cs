@@ -13,6 +13,8 @@ namespace CodingStrategy.Entities.Runtime
         /// </summary>
         public abstract void Execute();
 
+        public abstract StatementPhase Phase { get; }
+
         /// <summary>
         /// 명령문과 반대로 작동하는 명령문입니다.
         /// </summary>
