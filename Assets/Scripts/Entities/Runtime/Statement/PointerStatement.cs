@@ -39,6 +39,8 @@ namespace CodingStrategy.Entities.Runtime.Statement
             }
         }
 
+        public StatementPhase Phase => StatementPhase.Pointer;
+
         public IStatement Reverse => new PointerRollbackStatement(this);
 
         private class PointerRollbackStatement : IStatement
@@ -60,6 +62,8 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
                 _statement._boardDelegate.Remove(badSectorDelegate);
             }
+
+            public StatementPhase Phase => StatementPhase.Pointer;
 
             public IStatement Reverse => _statement;
         }

@@ -30,6 +30,8 @@ namespace CodingStrategy.Entities.Runtime.Statement
             }
         }
 
+        public StatementPhase Phase => StatementPhase.Attack;
+
         public IStatement Reverse =>
             new AttackStatement(new RobotAttackReverseStrategy(_strategy), _robotDelegate, _coordinates);
 
