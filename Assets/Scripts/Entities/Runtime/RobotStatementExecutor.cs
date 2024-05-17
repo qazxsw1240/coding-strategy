@@ -118,8 +118,7 @@ namespace CodingStrategy.Entities.Runtime
             }
         }
 
-        private void RollbackCommands(IExecutionQueue executionQueue,
-            Stack<IStatement> statements)
+        private void RollbackCommands(IExecutionQueue executionQueue, Stack<IStatement> statements)
         {
             executionQueue.Clear();
             while (statements.TryPop(out IStatement statement))

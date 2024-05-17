@@ -1,8 +1,9 @@
 #nullable enable
 
 
+using System;
+using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Runtime.Validator;
-using CodingStrategy.Factory;
 using Unity.VisualScripting;
 
 namespace CodingStrategy.Entities.Runtime
@@ -65,6 +66,7 @@ namespace CodingStrategy.Entities.Runtime
             _executionQueuePool.Clear();
             _cellObjects = new GameObject[BoardDelegate.Width, BoardDelegate.Height];
             BoardDelegate.OnRobotAdd.AddListener(CreateRobotInstance);
+            BoardDelegate.OnBadSectorAdd.AddListener(CreateBadSectorInstance);
             BoardDelegate.OnRobotRemove.AddListener(RemoveRobotInstance);
 
             InitializeCells();
@@ -217,6 +219,27 @@ namespace CodingStrategy.Entities.Runtime
                 Quaternion end = Quaternion.Euler(0, (int) next * 90f, 0);
                 RotateAnimation rotateAnimation = new RotateAnimation(robotObject, start, end, 0.125f);
                 AnimationCoroutineManager.AddAnimation(robotObject, rotateAnimation);
+            });
+        }
+
+        private void CreateBadSectorInstance(IBadSectorDelegate badSectorDelegate)
+        {
+            GameObject? prefab = Resources.Load<GameObject>(badSectorDelegate.Id);
+            if (ReferenceEquals(prefab, null))
+            {
+                throw new NullReferenceException("Cannot find prefab: " + badSectorDelegate.Id);
+            }
+
+            Coordinate coordinate = badSectorDelegate.Position;
+            Vector3 position = ConvertToVector(coordinate, 0.5f);
+            GameObject badSectorObject = Instantiate(prefab, position, Quaternion.identity, transform);
+            badSectorObject.name = $"{badSectorDelegate.Installer.Id}${badSectorDelegate.Id}";
+            BoardDelegate.OnBadSectorRemove.AddListener(b =>
+            {
+                if (b == badSectorDelegate)
+                {
+                    Destroy(badSectorObject);
+                }
             });
         }
 
