@@ -32,7 +32,11 @@ namespace CodingStrategy.Entities.Runtime.Statement
         {
             _badSectorDelegate = _generator(_boardDelegate, _robotDelegate);
             Debug.LogFormat("Robot {0} Tries to put bad sector {1}", _robotDelegate.Id, _badSectorDelegate.Id);
-            _boardDelegate.Add(_badSectorDelegate, _robotDelegate.Position);
+            bool result = _boardDelegate.Add(_badSectorDelegate, _robotDelegate.Position);
+            if (!result)
+            {
+                throw new ExecutionException($"Cannot add bad sector {_badSectorDelegate.Id}");
+            }
         }
 
         public IStatement Reverse => new StaticRollbackStatement(this);
