@@ -4,6 +4,7 @@
 using System;
 using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Board;
+using UnityEngine;
 
 namespace CodingStrategy.Entities.Runtime.Statement
 {
@@ -30,6 +31,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
         public void Execute()
         {
             _badSectorDelegate = _generator(_boardDelegate, _robotDelegate);
+            Debug.LogFormat("Robot {0} Tries to put bad sector {1}", _robotDelegate.Id, _badSectorDelegate.Id);
             _boardDelegate.Add(_badSectorDelegate, _robotDelegate.Position);
         }
 
