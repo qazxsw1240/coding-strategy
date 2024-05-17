@@ -118,6 +118,12 @@ namespace CodingStrategy.Entities.Board
         /// <returns>성공적으로 옮기면 true, 그렇지 않으면 false를 반환합니다.</returns>
         public abstract bool Place(IBadSectorDelegate badSectorDelegate, Coordinate position);
 
+        public abstract IRobotDelegate? GetRobotDelegate(Coordinate coordinate);
+
+        public abstract IBadSectorDelegate? GetBadSectorDelegate(Coordinate coordinate);
+
+        public abstract IList<IPlaceable>? GetPlaceables(Coordinate coordinate);
+
         /// <summary>
         /// 보드의 각 셀 정보를 배열로 반환합니다.
         /// </summary>

@@ -183,6 +183,48 @@ namespace CodingStrategy.Entities.Board
             return true;
         }
 
+
+        public IRobotDelegate? GetRobotDelegate(Coordinate coordinate)
+        {
+            foreach ((IRobotDelegate robotDelegate, RobotPosition position) in _robotPositions)
+            {
+                if (position.Position == coordinate)
+                {
+                    return robotDelegate;
+                }
+            }
+
+            return null;
+        }
+
+        public IBadSectorDelegate? GetBadSectorDelegate(Coordinate coordinate)
+        {
+            foreach ((IBadSectorDelegate badSectorDelegate, BadSectorPosition position) in _badSectorPositions)
+            {
+                if (position.Position == coordinate)
+                {
+                    return badSectorDelegate;
+                }
+            }
+
+            return null;
+        }
+
+        public IList<IPlaceable> GetPlaceables(Coordinate coordinate)
+        {
+            IList<IPlaceable> placeables = new List<IPlaceable>();
+
+            foreach ((IPlaceable placeable, PlaceablePosition position) in _placeablePositions)
+            {
+                if (position.Position == coordinate)
+                {
+                    placeables.Add(placeable);
+                }
+            }
+
+            return placeables;
+        }
+
         public ICellDelegate[,] AsArray()
         {
             return CreateCellArray();
