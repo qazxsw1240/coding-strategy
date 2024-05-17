@@ -1,6 +1,11 @@
 #nullable enable
 
 
+using System;
+using CodingStrategy.Entities.BadSector;
+using CodingStrategy.Entities.Board;
+using UnityEngine;
+
 namespace CodingStrategy.Entities.Runtime
 {
     using System.Linq;
@@ -60,6 +65,27 @@ namespace CodingStrategy.Entities.Runtime
                 {
                     RollbackCommands(executionQueue, statements);
                     _problematicRobots.Add(robotDelegate);
+                    continue;
+                }
+
+                // BadSector Check
+
+                IBadSectorDelegate? badSectorDelegate =
+                    Context.BoardDelegate.GetBadSectorDelegate(robotDelegate.Position);
+
+                if (ReferenceEquals(badSectorDelegate, null) || badSectorDelegate.Installer == robotDelegate)
+                {
+                    continue;
+                }
+
+                Context.BoardDelegate.Remove(badSectorDelegate);
+
+                statements.Clear();
+                executionQueue.Clear();
+
+                foreach (IStatement s in badSectorDelegate.Execute(robotDelegate))
+                {
+                    executionQueue.Add(s);
                 }
             }
 
