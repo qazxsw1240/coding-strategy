@@ -23,7 +23,7 @@ public class PlayerBit : MonoBehaviour
     }
     void Start()
     {
-        setBit(3);      
+             
     }
 
     // Update is called once per frame

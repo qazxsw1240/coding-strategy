@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -889,6 +889,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: setRobot2State
       objectReference: {fileID: 0}
+    - target: {fileID: 5359207702266320555, guid: 6c12415c2de259b41a6bff3f5b18a422, type: 3}
+      propertyPath: m_Vertical
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6c12415c2de259b41a6bff3f5b18a422, type: 3}
 --- !u!1001 &4306174165219712593
@@ -1180,11 +1184,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8356789718954201132, guid: d7a81bbb83b80374cb3900028f4e2e1c, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.99994
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8356789718954201132, guid: d7a81bbb83b80374cb3900028f4e2e1c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8356789719377650516, guid: d7a81bbb83b80374cb3900028f4e2e1c, type: 3}
+      propertyPath: m_Vertical
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8356789719479960371, guid: d7a81bbb83b80374cb3900028f4e2e1c, type: 3}
       propertyPath: m_IsActive
@@ -1385,6 +1393,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2461215565758421145, guid: 90b9c5607a3fba04c92407f1778f34d1, type: 3}
+      propertyPath: m_Vertical
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7105907355659395336, guid: 90b9c5607a3fba04c92407f1778f34d1, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1482,6 +1494,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2147048112}
     m_Modifications:
+    - target: {fileID: 7147527378693043807, guid: bcdfdf62b59e15048a691c69de677530, type: 3}
+      propertyPath: m_Vertical
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7147527379442833592, guid: bcdfdf62b59e15048a691c69de677530, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1395,7 +1395,6 @@ GameObject:
   - component: {fileID: 3612128063811578814}
   - component: {fileID: 3612128063811578815}
   - component: {fileID: 3612128063811578688}
-  - component: {fileID: 3612128063811578813}
   m_Layer: 5
   m_Name: ReroadBtn
   m_TagString: Untagged
@@ -1403,19 +1402,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &3612128063811578813
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3612128063811578690}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da1b49c66aaddf54aaa194ca83766c51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  reroadBit: {fileID: 3612128063961253456}
 --- !u!222 &3612128063811578814
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3788,20 +3774,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &3612128065041236942
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3612128065041236947}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 622c14bccf53c364eb811ecf42e60dc2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Bit: {fileID: 3612128063714498247}
-  BitEngtxt: {fileID: 3612128063673748175}
 --- !u!222 &3612128065041236943
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3878,7 +3850,6 @@ GameObject:
   - component: {fileID: 3612128065041236946}
   - component: {fileID: 3612128065041236943}
   - component: {fileID: 3612128065041236944}
-  - component: {fileID: 3612128065041236942}
   m_Layer: 5
   m_Name: ItemSelectInfo
   m_TagString: Untagged
@@ -4251,20 +4222,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &3612128065399678024
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3612128065399678029}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7dfb01e773d21143b85a6ec6dd121eb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Level1: {fileID: 3612128065005841768}
-  Level2: {fileID: 3612128064444255374}
 --- !u!222 &3612128065399678025
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4338,7 +4295,6 @@ GameObject:
   - component: {fileID: 3612128065399678028}
   - component: {fileID: 3612128065399678025}
   - component: {fileID: 3612128065399678026}
-  - component: {fileID: 3612128065399678024}
   m_Layer: 5
   m_Name: ShopLevelInfo
   m_TagString: Untagged
@@ -4654,6 +4610,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15ded177bfd84e744b64fea690adbce8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Bit: {fileID: 3612128063714498247}
+  BitEngtxt: {fileID: 3612128063673748175}
+  Level1: {fileID: 3612128065005841768}
+  Level2: {fileID: 3612128064444255374}
+  levelupBit: {fileID: 3612128064611063967}
+  reroadBit: {fileID: 3612128063961253456}
   plusIcon: {fileID: 5399182447503536933, guid: ccc7183a7a30cab4488e15f5c81cbd09, type: 3}
 --- !u!224 &3612128065495640206
 RectTransform:
