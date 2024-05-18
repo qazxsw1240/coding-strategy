@@ -5,10 +5,31 @@ using TMPro;
 
 public class PlayerStatusUI : MonoBehaviour
 {
+    public TMP_Text Rank;
     public TMP_Text Name;
     public TMP_Text Money;
     public GameObject robotLife;
     public GameObject playerLife;
+
+    public void setRank(int rank)
+    {
+        switch (rank)
+        {
+            case 1:
+                Rank.text = "1st";
+                break;
+            case 2: 
+                Rank.text = "2nd";
+                break;
+            case 3: 
+                Rank.text = "3rd";
+                break;
+            case 4:
+                Rank.text = "4th";
+                break;
+        }
+    }
+
     public void setName(string name)
     {
         Name.text = name; 
