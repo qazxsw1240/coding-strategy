@@ -77,10 +77,7 @@ public class ShopUi : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        setBit(0);
-        setLevel(0);
-        setLevelupBit(0);
-        setReroadBit(0);
+
     }
 
     // Update is called once per frame
