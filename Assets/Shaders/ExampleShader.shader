@@ -152,14 +152,20 @@ Shader "ExampleShader"
             //#pragma fragment LitPassFragment
             #pragma fragment MyLitPassFragment
 
+            half4 _RimColor;
+            half _RimAmount;
+            half _RimThreshold;
             half3 MyCalculateBlinnPhong(Light light, InputData inputData, SurfaceData surfaceData)
             {
+                half3 N = inputData.normalWS;
+                half3 L = light.direction;
+                half3 V = inputData.viewDirectionWS;
+
                 half3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
                 //half3 lightColor = LightingLambert(attenuatedLightColor, light.direction, inputData.normalWS);
                 //half3 lightColor = attenuatedLightColor * saturate(dot(inputData.normalWS, light.direction));
-                half3 lightColor = attenuatedLightColor * (dot(inputData.normalWS, light.direction) > 0 ? 1 : 0);
-
-                lightColor *= surfaceData.albedo;
+                half3 lightColor = surfaceData.albedo * attenuatedLightColor * (smoothstep(0, 0.01, dot(N, L) > 0 ? 1 : 0));
+                lightColor += surfaceData.albedo * attenuatedLightColor * (smoothstep(0, 0.01, dot(N, L) > 0 ? 1 : 0)) * smoothstep(_RimAmount - 0.01, _RimAmount + 0.01, 1 - dot(V, N)) * _RimColor;
 
                 #if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
                 half smoothness = exp2(10 * surfaceData.smoothness + 1);
