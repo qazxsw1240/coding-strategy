@@ -5,20 +5,20 @@ using UnityEngine.Audio;
 
 public class MoveAndRotate : MonoBehaviour
 {
-    public float rotationSpeed = 50f; // ¾ó¸¸Å­ È¸Àü
-    public float moveSpeed = 0.6f; // ¾ó¸¸Å­ ºü¸£°Ô
-    public float moveRange = 0.3f; // ¾ó¸¸Å­ ÀÌµ¿
+    public float rotationSpeed = 50f; // ì–¼ë§Œí¼ íšŒì „
+    public float moveSpeed = 0.6f; // ì–¼ë§Œí¼ ë¹ ë¥´ê²Œ
+    public float moveRange = 0.3f; // ì–¼ë§Œí¼ ì´ë™
 
-    private Vector3 startPosition; // ¿ÀºêÁ§Æ® À§Ä¡ ÁöÁ¡ ÀúÀå
+    private Vector3 startPosition; // ì˜¤ë¸Œì íŠ¸ ìœ„ì¹˜ ì§€ì  ì €ì¥
     [SerializeField] AudioSource musicsource;
 
     private void Start()
     {
-        startPosition = transform.position; // »ı¼ºµÈ À§Ä¡ ÀúÀå
-        musicsource.time = 0.3f; // À½¾ÇÀÇ 0.3ÃÊºÎÅÍ ½ÃÀÛ
+        startPosition = transform.position; // ìƒì„±ëœ ìœ„ì¹˜ ì €ì¥
+        musicsource.time = 0.3f; // ìŒì•…ì˜ 0.3ì´ˆë¶€í„° ì‹œì‘
     }
 
-//ºñÆ®¸¦ »ı¼ºÇßÀ» ¶§ È¸Àü ¹Ø ¾ÆÀÌÅÛ ÀÌµ¿ÀÌ 
+//ë¹„íŠ¸ë¥¼ ìƒì„±í–ˆì„ ë•Œ íšŒì „ ë°‘ ì•„ì´í…œ ì´ë™ì´ 
     private void Update()
     {
         // Rotate around the z-axis at the specified speed
@@ -29,7 +29,7 @@ public class MoveAndRotate : MonoBehaviour
         transform.position = new Vector3(transform.position.x, newY, transform.position.z);
     }
 
-// ºñÆ®¸¦ ¸Ô°Ô µÉ °æ¿ì ½ÇÇà½ÃÅ°¸é µÇ´Â ÇÔ¼öÀÔ´Ï´Ù.
+// ë¹„íŠ¸ë¥¼ ë¨¹ê²Œ ë  ê²½ìš° ì‹¤í–‰ì‹œí‚¤ë©´ ë˜ëŠ” í•¨ìˆ˜ì…ë‹ˆë‹¤.
     public void GetBit()
     {
         rotationSpeed = 1000f;
