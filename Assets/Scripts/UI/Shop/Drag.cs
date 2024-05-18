@@ -7,14 +7,11 @@ public class Drag : MonoBehaviour,  IDragHandler, IBeginDragHandler, IEndDragHan
 	[SerializeField] private Image _image;
     public Vector3 _oldPosition;
 
-    //[SerializeField] private GameObject 
-
     // Start is called before the first frame update
     void Start()
     {
         _image = GetComponent<Image>();
         _oldPosition = _image.rectTransform.position;
-        Debug.Log(_oldPosition);
     }
 
     // Update is called once per frame
@@ -25,7 +22,6 @@ public class Drag : MonoBehaviour,  IDragHandler, IBeginDragHandler, IEndDragHan
 
 	public void OnDrag(PointerEventData eventData)
 	{
-        Debug.Log(transform.position);
 		transform.position = eventData.position;
 	}
 
