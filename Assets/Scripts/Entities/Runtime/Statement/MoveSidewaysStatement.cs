@@ -41,5 +41,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
         {
             get { return _isEdge ? this : new MoveSidewaysStatement(_robotDelegate, _direction*-1, _isEdge); }
         }
+
+        public StatementPhase Phase => StatementPhase.Move;
     }
 }
