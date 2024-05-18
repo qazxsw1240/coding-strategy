@@ -31,13 +31,11 @@ public class Drag : MonoBehaviour,  IDragHandler, IBeginDragHandler, IEndDragHan
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log("Begin Drag");
         _image.raycastTarget = false;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log("End Drag");
         transform.position = _oldPosition;
 		_image.raycastTarget = true;
     }
