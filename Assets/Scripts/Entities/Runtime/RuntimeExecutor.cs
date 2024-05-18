@@ -106,7 +106,7 @@ namespace CodingStrategy.Entities.Runtime
                 }
 
                 ICommand command = algorithm[_currentCountdown % capacity];
-                foreach (IStatement statement in command.GetCommandStatements())
+                foreach (IStatement statement in command.GetCommandStatements(robotDelegate))
                 {
                     executionQueue.Add(statement);
                 }
