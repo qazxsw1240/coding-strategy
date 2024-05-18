@@ -165,7 +165,7 @@ Shader "ExampleShader"
                 //half3 lightColor = LightingLambert(attenuatedLightColor, light.direction, inputData.normalWS);
                 //half3 lightColor = attenuatedLightColor * saturate(dot(inputData.normalWS, light.direction));
                 half3 lightColor = surfaceData.albedo * attenuatedLightColor * (smoothstep(0, 0.01, dot(N, L) > 0 ? 1 : 0));
-                lightColor += surfaceData.albedo * attenuatedLightColor * smoothstep(_RimAmount - 0.01, _RimAmount + 0.01, 1 - dot(V, N)) * _RimColor;
+                lightColor += surfaceData.albedo * attenuatedLightColor * (smoothstep(0, 0.01, dot(N, L) > 0 ? 1 : 0)) * smoothstep(_RimAmount - 0.01, _RimAmount + 0.01, 1 - dot(V, N)) * _RimColor;
 
                 #if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
                 half smoothness = exp2(10 * surfaceData.smoothness + 1);
