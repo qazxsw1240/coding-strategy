@@ -32,7 +32,7 @@ public class Drag : MonoBehaviour,  IDragHandler, IBeginDragHandler, IEndDragHan
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        transform.position = _oldPosition;
+        transform.position = _oldPosition - new Vector3(Screen.width, 0, 0);
 		_image.raycastTarget = true;
     }
 	public void SetNewPosition(Vector3 newPosition)

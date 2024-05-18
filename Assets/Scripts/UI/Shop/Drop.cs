@@ -14,7 +14,7 @@ public class Drop : MonoBehaviour, IDropHandler
             Drag draggable = eventData.pointerDrag.GetComponent<Drag>();
             if (draggable != null)
             {
-                draggable._oldPosition = eventData.position;
+                draggable._oldPosition = eventData.position + new Vector2(Screen.width, 0);
             }
         }
         
