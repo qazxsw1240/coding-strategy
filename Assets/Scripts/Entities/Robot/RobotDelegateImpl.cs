@@ -1,19 +1,24 @@
 #nullable enable
 
 
+using System.Linq;
+
 namespace CodingStrategy.Entities.Robot
 {
     using System;
-    using CodingStrategy.Entities.Board;
+    using Board;
+    using Runtime;
     using UnityEngine.Events;
 
     public class RobotDelegateImpl : IRobotDelegate
     {
-        private static readonly Coordinate[] Vectors = new Coordinate[] {
+        private static readonly Coordinate[] Vectors = new Coordinate[]
+        {
             new Coordinate(0, 1),
             new Coordinate(1, 0),
             new Coordinate(0, -1),
-            new Coordinate(-1, 0) };
+            new Coordinate(-1, 0)
+        };
 
         private readonly string _id;
         private readonly IBoardDelegate _boardDelegate;
@@ -120,7 +125,7 @@ namespace CodingStrategy.Entities.Robot
 
         public bool Move(int count)
         {
-            Coordinate vector = Vectors[(int)Direction];
+            Coordinate vector = Vectors[(int) Direction];
             Coordinate destination = Position + (vector * count);
             return Move(destination);
         }
@@ -131,17 +136,36 @@ namespace CodingStrategy.Entities.Robot
         {
             int range = Enum.GetValues(typeof(RobotDirection)).Length;
             RobotDirection direction = Direction;
-            RobotDirection nextDirection = (RobotDirection)(((int)direction + count + range) % range);
+            RobotDirection nextDirection = (RobotDirection) (((int) direction + count + range) % range);
             return Rotate(nextDirection);
         }
 
         public bool Rotate(RobotDirection direction) => _boardDelegate.Rotate(this, direction);
 
+        public bool Attack(IRobotAttackStrategy strategy, params Coordinate[] relativePositions)
+        {
+            Coordinate currentPosition = Position;
+            int checksum = 0;
+            foreach (Coordinate relativePosition in relativePositions)
+            {
+                Coordinate targetPosition = currentPosition + relativePosition;
+                ICellDelegate cellDelegate = _boardDelegate[targetPosition];
+                foreach (IRobotDelegate robotDelegate in cellDelegate.Placeables.Where(p => p is IRobotDelegate).Cast<IRobotDelegate>())
+                {
+                    robotDelegate.HealthPoint -= strategy.CalculateAttackPoint(this, robotDelegate);
+                    checksum++;
+                }
+            }
+
+            return checksum != 0;
+        }
+
         public int CompareTo(IGameEntity other) => _id.CompareTo(other);
 
         public UnityEvent<IRobotDelegate, Coordinate, Coordinate> OnRobotChangePosition => _robotChangePositionEvents;
 
-        public UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> OnRobotChangeDirection => _robotChangeDirectionEvents;
+        public UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> OnRobotChangeDirection =>
+            _robotChangeDirectionEvents;
 
         public UnityEvent<IRobotDelegate, int, int> OnHealthPointChange => _healthPointChangeEvents;
 
@@ -151,7 +175,8 @@ namespace CodingStrategy.Entities.Robot
 
         public UnityEvent<IRobotDelegate, int, int> OnAttackPointChange => _attackPointChangeEvents;
 
-        private void InvokeRobotChangePositionEvents(IRobotDelegate robotDelegate, Coordinate previousPosition, Coordinate newPosition)
+        private void InvokeRobotChangePositionEvents(IRobotDelegate robotDelegate, Coordinate previousPosition,
+            Coordinate newPosition)
         {
             if (robotDelegate == this)
             {
@@ -159,7 +184,8 @@ namespace CodingStrategy.Entities.Robot
             }
         }
 
-        private void InvokeRobotChangeDirectionEvents(IRobotDelegate robotDelegate, RobotDirection previousDirection, RobotDirection newDirection)
+        private void InvokeRobotChangeDirectionEvents(IRobotDelegate robotDelegate, RobotDirection previousDirection,
+            RobotDirection newDirection)
         {
             if (robotDelegate == this)
             {

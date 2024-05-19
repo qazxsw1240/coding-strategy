@@ -1,11 +1,11 @@
 #nullable enable
 
 
-namespace CodingStrategy.Runtime
+namespace CodingStrategy.Entities.Runtime
 {
     using System.Collections.Generic;
-    using CodingStrategy.Entities.Board;
-    using CodingStrategy.Entities.Robot;
+    using Board;
+    using Robot;
 
     public interface ICycleExecutor
     {
