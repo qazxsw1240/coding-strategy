@@ -1,6 +1,8 @@
 #nullable enable
 
 
+using CodingStrategy.Utility;
+
 namespace CodingStrategy.Entities.Runtime
 {
     using System.Diagnostics.CodeAnalysis;
@@ -10,21 +12,23 @@ namespace CodingStrategy.Entities.Runtime
 
     public class ExecutionQueueImpl : IExecutionQueue
     {
-        private const int DefaultCapacity = 10;
+        private static readonly IComparer<IStatement> StatementComparer = new StatementComparer();
 
-        private readonly List<IStatement> _statements;
+        private readonly PriorityQueue<IStatement> _statements;
 
-        public ExecutionQueueImpl(int capacity)
+        public ExecutionQueueImpl()
         {
-            _statements = new List<IStatement>(capacity);
+            _statements = new PriorityQueue<IStatement>(StatementComparer);
         }
 
         public ExecutionQueueImpl(IEnumerable<IStatement> statements)
         {
-            _statements = new List<IStatement>(statements);
+            _statements = new PriorityQueue<IStatement>(StatementComparer);
+            foreach (IStatement statement in statements)
+            {
+                _statements.Enqueue(statement);
+            }
         }
-
-        public ExecutionQueueImpl() : this(DefaultCapacity) {}
 
 
         public int Count => _statements.Count;
@@ -38,19 +42,17 @@ namespace CodingStrategy.Entities.Runtime
 
         public bool Contains(IStatement item)
         {
-            return _statements.Contains(item);
+            return false;
         }
 
         public void Enqueue(IStatement statement)
         {
-            _statements.Add(statement);
+            _statements.Enqueue(statement);
         }
 
         public IStatement Dequeue()
         {
-            IStatement statement = _statements[0];
-            _statements.RemoveAt(0);
-            return statement;
+            return _statements.Dequeue();
         }
 
         public void EnqueueFirst(IStatement statement)
@@ -65,16 +67,7 @@ namespace CodingStrategy.Entities.Runtime
 
         public bool TryDequeue([MaybeNullWhen(false)] out IStatement statement)
         {
-            if (_statements.Count == 0)
-            {
-                statement = null;
-                return false;
-            }
-
-            IStatement obsolete = _statements[0];
-            _statements.RemoveAt(0);
-            statement = obsolete;
-            return true;
+            return _statements.TryDequeue(out statement);
         }
 
         public void Clear()
@@ -84,7 +77,7 @@ namespace CodingStrategy.Entities.Runtime
 
         public void CopyTo(IStatement[] array, int arrayIndex)
         {
-            _statements.CopyTo(array, arrayIndex);
+            return;
         }
 
         public IEnumerator<IStatement> GetEnumerator()
@@ -95,6 +88,17 @@ namespace CodingStrategy.Entities.Runtime
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+    }
+
+    public class StatementComparer : IComparer<IStatement>
+    {
+        public int Compare(IStatement x, IStatement y)
+        {
+            if (ReferenceEquals(x, y)) return 0;
+            if (ReferenceEquals(null, y)) return 1;
+            if (ReferenceEquals(null, x)) return -1;
+            return x.Phase.CompareTo(y.Phase);
         }
     }
 }
