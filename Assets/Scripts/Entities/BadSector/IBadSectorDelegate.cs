@@ -1,18 +1,20 @@
 #nullable enable
 
 
+using System.Collections.Generic;
 using CodingStrategy.Entities.Robot;
+using CodingStrategy.Entities.Runtime;
 
 namespace CodingStrategy.Entities.BadSector
 {
-    public interface IBadSectorDelegate : IGameEntity
+    public interface IBadSectorDelegate : IGameEntity, IPlaceable
     {
         public abstract IRobotDelegate Installer { get; }
 
-        public abstract Coordinate Position { get; }
+        public new abstract Coordinate Position { get; }
 
         public abstract void Remove();
 
-        public abstract void Execute(IRobotDelegate target);
+        public abstract IList<IStatement> Execute(IRobotDelegate target);
     }
 }

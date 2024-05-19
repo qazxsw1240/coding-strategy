@@ -3,7 +3,7 @@
 
 using System;
 
-namespace CodingStrategy.Runtime
+namespace CodingStrategy.Entities.Runtime
 {
     public class RuntimeException : Exception
     {
