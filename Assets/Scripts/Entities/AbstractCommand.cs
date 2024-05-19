@@ -1,9 +1,6 @@
 #nullable enable
 
 
-using System.Collections.Generic;
-using CodingStrategy.Entities.Runtime;
-
 namespace CodingStrategy.Entities
 {
     /// <summary>
@@ -15,7 +12,6 @@ namespace CodingStrategy.Entities
         private string _id;
 
         private readonly ICommandInfo _info;
-        private int _grade;
 
         /// <summary>
         /// 기본적인 명령어 정보를 생성합니다.
@@ -23,10 +19,10 @@ namespace CodingStrategy.Entities
         /// <param name="id">명령어의 ID입니다.</param>
         /// <param name="name">명령어의 이름입니다.</param>
         /// <param name="enhancedLevel">명령어의 강화 단계입니다.</param>
-        protected AbstractCommand(string id, string name, int enhancedLevel, int grade)
+        protected AbstractCommand(string id, string name, int enhancedLevel)
         {
             _id = id;
-            _info = new CommandInfoImpl(name, enhancedLevel, grade);
+            _info = new CommandInfoImpl(name, enhancedLevel);
         }
 
         public virtual string Id
@@ -40,8 +36,6 @@ namespace CodingStrategy.Entities
         public abstract bool Invoke(params object[] args);
 
         public abstract bool Revoke(params object[] args);
-
-        public abstract IList<IStatement> GetCommandStatements();
 
         public abstract ICommand Copy(bool keepStatus = true);
     }
