@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using CodingStrategy.Entities.Robot;
 using CodingStrategy.Entities.Runtime;
 
 namespace CodingStrategy.Entities
@@ -42,8 +43,9 @@ namespace CodingStrategy.Entities
         /// <summary>
         /// 실행할 명령어의 Statement가 들어있는 리스트를 반환합니다.
         /// </summary>
+        /// <param name="robot">명령어를 실행하는 로봇입니다.</param>
         /// <returns>명령어 Statement 리스트입니다.</returns>
-        public abstract IList<IStatement> GetCommandStatements();
+        public abstract IList<IStatement> GetCommandStatements(IRobotDelegate robot);
 
         /// <summary>
         /// 동일한 정보의 명령어를 복제합니다. 현재 명령어의 상태를 반영할지 선택할 수 있습니다.

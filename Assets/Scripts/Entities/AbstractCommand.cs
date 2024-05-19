@@ -2,6 +2,7 @@
 
 
 using System.Collections.Generic;
+using CodingStrategy.Entities.Robot;
 using CodingStrategy.Entities.Runtime;
 
 namespace CodingStrategy.Entities
@@ -15,7 +16,6 @@ namespace CodingStrategy.Entities
         private string _id;
 
         private readonly ICommandInfo _info;
-        private int _grade;
 
         /// <summary>
         /// 기본적인 명령어 정보를 생성합니다.
@@ -41,7 +41,7 @@ namespace CodingStrategy.Entities
 
         public abstract bool Revoke(params object[] args);
 
-        public abstract IList<IStatement> GetCommandStatements();
+        public abstract IList<IStatement> GetCommandStatements(IRobotDelegate robot);
 
         public abstract ICommand Copy(bool keepStatus = true);
     }

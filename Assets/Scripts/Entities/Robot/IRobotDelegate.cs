@@ -12,6 +12,7 @@ namespace CodingStrategy.Entities.Robot
     /// </summary>
     public interface IRobotDelegate : IGameEntity, IPlaceable
     {
+        public abstract Coordinate[] Vectors { get; }
         /// <summary>
         /// 로봇이 지닌 알고리즘입니다. 알고리즘에는 턴마다 실행할 명령어가 순서대로 저장돼 있습니다.
         /// </summary>

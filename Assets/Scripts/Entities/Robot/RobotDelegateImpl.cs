@@ -12,7 +12,7 @@ namespace CodingStrategy.Entities.Robot
 
     public class RobotDelegateImpl : IRobotDelegate
     {
-        private static readonly Coordinate[] Vectors = new Coordinate[]
+        private static readonly Coordinate[] _vectors = new Coordinate[]
         {
             new Coordinate(0, 1),
             new Coordinate(1, 0),
@@ -62,6 +62,7 @@ namespace CodingStrategy.Entities.Robot
             _boardDelegate.OnRobotChangePosition.AddListener(InvokeRobotChangePositionEvents);
             _boardDelegate.OnRobotChangeDirection.AddListener(InvokeRobotChangeDirectionEvents);
         }
+        public Coordinate[] Vectors => _vectors;
 
         public string Id => _id;
 
