@@ -143,7 +143,7 @@ namespace CodingStrategy
                 throw new NotImplementedException();
             }
 
-            public override IList<IStatement> GetCommandStatements()
+            public override IList<IStatement> GetCommandStatements(IRobotDelegate robotDelegate)
             {
                 return new List<IStatement>
                 {
