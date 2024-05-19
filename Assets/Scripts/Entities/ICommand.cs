@@ -1,10 +1,6 @@
 #nullable enable
 
 
-using System;
-using System.Collections.Generic;
-using CodingStrategy.Entities.Runtime;
-
 namespace CodingStrategy.Entities
 {
     /// <summary>
@@ -27,7 +23,6 @@ namespace CodingStrategy.Entities
         /// </summary>
         /// <param name="args">명령어를 실행하는 데 추가적으로 필요한 매개변수입니다.</param>
         /// <returns>명령어가 정상적으로 실행을 완료하면 true를 반환하고, 실패했다면 false를 반환합니다.</returns>
-        [Obsolete]
         public abstract bool Invoke(params object[] args);
 
         /// <summary>
@@ -36,14 +31,7 @@ namespace CodingStrategy.Entities
         /// </summary>
         /// <param name="args">명령어를 취소하는 데 추가적으로 필요한 매개변수입니다.</param>
         /// <returns>명령어가 정상적으로 취소됐으면 true를 반환하고, 실패했다면 false를 반환합니다.</returns>
-        [Obsolete]
         public abstract bool Revoke(params object[] args);
-
-        /// <summary>
-        /// 실행할 명령어의 Statement가 들어있는 리스트를 반환합니다.
-        /// </summary>
-        /// <returns>명령어 Statement 리스트입니다.</returns>
-        public abstract IList<IStatement> GetCommandStatements();
 
         /// <summary>
         /// 동일한 정보의 명령어를 복제합니다. 현재 명령어의 상태를 반영할지 선택할 수 있습니다.
