@@ -1,10 +1,7 @@
 #nullable enable
 
 
-using System;
 using CodingStrategy.Entities.BadSector;
-using CodingStrategy.Entities.Board;
-using UnityEngine;
 
 namespace CodingStrategy.Entities.Runtime
 {
