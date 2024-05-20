@@ -41,7 +41,7 @@ namespace CodingStrategy.Entities.Runtime
         {
             foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in Context.ExecutionQueuePool)
             {
-                if (!executionQueue.TryDequeue(out IStatement statement))
+                if (!executionQueue.TryDequeue(out IStatement? statement))
                 {
                     continue;
                 }
@@ -55,8 +55,8 @@ namespace CodingStrategy.Entities.Runtime
 
                 try
                 {
-                    statements.Push(statement);
-                    statement.Execute();
+                    statements.Push(statement!);
+                    statement!.Execute();
                 }
                 catch (ExecutionException)
                 {
