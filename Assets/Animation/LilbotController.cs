@@ -17,31 +17,31 @@ public class LilbotController : MonoBehaviour
 
     public IEnumerator Walk(float speed, int x, int z)
     {
-        //speedÀÇ °ªÀÌ 1¿¡ °¡±î¿ì¸é °¡±î¿ï¼ö·Ï ´Ş¸®´Â ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ Æ²¾îÁú°Å¿¡¿ä.
-        //1ÀÌ¸é ³ª·çÅä ´Ş¸®±â, 0.5¸é ¶Ñ¹æ¶Ñ¹æ °È±â, 0ÀÌ¸é °¡¸¸È÷ ¼­ÀÖ±â¸¦ ½ÇÇàÇÕ´Ï´Ù.
+        //speedì˜ ê°’ì´ 1ì— ê°€ê¹Œìš°ë©´ ê°€ê¹Œìš¸ìˆ˜ë¡ ë‹¬ë¦¬ëŠ” ì• ë‹ˆë©”ì´ì…˜ì´ í‹€ì–´ì§ˆê±°ì—ìš”.
+        //1ì´ë©´ ë‚˜ë£¨í†  ë‹¬ë¦¬ê¸°, 0.5ë©´ ëšœë°©ëšœë°© ê±·ê¸°, 0ì´ë©´ ê°€ë§Œíˆ ì„œìˆê¸°ë¥¼ ì‹¤í–‰í•©ë‹ˆë‹¤.
         animator.SetFloat("Speed", speed);
 
 
-        // ÇöÀç °´Ã¼¸¦ (x, y, z) À§Ä¡·Î speed ¼Óµµ·Î ÀÌµ¿ÇÕ´Ï´Ù. ±×·¯´Ï±î, ¿ì¸®
+        // í˜„ì¬ ê°ì²´ë¥¼ (x, y, z) ìœ„ì¹˜ë¡œ speed ì†ë„ë¡œ ì´ë™í•©ë‹ˆë‹¤. ê·¸ëŸ¬ë‹ˆê¹Œ,
         Vector3 targetPosition = new Vector3(x, transform.position.y, z);
 
 
-        // DoTweenÀÇ DoMove ÇÔ¼ö¸¦ »ç¿ëÇÏ¿© ÀÌµ¿ÇÕ´Ï´Ù.
+        // DoTweenì˜ DoMove í•¨ìˆ˜ë¥¼ ì‚¬ìš©í•˜ì—¬ ì´ë™í•©ë‹ˆë‹¤.
         transform.DOMove(targetPosition, duration).SetEase(Ease.Linear);
 
 
-        // ÀÌµ¿ ¿Ï·á±îÁö ±â´Ù¸³´Ï´Ù.
+        // ì´ë™ ì™„ë£Œê¹Œì§€ ê¸°ë‹¤ë¦½ë‹ˆë‹¤.
         yield return new WaitForSeconds(duration);
 
 
-        // ÀÌµ¿ÀÌ ¿Ï·áµÇ¸é ¾Ö´Ï¸ŞÀÌ¼Ç Speed¸¦ 0À¸·Î ¼³Á¤ÇÏ¿© Idle »óÅÂ·Î µ¹¾Æ°©´Ï´Ù.
+        // ì´ë™ì´ ì™„ë£Œë˜ë©´ ì• ë‹ˆë©”ì´ì…˜ Speedë¥¼ 0ìœ¼ë¡œ ì„¤ì •í•˜ì—¬ Idle ìƒíƒœë¡œ ëŒì•„ê°‘ë‹ˆë‹¤.
         animator.SetFloat("Speed", 0);
     }
     
     public IEnumerator JumpAnimationCoroutine()
     {
         animator.SetTrigger("Jump");
-        yield return new WaitForSeconds(1);   // 1ÃÊ ´ë±â
+        yield return new WaitForSeconds(1);   // 1ì´ˆ ëŒ€ê¸°
         animator.ResetTrigger("Jump");
     }
 
@@ -49,14 +49,21 @@ public class LilbotController : MonoBehaviour
 
 
     #region attack_Animation
-    public void Attack1()
+
+    //ë¡œë´‡ ê¸°ì¤€ ì˜¤ë¥¸ì† ì–´í¼ì»·
+    public IEnumerator AttackRightAnimationCoroutine()
     {
         animator.SetTrigger("Attack1");
+        yield return new WaitForSeconds(1);   // 1ì´ˆ ëŒ€ê¸°
+        animator.ResetTrigger("Attack1");
     }
 
-    public void Attack2()
+    //ë¡œë´‡ ê¸°ì¤€ ì™¼ì† ì–´í¼ì»·
+    public IEnumerator AttackLeftAnimationCoroutine()
     {
         animator.SetTrigger("Attack2");
+        yield return new WaitForSeconds(1);   // 1ì´ˆ ëŒ€ê¸°
+        animator.ResetTrigger("Attack2");
     }
     #endregion
 
@@ -68,7 +75,7 @@ public class LilbotController : MonoBehaviour
         animator.SetTrigger("Death");
 
         playercamera.DOShakePosition(1, 5);
-        yield return new WaitForSeconds(1);   // 1ÃÊ ´ë±â
+        yield return new WaitForSeconds(1);   // 1ì´ˆ ëŒ€ê¸°
         animator.ResetTrigger("Death");
     }
     #endregion
@@ -76,12 +83,12 @@ public class LilbotController : MonoBehaviour
 
 
     #region Hit_Animation
-    //ÇÇ°İÇÒ ¶§ÀÇ ¾Ö´Ï¸ŞÀÌ¼Ç ÀÛ¾÷À» ÁøÇàÇÕ´Ï´Ù.
+    //í”¼ê²©í•  ë•Œì˜ ì• ë‹ˆë©”ì´ì…˜ ì‘ì—…ì„ ì§„í–‰í•©ë‹ˆë‹¤.
     public IEnumerator HitAnimationCoroutine()
     {
         animator.SetTrigger("Hit");
         playercamera.DOShakePosition(1, 3);
-        yield return new WaitForSeconds(1);   // 1ÃÊ ´ë±â
+        yield return new WaitForSeconds(1);   // 1ì´ˆ ëŒ€ê¸°
         animator.ResetTrigger("Hit");
     }
     #endregion
