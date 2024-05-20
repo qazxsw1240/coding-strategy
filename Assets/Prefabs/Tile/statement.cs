@@ -29,7 +29,7 @@ public class statement : MonoBehaviour
         }
     }
 
-    IEnumerator AnimateItem()
+    public IEnumerator AnimateItem()
     {
         // 동시에 시작할 애니메이션들을 담은 Sequence를 생성합니다.
         Sequence sequence = DOTween.Sequence();
@@ -53,7 +53,7 @@ public class statement : MonoBehaviour
     }
 
 
-    IEnumerator AnimateItemReverse()
+    public IEnumerator AnimateItemReverse()
     {
         Sequence sequence = DOTween.Sequence();
 
