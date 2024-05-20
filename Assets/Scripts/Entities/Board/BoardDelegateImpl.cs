@@ -160,7 +160,7 @@ namespace CodingStrategy.Entities.Board
                 return false;
             }
 
-            if (IsPositionValid(position))
+            if (!IsPositionValid(position))
             {
                 return false;
             }
@@ -350,7 +350,7 @@ namespace CodingStrategy.Entities.Board
             if (!IsPlaceableExist(placeable))
             {
                 throw new ArgumentException(
-                    $"The bad sector delegate {placeable.GetHashCode()} is not placed on this board.");
+                    $"The placeable {placeable.GetHashCode()}({placeable.GetType().Name}) is not placed on this board.");
             }
         }
 
