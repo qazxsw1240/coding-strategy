@@ -30,7 +30,13 @@ namespace CodingStrategy.Entities.Runtime
 
         private readonly ExecutionQueuePool _executionQueuePool = new ExecutionQueuePool();
 
-        // private readonly IList<IExecutionValidator> _validators = new List<IExecutionValidator>();
+        private readonly IList<IExecutionValidator> _validators = new List<IExecutionValidator>
+        {
+            new MoveValidator(),
+            new PointerValidator(),
+            new StaticValidator(),
+            new AttackValidator()
+        };
 
         private readonly IDictionary<IRobotDelegate, GameObject> _robotObjects =
             new Dictionary<IRobotDelegate, GameObject>();
@@ -153,14 +159,23 @@ namespace CodingStrategy.Entities.Runtime
             //     AnimationCoroutineManager);
             //
             // yield return AwaitLifeCycleCoroutine(commandIterationExecutor);
-            RobotStatementExecutor robotStatementExecutor = gameObject.GetOrAddComponent<RobotStatementExecutor>();
-            robotStatementExecutor.Validator = new MoveValidator();
-            robotStatementExecutor.Context = new RuntimeExecutorContext(BoardDelegate,
-                PlayerPool,
-                RobotDelegatePool,
-                _executionQueuePool,
-                AnimationCoroutineManager);
-            yield return AwaitLifeCycleCoroutine(robotStatementExecutor);
+
+            foreach (IExecutionValidator validator in _validators)
+            {
+                if (IsDeadlock())
+                {
+                    break;
+                }
+                RobotStatementExecutor robotStatementExecutor = gameObject.GetOrAddComponent<RobotStatementExecutor>();
+                robotStatementExecutor.Validator = validator;
+                robotStatementExecutor.Context = new RuntimeExecutorContext(BoardDelegate,
+                    PlayerPool,
+                    RobotDelegatePool,
+                    _executionQueuePool,
+                    AnimationCoroutineManager);
+                yield return AwaitLifeCycleCoroutine(robotStatementExecutor);
+                Destroy(robotStatementExecutor);
+            }
         }
 
         protected override IEnumerator OnAfterTermination()
@@ -186,29 +201,28 @@ namespace CodingStrategy.Entities.Runtime
             }
         }
 
-        private Vector3 ConvertToVector(Coordinate coordinate,
-            float heightOffset)
+        private Vector3 ConvertToVector(Coordinate coordinate, float heightOffset)
         {
-            int halfWidth = BoardDelegate.Width / 2;
-            int halfHeight = BoardDelegate.Height / 2;
-            return new Vector3((coordinate.X - halfWidth) * BlockGap, heightOffset,
-                (coordinate.Y - halfHeight) * BlockGap);
+            // int halfWidth = BoardDelegate.Width / 2;
+            // int halfHeight = BoardDelegate.Height / 2;
+            return new Vector3(coordinate.X, heightOffset, coordinate.Y);
         }
 
         private void CreateRobotInstance(IRobotDelegate robotDelegate)
         {
             Coordinate coordinate = robotDelegate.Position;
             RobotDirection direction = robotDelegate.Direction;
-            Vector3 position = ConvertToVector(coordinate, 1.5f);
+            Vector3 position = ConvertToVector(coordinate, 0.5f);
             Quaternion quaternion = Quaternion.Euler(0, (int) direction * 90f, 0);
             GameObject robotObject = Instantiate(RobotPrefab, position, quaternion, transform);
             robotObject.name = robotDelegate.Id;
+            robotObject.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
             _robotObjects[robotDelegate] = robotObject;
             robotDelegate.OnRobotChangePosition.AddListener((_, previous, next) =>
             {
                 Debug.LogFormat("Robot {2} moved from {0} to {1}", previous, next, robotDelegate.Id);
-                Vector3 start = ConvertToVector(previous, 1.5f);
-                Vector3 end = ConvertToVector(next, 1.5f);
+                Vector3 start = ConvertToVector(previous, 0.5f);
+                Vector3 end = ConvertToVector(next, 0.5f);
                 MoveAnimation moveAnimation = new MoveAnimation(robotObject, start, end, 0.25f);
                 AnimationCoroutineManager.AddAnimation(robotObject, moveAnimation);
             });
