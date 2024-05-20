@@ -2,7 +2,9 @@
 
 
 using System;
+using System.Linq;
 using CodingStrategy.Entities.BadSector;
+using CodingStrategy.Entities.Placeable;
 using CodingStrategy.Entities.Runtime.Validator;
 using Unity.VisualScripting;
 
@@ -48,13 +50,15 @@ namespace CodingStrategy.Entities.Runtime
 
         public GameObject BoardCellPrefab = null!;
         public GameObject RobotPrefab = null!;
-        public float BlockGap;
+        public GameObject BitPrefab = null!;
 
         public IBoardDelegate BoardDelegate { private get; set; } = null!;
 
         public IRobotDelegatePool RobotDelegatePool { private get; set; } = null!;
 
         public IPlayerPool PlayerPool { private get; set; } = null!;
+
+        public BitDispenser BitDispenser { private get; set; } = null!;
 
         public AnimationCoroutineManager AnimationCoroutineManager { private get; set; } = null!;
 
@@ -73,6 +77,7 @@ namespace CodingStrategy.Entities.Runtime
             _cellObjects = new GameObject[BoardDelegate.Width, BoardDelegate.Height];
             BoardDelegate.OnRobotAdd.AddListener(CreateRobotInstance);
             BoardDelegate.OnBadSectorAdd.AddListener(CreateBadSectorInstance);
+            BoardDelegate.OnPlaceableAdd.AddListener(CreateBitInstance);
             BoardDelegate.OnRobotRemove.AddListener(RemoveRobotInstance);
 
             InitializeCells();
@@ -84,6 +89,8 @@ namespace CodingStrategy.Entities.Runtime
                 BoardDelegate.Add(robotDelegate, position, direction);
                 _executionQueuePool[robotDelegate] = new ExecutionQueueImpl();
             }
+
+            BitDispenser.Dispense();
         }
 
         public bool MoveNext()
@@ -105,13 +112,13 @@ namespace CodingStrategy.Entities.Runtime
             foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in _executionQueuePool)
             {
                 IAlgorithm algorithm = robotDelegate.Algorithm;
-                int capacity = algorithm.Count;
+                int capacity = algorithm.Capacity;
                 if (capacity == 0)
                 {
                     continue;
                 }
 
-                ICommand command = algorithm[_currentCountdown % capacity];
+                ICommand command = algorithm[_currentCountdown % algorithm.Count];
                 foreach (IStatement statement in command.GetCommandStatements(robotDelegate))
                 {
                     executionQueue.Add(statement);
@@ -149,23 +156,13 @@ namespace CodingStrategy.Entities.Runtime
 
         protected override IEnumerator OnAfterExecution()
         {
-            // CommandIterationExecutor commandIterationExecutor = gameObject.AddComponent<CommandIterationExecutor>();
-            //
-            // commandIterationExecutor.Validators = _validators;
-            // commandIterationExecutor.Context = new RuntimeExecutorContext(BoardDelegate,
-            //     PlayerPool,
-            //     RobotDelegatePool,
-            //     _executionQueuePool,
-            //     AnimationCoroutineManager);
-            //
-            // yield return AwaitLifeCycleCoroutine(commandIterationExecutor);
-
             foreach (IExecutionValidator validator in _validators)
             {
-                if (IsDeadlock())
+                if (IsDeadlock() || IsExecutionQueueEmpty(_executionQueuePool))
                 {
                     break;
                 }
+
                 RobotStatementExecutor robotStatementExecutor = gameObject.GetOrAddComponent<RobotStatementExecutor>();
                 robotStatementExecutor.Validator = validator;
                 robotStatementExecutor.Context = new RuntimeExecutorContext(BoardDelegate,
@@ -175,7 +172,11 @@ namespace CodingStrategy.Entities.Runtime
                     AnimationCoroutineManager);
                 yield return AwaitLifeCycleCoroutine(robotStatementExecutor);
                 Destroy(robotStatementExecutor);
+                BitDispenser.SweepBits(true);
             }
+
+
+            BitDispenser.SweepBits();
         }
 
         protected override IEnumerator OnAfterTermination()
@@ -257,6 +258,30 @@ namespace CodingStrategy.Entities.Runtime
             });
         }
 
+        private void CreateBitInstance(IPlaceable placeable)
+        {
+            Debug.LogFormat("Placeable added: {0}", placeable.GetType().Name);
+            if (placeable is not IBitDelegate bitDelegate)
+            {
+                return;
+            }
+
+            Debug.Log("Create instance of  BitDelegate");
+
+            Coordinate coordinate = bitDelegate.Position;
+            Vector3 position = ConvertToVector(coordinate, 1.5f);
+            GameObject bitGameObject = Instantiate(BitPrefab, position, Quaternion.Euler(90f, 0, 0), transform);
+            bitDelegate.OnRobotTakeInEvents.AddListener(_ => bitGameObject.SetActive(false));
+            bitDelegate.OnRobotTakeAwayEvents.AddListener(_ => bitGameObject.SetActive(true));
+            BoardDelegate.OnPlaceableRemove.AddListener(p =>
+            {
+                if (p == bitDelegate)
+                {
+                    Destroy(bitGameObject);
+                }
+            });
+        }
+
         private void RemoveRobotInstance(IRobotDelegate robotDelegate)
         {
             if (!_robotObjects.TryGetValue(robotDelegate, out GameObject robotObject))
@@ -267,6 +292,11 @@ namespace CodingStrategy.Entities.Runtime
             Destroy(robotObject);
 
             _robotObjects.Remove(robotDelegate);
+        }
+
+        private static bool IsExecutionQueueEmpty(ExecutionQueuePool pool)
+        {
+            return pool.Values.All(executionQueue => executionQueue.Count == 0);
         }
 
         private static IEnumerable<(int, T)> ToIndexedEnumerable<T>(IEnumerable<T> enumerable)
