@@ -58,7 +58,7 @@ namespace CodingStrategy.Entities.Runtime
                 throw new Exception();
             }
 
-            return statement;
+            return statement!;
         }
 
         public void EnqueueFirst(IStatement statement)
@@ -71,7 +71,7 @@ namespace CodingStrategy.Entities.Runtime
             return _statements.Remove(item);
         }
 
-        public bool TryDequeue([MaybeNullWhen(false)] out IStatement statement)
+        public bool TryDequeue(out IStatement? statement)
         {
             if (_statements.Count == 0)
             {
