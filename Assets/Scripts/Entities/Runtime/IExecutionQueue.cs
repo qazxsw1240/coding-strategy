@@ -11,6 +11,11 @@ namespace CodingStrategy.Entities.Runtime
     public interface IExecutionQueue : ICollection<IStatement>
     {
         /// <summary>
+        /// IsProtected 값이 true면 큐에 IStatement를 추가할 수 없습니다.
+        /// </summary>
+        public abstract bool IsProtected { get; set; }
+
+        /// <summary>
         /// 큐에 새 IStatement 인스턴스를 추가합니다.
         /// </summary>
         /// <param name="statement">큐에 추가할 IStatement 인스턴스입니다.</param>

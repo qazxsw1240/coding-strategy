@@ -1,12 +1,8 @@
 #nullable enable
 
 
-using CodingStrategy.Utility;
-using NUnit.Framework;
-
 namespace CodingStrategy.Entities.Runtime
 {
-    using System.Diagnostics.CodeAnalysis;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -20,17 +16,16 @@ namespace CodingStrategy.Entities.Runtime
         public ExecutionQueueImpl()
         {
             _statements = new List<IStatement>();
+            IsProtected = false;
         }
 
-        public ExecutionQueueImpl(IEnumerable<IStatement> statements)
+        public ExecutionQueueImpl(IEnumerable<IStatement> statements): this()
         {
-            _statements = new List<IStatement>();
             foreach (IStatement statement in statements)
             {
                 Enqueue(statement);
             }
         }
-
 
         public int Count => _statements.Count;
 
@@ -46,8 +41,14 @@ namespace CodingStrategy.Entities.Runtime
             return _statements.Contains(item);
         }
 
+        public bool IsProtected { get; set; }
+
         public void Enqueue(IStatement statement)
         {
+            if (IsProtected)
+            {
+                return;
+            }
             _statements.Add(statement);
         }
 
@@ -63,6 +64,10 @@ namespace CodingStrategy.Entities.Runtime
 
         public void EnqueueFirst(IStatement statement)
         {
+            if (IsProtected)
+            {
+                return;
+            }
             _statements.Insert(0, statement);
         }
 
