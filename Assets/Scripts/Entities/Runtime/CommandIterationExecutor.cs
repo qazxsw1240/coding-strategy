@@ -1,19 +1,21 @@
 #nullable enable
 
 
+using System;
 using System.Collections;
 
 namespace CodingStrategy.Entities.Runtime
 {
     using System.Collections.Generic;
 
+    [Obsolete]
     public class CommandIterationExecutor : LifeCycleMonoBehaviourBase, ILifeCycle
     {
         private IList<IExecutionValidator> _validators = null!;
         private IEnumerator<IExecutionValidator> _enumerator = null!;
         private RobotStatementExecutor _executor = null!;
 
-        public RuntimeExecutorContext Context { get; set; }
+        public RuntimeExecutorContext Context { get; set; } = null!;
 
         public IList<IExecutionValidator> Validators
         {
