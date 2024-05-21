@@ -1,12 +1,14 @@
 #nullable enable
 
 
+using System.Linq;
 using CodingStrategy.Entities.Animations;
 using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Placeable;
 using CodingStrategy.Entities.Runtime.Statement;
 using CodingStrategy.Factory;
 using CodingStrategy.Utility;
+using NUnit.Framework;
 using UnityEngine.Serialization;
 
 namespace CodingStrategy
@@ -116,10 +118,12 @@ namespace CodingStrategy
             IRobotDelegate robotDelegate = _robotDelegatePool[playerDelegate.Id];
             playerStatusUI.SetColor(color);
             playerStatusUI.SetName(playerDelegate.Id);
+            playerStatusUI.SetRank(1);
             playerStatusUI.SetMoney(playerDelegate.Currency);
             playerStatusUI.SetPlayerHP(playerDelegate.HealthPoint);
             playerStatusUI.SetRobotHP(robotDelegate.HealthPoint);
             playerDelegate.OnCurrencyChange.AddListener((_, currency) => playerStatusUI.SetMoney(currency));
+            playerDelegate.OnCurrencyChange.AddListener((_, _) => UpdatePlayerRanks());
             playerDelegate.OnHealthPointChange.AddListener((_, hp) => playerStatusUI.SetPlayerHP(hp));
             robotDelegate.OnHealthPointChange.AddListener((_, _, hp) => playerStatusUI.SetRobotHP(Math.Max(hp, 0)));
         }
@@ -146,7 +150,7 @@ namespace CodingStrategy
             GameObject robotObject = Instantiate(prefab, vectorPosition, quaternion, transform);
             robotObject.name = robotDelegate.Id;
             robotObject.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
-            LilbotController lilbotController= robotObject.AddComponent<LilbotController>();
+            LilbotController lilbotController = robotObject.AddComponent<LilbotController>();
             lilbotController.animator = robotObject.GetComponent<Animator>();
             robotDelegate.OnRobotChangePosition.AddListener((_, previous, next) =>
             {
@@ -221,6 +225,45 @@ namespace CodingStrategy
             }
         }
 
+        private PlayerStatusUI? FindPlayerStatusUI(IPlayerDelegate playerDelegate)
+        {
+            foreach (PlayerStatusUI playerStatusUI in inGameUI.playerStatusUI)
+            {
+                if (playerStatusUI.Name.text == playerDelegate.Id)
+                {
+                    return playerStatusUI;
+                }
+            }
+
+            return null;
+        }
+
+        private void UpdatePlayerRanks()
+        {
+            IPlayerDelegate[] playerDelegates = _playerPool.ToArray();
+            Array.Sort(playerDelegates, (x, y) => y.Currency - x.Currency);
+            int rank = 1;
+            for (int i = 0; i < playerDelegates.Length; i++)
+            {
+                PlayerStatusUI? playerStatusUI = FindPlayerStatusUI(playerDelegates[i]);
+
+                if (ReferenceEquals(playerStatusUI, null))
+                {
+                    throw new Exception();
+                }
+
+                if (i != 0)
+                {
+                    IPlayerDelegate previousPlayerDelegate = playerDelegates[i - 1];
+                    if (previousPlayerDelegate.Currency != playerDelegates[i].Currency)
+                    {
+                        rank++;
+                    }
+                }
+
+                playerStatusUI.SetRank(rank);
+            }
+        }
 
         private static readonly IPlayerDelegate[] MockPlayerDelegates =
         {
