@@ -4,6 +4,7 @@
 using System.Linq;
 using CodingStrategy.Entities.Runtime.Validator;
 using Unity.VisualScripting;
+using UnityEngine.Events;
 
 namespace CodingStrategy.Entities.Runtime
 {
@@ -40,6 +41,8 @@ namespace CodingStrategy.Entities.Runtime
 
         public AnimationCoroutineManager AnimationCoroutineManager { private get; set; } = null!;
 
+        public UnityEvent<int, int> OnRoundNumberChange { get; } = new UnityEvent<int, int>();
+
         public void Awake()
         {
             LifeCycle = this;
@@ -58,6 +61,8 @@ namespace CodingStrategy.Entities.Runtime
                 IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
                 _executionQueuePool[robotDelegate] = new ExecutionQueueImpl();
             }
+
+            OnRoundNumberChange.Invoke(0, _countdown - _currentCountdown);
         }
 
         public bool MoveNext()
@@ -113,6 +118,7 @@ namespace CodingStrategy.Entities.Runtime
 
         protected override IEnumerator OnBeforeExecution()
         {
+            OnRoundNumberChange.Invoke(0, _countdown - _currentCountdown);
             yield return null;
         }
 
