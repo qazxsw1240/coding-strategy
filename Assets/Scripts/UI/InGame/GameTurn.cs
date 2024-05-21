@@ -7,7 +7,7 @@ public class GameTurn : MonoBehaviour
 {
     public TMP_Text gameTurn;
 
-    public void setTurn(int turn)
+    public void SetTurn(int turn)
     {
         gameTurn.text = turn.ToString();
     }
