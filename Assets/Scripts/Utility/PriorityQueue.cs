@@ -29,7 +29,7 @@ namespace CodingStrategy.Utility
 
         public T Dequeue()
         {
-            if (!TryDequeue(out T value))
+            if (!TryDequeue(out T? value))
             {
                 throw new Exception();
             }

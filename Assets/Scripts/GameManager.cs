@@ -27,16 +27,20 @@ namespace CodingStrategy
         private IPlayerPool _playerPool = null!;
 
         private AnimationCoroutineManager _animationCoroutineManager = null!;
+        private BitDispenser _bitDispenser = null!;
 
         public GameObject BoardCellPrefab = null!;
         public GameObject RobotPrefab = null!;
-        public float BlockGap;
+        public GameObject BitPrefab = null!;
+
+        public List<GameObject> RobotPrefabs = new List<GameObject>();
 
         public void Awake()
         {
             _boardDelegate = new BoardDelegateImpl(boardWidth, boardHeight);
             _robotDelegatePool = new RobotDelegatePoolImpl();
             _playerPool = new PlayerPoolImpl();
+            _bitDispenser = new BitDispenser(_boardDelegate, _playerPool);
             Debug.Log("AnimationCoroutineManager created.");
             _animationCoroutineManager = gameObject.GetOrAddComponent<AnimationCoroutineManager>();
 
@@ -76,10 +80,12 @@ namespace CodingStrategy
 
             runtimeExecutor.BoardCellPrefab = BoardCellPrefab;
             runtimeExecutor.RobotPrefab = RobotPrefab;
-            runtimeExecutor.BlockGap = BlockGap;
+            runtimeExecutor.BitPrefab = BitPrefab;
+            runtimeExecutor.RobotPrefabs = RobotPrefabs;
             runtimeExecutor.BoardDelegate = _boardDelegate;
             runtimeExecutor.RobotDelegatePool = _robotDelegatePool;
             runtimeExecutor.PlayerPool = _playerPool;
+            runtimeExecutor.BitDispenser = _bitDispenser;
             runtimeExecutor.AnimationCoroutineManager = _animationCoroutineManager;
 
             yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(runtimeExecutor);
@@ -117,20 +123,18 @@ namespace CodingStrategy
                     throw new Exception();
                 }
 
-                return new TestCommand(_robotDelegate!, _direction);
+                return new TestCommand(_robotDelegate!);
             }
         }
 
         private class TestCommand : AbstractCommand, ICommand
         {
             private readonly IRobotDelegate _robotDelegate;
-            private readonly int _direction;
 
-            public TestCommand(IRobotDelegate robotDelegate, int direction) :
+            public TestCommand(IRobotDelegate robotDelegate) :
                 base("0", "TestCommand", 0, 0)
             {
                 _robotDelegate = robotDelegate;
-                _direction = direction;
             }
 
             public override bool Invoke(params object[] args)
@@ -147,7 +151,8 @@ namespace CodingStrategy
             {
                 return new List<IStatement>
                 {
-                    new MoveStatement(_robotDelegate, _direction)
+                    new MoveStatement(_robotDelegate, 1),
+                    new RotateStatement(_robotDelegate, 1)
                 };
             }
 

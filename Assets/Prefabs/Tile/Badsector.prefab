@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 2489379837401908451}
   - component: {fileID: 2043034053}
   m_Layer: 0
-  m_Name: statement
+  m_Name: Badsector
   m_TagString: Statement
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -293,6 +293,9 @@ MonoBehaviour:
   shakeVibrato: 10
   cameras:
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!54 &2043034053
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -305,7 +308,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 122
   m_CollisionDetection: 0

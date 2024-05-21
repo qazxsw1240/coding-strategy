@@ -15,10 +15,10 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public MoveStatement(IRobotDelegate robotDelegate, int direction, bool isEdge = false)
         {
-            if (direction != 1 && direction != -1)
-            {
-                throw new ArgumentException();
-            }
+            // if (direction != 1 && direction != -1)
+            // {
+            //     throw new ArgumentException();
+            // }
 
             _robotDelegate = robotDelegate;
             _direction = direction;
@@ -37,6 +37,8 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public StatementPhase Phase => StatementPhase.Move;
 
-        public IStatement Reverse => _isEdge ? this : new MoveStatement(_robotDelegate, -_direction, _isEdge);
+        public IStatement Reverse => _isEdge ?
+            new MoveStatement(_robotDelegate, 0) :
+            new MoveStatement(_robotDelegate, -_direction, _isEdge);
     }
 }
