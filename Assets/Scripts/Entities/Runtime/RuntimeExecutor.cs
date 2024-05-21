@@ -62,6 +62,8 @@ namespace CodingStrategy.Entities.Runtime
 
         public AnimationCoroutineManager AnimationCoroutineManager { private get; set; } = null!;
 
+        public List<GameObject> RobotPrefabs { get; set; } = null!;
+
         public void Awake()
         {
             LifeCycle = this;
@@ -214,7 +216,8 @@ namespace CodingStrategy.Entities.Runtime
             RobotDirection direction = robotDelegate.Direction;
             Vector3 position = ConvertToVector(coordinate, 0.5f);
             Quaternion quaternion = Quaternion.Euler(0, (int) direction * 90f, 0);
-            GameObject robotObject = Instantiate(RobotPrefab, position, quaternion, transform);
+            GameObject robotPrefab = RobotPrefabs[int.Parse(robotDelegate.Id) - 1];
+            GameObject robotObject = Instantiate(robotPrefab, position, quaternion, transform);
             robotObject.name = robotDelegate.Id;
             robotObject.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
             _robotObjects[robotDelegate] = robotObject;
