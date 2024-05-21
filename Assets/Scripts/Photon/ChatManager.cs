@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ChatManager : MonoBehaviour, IChatClientListener
 {
@@ -23,20 +24,19 @@ public class ChatManager : MonoBehaviour, IChatClientListener
 
 	#region General
 
-	[SerializeField] GameObject chatPanel;
 	string privateReceiver = "";
 	string currentChat;
-	[SerializeField] InputField chatField;
-	[SerializeField] Text chatDisplay;
+	[SerializeField] TMP_InputField chatField;
+	[SerializeField] TMP_Text chatDisplay;
 
 	// Start is called before the first frame update
 	void Start()
 	{
 		isConnected = true;
 		chatClient = new ChatClient(this);
-		//chatClient.ChatRegion = "US";
+		chatClient.ChatRegion = "kr";
 		chatClient.Connect(PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat, PhotonNetwork.AppVersion, new AuthenticationValues(username));
-		Debug.Log("Connenting");
+		Debug.Log("Connecting");
 	}
 
 	// Update is called once per frame
@@ -74,6 +74,22 @@ public class ChatManager : MonoBehaviour, IChatClientListener
 
 	#endregion PublicChat
 
+	#region PrivateChat
+	public void ReceiverOnValueChange(string valueIn)
+	{
+		privateReceiver = valueIn;
+	}
+	public void SubmitPrivateChatOnClick()
+	{
+		if (privateReceiver != "")
+		{
+			chatClient.SendPrivateMessage(privateReceiver, currentChat);
+			chatField.text = "";
+			currentChat = "";
+		}
+	}
+	#endregion PrivateChat
+
 	#region Callbacks
 
 	public void DebugReturn(DebugLevel level, string message)
@@ -86,7 +102,6 @@ public class ChatManager : MonoBehaviour, IChatClientListener
 		if (state == ChatState.Uninitialized)
 		{
 			isConnected = false;
-			chatPanel.SetActive(false);
 		}
 	}
 
@@ -99,7 +114,6 @@ public class ChatManager : MonoBehaviour, IChatClientListener
 	public void OnDisconnected()
 	{
 		isConnected = false;
-		chatPanel.SetActive(false);
 	}
 
 	public void OnGetMessages(string channelName, string[] senders, object[] messages)
@@ -135,7 +149,7 @@ public class ChatManager : MonoBehaviour, IChatClientListener
 
 	public void OnSubscribed(string[] channels, bool[] results)
 	{
-		chatPanel.SetActive(true);
+
 	}
 
 	public void OnUnsubscribed(string[] channels)
