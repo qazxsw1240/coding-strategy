@@ -172,15 +172,14 @@ namespace CodingStrategy.Entities.Runtime
                     AnimationCoroutineManager);
                 yield return AwaitLifeCycleCoroutine(robotStatementExecutor);
                 Destroy(robotStatementExecutor);
-                BitDispenser.SweepBits(true);
+
+                BitDispenser.ClearTakenBits();
             }
-
-
-            BitDispenser.SweepBits();
         }
 
         protected override IEnumerator OnAfterTermination()
         {
+            BitDispenser.Clear();
             Debug.Log("RuntimeExecutor Terminated.");
             yield return null;
         }
@@ -260,13 +259,10 @@ namespace CodingStrategy.Entities.Runtime
 
         private void CreateBitInstance(IPlaceable placeable)
         {
-            Debug.LogFormat("Placeable added: {0}", placeable.GetType().Name);
             if (placeable is not IBitDelegate bitDelegate)
             {
                 return;
             }
-
-            Debug.Log("Create instance of  BitDelegate");
 
             Coordinate coordinate = bitDelegate.Position;
             Vector3 position = ConvertToVector(coordinate, 1.5f);

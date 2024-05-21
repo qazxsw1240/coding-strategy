@@ -37,21 +37,34 @@ namespace CodingStrategy.Entities
             }
         }
 
-        public void SweepBits(bool onlyTaken = false)
+        public void ClearTakenBits()
         {
+            ISet<IBitDelegate> obsoletes = new HashSet<IBitDelegate>();
+
             foreach (IBitDelegate bitDelegate in _bits)
             {
-                if (onlyTaken && bitDelegate.IsTaken)
+                if (bitDelegate.IsTaken)
                 {
+                    Debug.LogFormat("Remove bit on {0}", bitDelegate.Position);
                     _boardDelegate.Remove(bitDelegate);
+                    obsoletes.Add(bitDelegate);
                 }
             }
-            if (!onlyTaken)
+
+            foreach (IBitDelegate bitDelegate in obsoletes)
             {
-                _bits.Clear();
+                _bits.Remove(bitDelegate);
             }
         }
 
+        public void Clear()
+        {
+            foreach (IBitDelegate bitDelegate in _bits)
+            {
+                _boardDelegate.Remove(bitDelegate);
+            }
+            _bits.Clear();
+        }
         private IList<Coordinate> GetCoordinates()
         {
             int width = _boardDelegate.Width;
