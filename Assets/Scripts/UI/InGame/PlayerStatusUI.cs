@@ -1,17 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class PlayerStatusUI : MonoBehaviour
 {
-    public TMP_Text Rank;
+	public static readonly Color Red = new Vector4(230, 190, 166, 255) / 255;
+	public static readonly Color Green = new Vector4(173, 220, 156, 255) / 255;
+	public static readonly Color Blue = new Vector4(78, 149, 217, 255) / 255;
+	public static readonly Color Yellow = new Vector4(245, 184, 0, 255) / 255;
+
+	public TMP_Text Rank;
     public TMP_Text Name;
     public TMP_Text Money;
+    public Image image;
     public GameObject robotLife;
     public GameObject playerLife;
 
-    public void setRank(int rank)
+    public void SetColor(Color color)
+    {
+        image.color = color;
+    }
+    
+    public void SetRank(int rank)
     {
         switch (rank)
         {
@@ -30,12 +42,12 @@ public class PlayerStatusUI : MonoBehaviour
         }
     }
 
-    public void setName(string name)
+    public void SetName(string name)
     {
         Name.text = name; 
     }
 
-    public void setMoney(int money)
+    public void SetMoney(int money)
     {
         Money.text = money.ToString() + " Bit";
         if(money<0)
@@ -44,7 +56,7 @@ public class PlayerStatusUI : MonoBehaviour
         }
     }
 
-    public void setPlayerHP(int hp)
+    public void SetPlayerHP(int hp)
     {
         for (int i = 0; i < hp; i++)
         {
@@ -56,7 +68,7 @@ public class PlayerStatusUI : MonoBehaviour
         }
     }
 
-    public void setRobotHP(int hp)
+    public void SetRobotHP(int hp)
     {
         for (int i = 0; i < hp; i++)
         {
