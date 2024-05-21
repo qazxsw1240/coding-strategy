@@ -11,7 +11,7 @@ namespace CodingStrategy.Factory
 
         public string Id { get; }
         public IAlgorithm Algorithm => new AlgorithmImpl(3);
-        public int HealthPoint => 5;
+        public int HealthPoint => 3;
         public int Level => 1;
         public int Exp => 0;
         public int Currency => 0;
