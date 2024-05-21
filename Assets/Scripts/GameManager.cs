@@ -131,6 +131,7 @@ namespace CodingStrategy
             runtimeExecutor.PlayerPool = _playerPool;
             runtimeExecutor.BitDispenser = _bitDispenser;
             runtimeExecutor.AnimationCoroutineManager = _animationCoroutineManager;
+            runtimeExecutor.OnRoundNumberChange.AddListener((_, round) => inGameUI.gameturn.SetTurn(round));
         }
 
         private void PrepareRobotDelegate(
