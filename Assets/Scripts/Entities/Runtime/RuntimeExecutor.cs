@@ -49,7 +49,6 @@ namespace CodingStrategy.Entities.Runtime
         private int _currentCountdown;
 
         public GameObject BoardCellPrefab = null!;
-        public GameObject RobotPrefab = null!;
         public GameObject BitPrefab = null!;
 
         public IBoardDelegate BoardDelegate { private get; set; } = null!;

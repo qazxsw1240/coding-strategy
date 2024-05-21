@@ -1,6 +1,7 @@
 #nullable enable
 
 
+using CodingStrategy.Entities.CodingTime;
 using CodingStrategy.Entities.Runtime.Statement;
 using CodingStrategy.Factory;
 
@@ -29,8 +30,8 @@ namespace CodingStrategy
         private AnimationCoroutineManager _animationCoroutineManager = null!;
         private BitDispenser _bitDispenser = null!;
 
+        public InGameUI InGameUI = null!;
         public GameObject BoardCellPrefab = null!;
-        public GameObject RobotPrefab = null!;
         public GameObject BitPrefab = null!;
 
         public List<GameObject> RobotPrefabs = new List<GameObject>();
@@ -41,7 +42,6 @@ namespace CodingStrategy
             _robotDelegatePool = new RobotDelegatePoolImpl();
             _playerPool = new PlayerPoolImpl();
             _bitDispenser = new BitDispenser(_boardDelegate, _playerPool);
-            Debug.Log("AnimationCoroutineManager created.");
             _animationCoroutineManager = gameObject.GetOrAddComponent<AnimationCoroutineManager>();
 
             foreach (IPlayerDelegate mockPlayerDelegate in MockPlayerDelegates)
@@ -64,22 +64,18 @@ namespace CodingStrategy
 
         private IEnumerator StartGameManagerCoroutine()
         {
-            // CodingTimeExecutor codingTimeExecutor = gameObject.GetOrAddComponent<CodingTimeExecutor>();
-            //
-            // yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
-
             foreach (IPlayerDelegate playerDelegate in _playerPool)
             {
-                playerDelegate.Algorithm.Add(new TestCommandBuilder()
-                    .SetRobotDelegate(playerDelegate.Robot)
-                    .SetDirection(1)
-                    .Build());
+                playerDelegate.Algorithm.Add(new TestCommand());
             }
+
+            CodingTimeExecutor codingTimeExecutor = gameObject.GetOrAddComponent<CodingTimeExecutor>();
+
+            yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
 
             RuntimeExecutor runtimeExecutor = gameObject.GetOrAddComponent<RuntimeExecutor>();
 
             runtimeExecutor.BoardCellPrefab = BoardCellPrefab;
-            runtimeExecutor.RobotPrefab = RobotPrefab;
             runtimeExecutor.BitPrefab = BitPrefab;
             runtimeExecutor.RobotPrefabs = RobotPrefabs;
             runtimeExecutor.BoardDelegate = _boardDelegate;
@@ -99,43 +95,9 @@ namespace CodingStrategy
             new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("4")).Build()
         };
 
-        public class TestCommandBuilder
-        {
-            private IRobotDelegate? _robotDelegate;
-            private int _direction;
-
-            public TestCommandBuilder SetRobotDelegate(IRobotDelegate robotDelegate)
-            {
-                _robotDelegate = robotDelegate;
-                return this;
-            }
-
-            public TestCommandBuilder SetDirection(int direction)
-            {
-                _direction = direction;
-                return this;
-            }
-
-            public ICommand Build()
-            {
-                if (_direction == 0)
-                {
-                    throw new Exception();
-                }
-
-                return new TestCommand(_robotDelegate!);
-            }
-        }
-
         private class TestCommand : AbstractCommand, ICommand
         {
-            private readonly IRobotDelegate _robotDelegate;
-
-            public TestCommand(IRobotDelegate robotDelegate) :
-                base("0", "TestCommand", 0, 0)
-            {
-                _robotDelegate = robotDelegate;
-            }
+            public TestCommand() : base("0", "TestCommand", 0, 0) {}
 
             public override bool Invoke(params object[] args)
             {
@@ -151,8 +113,8 @@ namespace CodingStrategy
             {
                 return new List<IStatement>
                 {
-                    new MoveStatement(_robotDelegate, 1),
-                    new RotateStatement(_robotDelegate, 1)
+                    new MoveStatement(robotDelegate, 1),
+                    new RotateStatement(robotDelegate, 1)
                 };
             }
 
