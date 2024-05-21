@@ -1,9 +1,13 @@
 #nullable enable
 
 
+using CodingStrategy.Entities.Animations;
+using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.CodingTime;
+using CodingStrategy.Entities.Placeable;
 using CodingStrategy.Entities.Runtime.Statement;
 using CodingStrategy.Factory;
+using CodingStrategy.Utility;
 
 namespace CodingStrategy
 {
@@ -20,6 +24,14 @@ namespace CodingStrategy
 
     public class GameManager : MonoBehaviour
     {
+        private static readonly (RobotDirection, Coordinate)[] StartPositions =
+        {
+            (RobotDirection.North, new Coordinate(4, 0)),
+            (RobotDirection.East, new Coordinate(0, 4)),
+            (RobotDirection.South, new Coordinate(4, 8)),
+            (RobotDirection.West, new Coordinate(8, 4))
+        };
+
         public int boardWidth = 9;
         public int boardHeight = 9;
 
@@ -54,6 +66,18 @@ namespace CodingStrategy
                 mockPlayerDelegate.Robot = robotDelegate;
                 _robotDelegatePool[mockPlayerDelegate.Id] = robotDelegate;
             }
+
+            foreach ((int index, IPlayerDelegate playerDelegate) in _playerPool.ToIndexed())
+            {
+                (RobotDirection direction, Coordinate position) = StartPositions[index];
+                IRobotDelegate robotDelegate = _robotDelegatePool[playerDelegate.Id];
+                PreparePlayerUI(playerDelegate, InGameUI.playerStatusUI[index]);
+                PrepareRobotDelegate(robotDelegate, position, direction, RobotPrefabs[index]);
+                _boardDelegate.Add(robotDelegate, position, direction);
+            }
+
+            _boardDelegate.OnBadSectorAdd.AddListener(CreateBadSectorInstance);
+            _boardDelegate.OnPlaceableAdd.AddListener(CreateBitInstance);
         }
 
         public void Start()
@@ -64,36 +88,151 @@ namespace CodingStrategy
 
         private IEnumerator StartGameManagerCoroutine()
         {
+            InitializeCells();
+
             foreach (IPlayerDelegate playerDelegate in _playerPool)
             {
                 playerDelegate.Algorithm.Add(new TestCommand());
             }
 
-            CodingTimeExecutor codingTimeExecutor = gameObject.GetOrAddComponent<CodingTimeExecutor>();
+            _bitDispenser.Dispense();
 
-            yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
+            yield return new WaitForSeconds(2.0f);
+
+            // CodingTimeExecutor codingTimeExecutor = gameObject.GetOrAddComponent<CodingTimeExecutor>();
+            //
+            // yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
 
             RuntimeExecutor runtimeExecutor = gameObject.GetOrAddComponent<RuntimeExecutor>();
 
-            runtimeExecutor.BoardCellPrefab = BoardCellPrefab;
-            runtimeExecutor.BitPrefab = BitPrefab;
-            runtimeExecutor.RobotPrefabs = RobotPrefabs;
+            PrepareRuntimeExecutor(runtimeExecutor);
+
+            yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(runtimeExecutor);
+
+            _bitDispenser.Clear();
+        }
+
+        private void PreparePlayerUI(IPlayerDelegate playerDelegate, PlayerStatusUI playerStatusUI)
+        {
+            IRobotDelegate robotDelegate = _robotDelegatePool[playerDelegate.Id];
+            playerStatusUI.SetName(playerDelegate.Id);
+            playerStatusUI.SetMoney(0);
+            playerStatusUI.SetPlayerHP(playerDelegate.HealthPoint);
+            playerStatusUI.SetRobotHP(robotDelegate.HealthPoint);
+            playerDelegate.OnCurrencyChange.AddListener((_, currency) => playerStatusUI.SetMoney(currency));
+            playerDelegate.OnHealthPointChange.AddListener((_, hp) => playerStatusUI.SetPlayerHP(hp));
+            robotDelegate.OnHealthPointChange.AddListener((_, _, hp) => playerStatusUI.SetRobotHP(Math.Max(hp, 0)));
+        }
+
+        private void PrepareRuntimeExecutor(RuntimeExecutor runtimeExecutor)
+        {
             runtimeExecutor.BoardDelegate = _boardDelegate;
             runtimeExecutor.RobotDelegatePool = _robotDelegatePool;
             runtimeExecutor.PlayerPool = _playerPool;
             runtimeExecutor.BitDispenser = _bitDispenser;
             runtimeExecutor.AnimationCoroutineManager = _animationCoroutineManager;
-
-            yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(runtimeExecutor);
         }
+
+        private void PrepareRobotDelegate(
+            IRobotDelegate robotDelegate,
+            Coordinate position,
+            RobotDirection direction,
+            GameObject prefab)
+        {
+            _boardDelegate.Add(robotDelegate, position, direction);
+            Vector3 vectorPosition = ConvertToVector(position, 0.5f);
+            Quaternion quaternion = Quaternion.Euler(0, (int) direction * 90f, 0);
+            GameObject robotObject = Instantiate(prefab, vectorPosition, quaternion, transform);
+            robotObject.name = robotDelegate.Id;
+            robotObject.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
+            LilbotController lilbotController= robotObject.AddComponent<LilbotController>();
+            lilbotController.animator = robotObject.GetComponent<Animator>();
+            robotDelegate.OnRobotChangePosition.AddListener((_, previous, next) =>
+            {
+                Debug.LogFormat("Robot {2} moved from {0} to {1}", previous, next, robotDelegate.Id);
+                LilbotController controller = robotObject.GetComponent<LilbotController>();
+                Vector3 end = ConvertToVector(next, 0.5f);
+                IEnumerator controllerAnimation = controller.Walk(0.5f, (int) end.x, (int) end.z);
+                _animationCoroutineManager.AddAnimation(robotObject, controllerAnimation);
+            });
+            robotDelegate.OnRobotChangeDirection.AddListener((_, previous, next) =>
+            {
+                Debug.LogFormat("Robot rotated from {0} to {1}", previous, next);
+                Quaternion start = Quaternion.Euler(0, (int) previous * 90f, 0);
+                Quaternion end = Quaternion.Euler(0, (int) next * 90f, 0);
+                RotateAnimation rotateAnimation = new RotateAnimation(robotObject, start, end, 0.125f);
+                _animationCoroutineManager.AddAnimation(robotObject, rotateAnimation);
+            });
+        }
+
+        private void CreateBadSectorInstance(IBadSectorDelegate badSectorDelegate)
+        {
+            GameObject? prefab = Resources.Load<GameObject>(badSectorDelegate.Id);
+            if (ReferenceEquals(prefab, null))
+            {
+                throw new NullReferenceException("Cannot find prefab: " + badSectorDelegate.Id);
+            }
+
+            Coordinate coordinate = badSectorDelegate.Position;
+            Vector3 position = ConvertToVector(coordinate, 0.5f);
+            GameObject badSectorObject = Instantiate(prefab, position, Quaternion.identity, transform);
+            badSectorObject.name = $"{badSectorDelegate.Installer.Id}${badSectorDelegate.Id}";
+            _boardDelegate.OnBadSectorRemove.AddListener(b =>
+            {
+                if (b == badSectorDelegate)
+                {
+                    Destroy(badSectorObject);
+                }
+            });
+        }
+
+        private void CreateBitInstance(IPlaceable placeable)
+        {
+            if (placeable is not IBitDelegate bitDelegate)
+            {
+                return;
+            }
+
+            Coordinate coordinate = bitDelegate.Position;
+            Vector3 position = ConvertToVector(coordinate, 1.5f);
+            GameObject bitGameObject = Instantiate(BitPrefab, position, Quaternion.Euler(90f, 0, 0), transform);
+            bitDelegate.OnRobotTakeInEvents.AddListener(_ => bitGameObject.SetActive(false));
+            bitDelegate.OnRobotTakeAwayEvents.AddListener(_ => bitGameObject.SetActive(true));
+            _boardDelegate.OnPlaceableRemove.AddListener(p =>
+            {
+                if (p == bitDelegate)
+                {
+                    MoveAndRotate moveAndRotate = bitGameObject.GetComponent<MoveAndRotate>();
+                    moveAndRotate.GetBit();
+                }
+            });
+        }
+
+        private void InitializeCells()
+        {
+            for (int i = 0; i < _boardDelegate.Width; i++)
+            {
+                for (int j = 0; j < _boardDelegate.Height; j++)
+                {
+                    Vector3 position = ConvertToVector(new Coordinate(i, j), 0);
+                    Instantiate(BoardCellPrefab, position, Quaternion.identity, transform);
+                }
+            }
+        }
+
 
         private static readonly IPlayerDelegate[] MockPlayerDelegates =
         {
-            new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("1")).Build(),
-            new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("2")).Build(),
-            new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("3")).Build(),
-            new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("4")).Build()
+            new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("Player1")).Build(),
+            new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("Player2")).Build(),
+            new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("Player3")).Build(),
+            new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("Player4")).Build()
         };
+
+        private static Vector3 ConvertToVector(Coordinate coordinate, float heightOffset)
+        {
+            return new Vector3(coordinate.X, heightOffset, coordinate.Y);
+        }
 
         private class TestCommand : AbstractCommand, ICommand
         {
