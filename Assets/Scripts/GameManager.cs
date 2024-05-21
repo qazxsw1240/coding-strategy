@@ -3,11 +3,11 @@
 
 using CodingStrategy.Entities.Animations;
 using CodingStrategy.Entities.BadSector;
-using CodingStrategy.Entities.CodingTime;
 using CodingStrategy.Entities.Placeable;
 using CodingStrategy.Entities.Runtime.Statement;
 using CodingStrategy.Factory;
 using CodingStrategy.Utility;
+using UnityEngine.Serialization;
 
 namespace CodingStrategy
 {
@@ -24,16 +24,20 @@ namespace CodingStrategy
 
     public class GameManager : MonoBehaviour
     {
-        private static readonly (RobotDirection, Coordinate)[] StartPositions =
+        private static readonly (RobotDirection, Coordinate, Color)[] StartPositions =
         {
-            (RobotDirection.North, new Coordinate(4, 0)),
-            (RobotDirection.East, new Coordinate(0, 4)),
-            (RobotDirection.South, new Coordinate(4, 8)),
-            (RobotDirection.West, new Coordinate(8, 4))
+            (RobotDirection.North, new Coordinate(4, 0), PlayerStatusUI.Blue),
+            (RobotDirection.East, new Coordinate(0, 4), PlayerStatusUI.Yellow),
+            (RobotDirection.South, new Coordinate(4, 8), PlayerStatusUI.Green),
+            (RobotDirection.West, new Coordinate(8, 4), PlayerStatusUI.Red)
         };
 
         public int boardWidth = 9;
         public int boardHeight = 9;
+        public InGameUI inGameUI = null!;
+        public GameObject boardCellPrefab = null!;
+        public GameObject bitPrefab = null!;
+        public List<GameObject> robotPrefabs = new List<GameObject>();
 
         private IBoardDelegate _boardDelegate = null!;
         private IRobotDelegatePool _robotDelegatePool = null!;
@@ -42,11 +46,6 @@ namespace CodingStrategy
         private AnimationCoroutineManager _animationCoroutineManager = null!;
         private BitDispenser _bitDispenser = null!;
 
-        public InGameUI InGameUI = null!;
-        public GameObject BoardCellPrefab = null!;
-        public GameObject BitPrefab = null!;
-
-        public List<GameObject> RobotPrefabs = new List<GameObject>();
 
         public void Awake()
         {
@@ -69,10 +68,10 @@ namespace CodingStrategy
 
             foreach ((int index, IPlayerDelegate playerDelegate) in _playerPool.ToIndexed())
             {
-                (RobotDirection direction, Coordinate position) = StartPositions[index];
+                (RobotDirection direction, Coordinate position, Color color) = StartPositions[index];
                 IRobotDelegate robotDelegate = _robotDelegatePool[playerDelegate.Id];
-                PreparePlayerUI(playerDelegate, InGameUI.playerStatusUI[index]);
-                PrepareRobotDelegate(robotDelegate, position, direction, RobotPrefabs[index]);
+                PreparePlayerUI(playerDelegate, inGameUI.playerStatusUI[index], color);
+                PrepareRobotDelegate(robotDelegate, position, direction, robotPrefabs[index]);
                 _boardDelegate.Add(robotDelegate, position, direction);
             }
 
@@ -112,11 +111,12 @@ namespace CodingStrategy
             _bitDispenser.Clear();
         }
 
-        private void PreparePlayerUI(IPlayerDelegate playerDelegate, PlayerStatusUI playerStatusUI)
+        private void PreparePlayerUI(IPlayerDelegate playerDelegate, PlayerStatusUI playerStatusUI, Color color)
         {
             IRobotDelegate robotDelegate = _robotDelegatePool[playerDelegate.Id];
+            playerStatusUI.SetColor(color);
             playerStatusUI.SetName(playerDelegate.Id);
-            playerStatusUI.SetMoney(0);
+            playerStatusUI.SetMoney(playerDelegate.Currency);
             playerStatusUI.SetPlayerHP(playerDelegate.HealthPoint);
             playerStatusUI.SetRobotHP(robotDelegate.HealthPoint);
             playerDelegate.OnCurrencyChange.AddListener((_, currency) => playerStatusUI.SetMoney(currency));
@@ -195,7 +195,7 @@ namespace CodingStrategy
 
             Coordinate coordinate = bitDelegate.Position;
             Vector3 position = ConvertToVector(coordinate, 1.5f);
-            GameObject bitGameObject = Instantiate(BitPrefab, position, Quaternion.Euler(90f, 0, 0), transform);
+            GameObject bitGameObject = Instantiate(bitPrefab, position, Quaternion.Euler(90f, 0, 0), transform);
             bitDelegate.OnRobotTakeInEvents.AddListener(_ => bitGameObject.SetActive(false));
             bitDelegate.OnRobotTakeAwayEvents.AddListener(_ => bitGameObject.SetActive(true));
             _boardDelegate.OnPlaceableRemove.AddListener(p =>
@@ -215,7 +215,7 @@ namespace CodingStrategy
                 for (int j = 0; j < _boardDelegate.Height; j++)
                 {
                     Vector3 position = ConvertToVector(new Coordinate(i, j), 0);
-                    Instantiate(BoardCellPrefab, position, Quaternion.identity, transform);
+                    Instantiate(boardCellPrefab, position, Quaternion.identity, transform);
                 }
             }
         }
