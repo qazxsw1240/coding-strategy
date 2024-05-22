@@ -2,29 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-public class CommandInfo : MonoBehaviour
+
+namespace CodingStrategy.UI.GameRoom
 {
-    public TMP_Text commandName;
-    public TMP_Text commandDetail;
-
-    public void setCommandName(string commandname)
+    public class CommandInfo : MonoBehaviour
     {
-        commandName.SetText(commandname);
-    }
+        public TMP_Text commandName;
+        public TMP_Text commandDetail;
 
-    public void setCommandDetail(string detail)
-    {
-        commandDetail.SetText(detail);
-    }
+        public void setCommandName(string commandname)
+        {
+            commandName.SetText(commandname);
+        }
 
-    void Start()
-    {
+        public void setCommandDetail(string detail)
+        {
+            commandDetail.SetText(detail);
+        }
 
-    }
+        void Start() {}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Update is called once per frame
+        void Update() {}
     }
 }

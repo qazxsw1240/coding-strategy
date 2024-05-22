@@ -2,25 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-public class ShopLevel : MonoBehaviour
+
+
+namespace CodingStrategy.UI.Shop
 {
-    public TMP_Text Level1;
-    public TMP_Text Level2;
-
-    public void setLevel(int level)
+    public class ShopLevel : MonoBehaviour
     {
-        Level1.SetText(level.ToString());
-        Level2.SetText(level.ToString());
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
+        public TMP_Text Level1;
+        public TMP_Text Level2;
 
-    }
+        public void setLevel(int level)
+        {
+            Level1.SetText(level.ToString());
+            Level2.SetText(level.ToString());
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Start is called before the first frame update
+        void Start() {}
+
+        // Update is called once per frame
+        void Update() {}
     }
 }

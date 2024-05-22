@@ -2,36 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-public class RoomInfo : MonoBehaviour
+
+namespace CodingStrategy.UI.GameLobby
 {
-    public TMP_Text modeTitle;
-    public TMP_Text roomName;
-    public TMP_Text playerCount;
-
-    public void setModeTitle(string modename)
+    public class RoomInfo : MonoBehaviour
     {
-        modeTitle.SetText(modename);
-    }
+        public TMP_Text modeTitle;
+        public TMP_Text roomName;
+        public TMP_Text playerCount;
 
-    public void setRoomName(string roomname)
-    {
-        roomName.SetText(roomname);
-    }
+        public void setModeTitle(string modename)
+        {
+            modeTitle.SetText(modename);
+        }
 
-    public void setPlayerCount(int count)
-    {
-        playerCount.SetText(count.ToString()+" /4");
-    }
+        public void setRoomName(string roomname)
+        {
+            roomName.SetText(roomname);
+        }
 
-    // Start is called before the first frame update
-    void Start()
-    {
+        public void setPlayerCount(int count)
+        {
+            playerCount.SetText(count.ToString() + " /4");
+        }
 
-    }
+        // Start is called before the first frame update
+        void Start() {}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Update is called once per frame
+        void Update() {}
     }
 }

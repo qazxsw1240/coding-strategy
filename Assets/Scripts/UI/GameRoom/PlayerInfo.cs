@@ -2,35 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-public class PlayerInfo : MonoBehaviour
+
+namespace CodingStrategy.UI.GameRoom
 {
-    public TMP_Text Name;
-    public TMP_Text ReadyState;
-    public void setName(string name)
+    public class PlayerInfo : MonoBehaviour
     {
-        Name.SetText(name);
-    }
+        public TMP_Text Name;
+        public TMP_Text ReadyState;
 
-    public void setReady(bool ready)
-    {
-        if(ready == true)
+        public void setName(string name)
         {
-            ReadyState.SetText("ÁØºñ ¿Ï·á");
+            Name.SetText(name);
         }
-        else
+
+        public void setReady(bool ready)
         {
-            ReadyState.SetText("ÁØºñ Áß");
+            if (ready == true)
+            {
+                ReadyState.SetText("ì¤€ë¹„ ì™„ë£Œ");
+            }
+            else
+            {
+                ReadyState.SetText("ì¤€ë¹„ ì¤‘");
+            }
         }
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
 
-    }
+        // Start is called before the first frame update
+        void Start() {}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Update is called once per frame
+        void Update() {}
     }
 }
