@@ -130,6 +130,7 @@ namespace CodingStrategy
         private void PreparePlayerUI(IPlayerDelegate playerDelegate, PlayerStatusUI playerStatusUI, Color color)
         {
             IRobotDelegate robotDelegate = _robotDelegatePool[playerDelegate.Id];
+            playerStatusUI.SetUserID(playerDelegate.Id);
             playerStatusUI.SetColor(color);
             playerStatusUI.SetName(playerDelegate.Id);
             playerStatusUI.SetRank(1);
@@ -243,7 +244,7 @@ namespace CodingStrategy
         {
             foreach (PlayerStatusUI playerStatusUI in inGameUI.playerStatusUI)
             {
-                if (playerStatusUI.Name.text == playerDelegate.Id)
+                if (playerStatusUI.GetUserID() == playerDelegate.Id)
                 {
                     return playerStatusUI;
                 }
