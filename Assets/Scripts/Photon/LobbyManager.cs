@@ -9,7 +9,7 @@ using TMPro;
 using static UnityEngine.Rendering.DebugUI;
 
 public class LobbyManager : MonoBehaviour
-{
+{/*
     public GameObject RandomRoomDescribe;
     public GameObject StandardRoomDescribe;
     public TMP_Text RoomTitle;
@@ -51,5 +51,5 @@ public class LobbyManager : MonoBehaviour
     void Update()
     {
 
-    }
+    }*/
 }
