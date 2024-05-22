@@ -12,7 +12,7 @@ public class LilbotController : MonoBehaviour
     public bool Hit;
     public bool Death;
 
-    public float duration = 1f;
+    public float duration = 0.5f;
     public Camera playercamera;
 
     public IEnumerator Walk(float speed, int x, int z)
@@ -41,7 +41,7 @@ public class LilbotController : MonoBehaviour
     public IEnumerator JumpAnimationCoroutine()
     {
         animator.SetTrigger("Jump");
-        yield return new WaitForSeconds(1);   // 1초 대기
+        yield return new WaitForSeconds(duration);   // 1초 대기
         animator.ResetTrigger("Jump");
     }
 
@@ -54,7 +54,7 @@ public class LilbotController : MonoBehaviour
     public IEnumerator AttackRightAnimationCoroutine()
     {
         animator.SetTrigger("Attack1");
-        yield return new WaitForSeconds(1);   // 1초 대기
+        yield return new WaitForSeconds(duration);   // 1초 대기
         animator.ResetTrigger("Attack1");
     }
 
@@ -62,7 +62,7 @@ public class LilbotController : MonoBehaviour
     public IEnumerator AttackLeftAnimationCoroutine()
     {
         animator.SetTrigger("Attack2");
-        yield return new WaitForSeconds(1);   // 1초 대기
+        yield return new WaitForSeconds(duration);   // 1초 대기
         animator.ResetTrigger("Attack2");
     }
     #endregion
@@ -74,8 +74,8 @@ public class LilbotController : MonoBehaviour
     {
         animator.SetTrigger("Death");
 
-        playercamera.DOShakePosition(1, 5);
-        yield return new WaitForSeconds(1);   // 1초 대기
+        playercamera.DOShakePosition(1, 3);
+        yield return new WaitForSeconds(duration);   // 1초 대기
         animator.ResetTrigger("Death");
     }
     #endregion
@@ -87,8 +87,8 @@ public class LilbotController : MonoBehaviour
     public IEnumerator HitAnimationCoroutine()
     {
         animator.SetTrigger("Hit");
-        playercamera.DOShakePosition(1, 3);
-        yield return new WaitForSeconds(1);   // 1초 대기
+        playercamera.DOShakePosition(1, 1);
+        yield return new WaitForSeconds(duration);   // 1초 대기
         animator.ResetTrigger("Hit");
     }
     #endregion
