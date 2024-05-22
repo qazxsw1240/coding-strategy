@@ -66,6 +66,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         Nickname.text = PhotonNetwork.NickName;
+        PhotonNetwork.JoinLobby();
     }
 
     //버튼 클릭시 오브젝트 설명 변경. (standard 설명의 경우 false로 할당하여 room을 클릭했다가 random을 클릭할 경우를 고려하였음)
