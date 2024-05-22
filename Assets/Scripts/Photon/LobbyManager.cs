@@ -66,6 +66,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         Nickname.text = PhotonNetwork.NickName;
+        DontDestroyOnLoad(gameObject);
         PhotonNetwork.JoinLobby();
     }
 
