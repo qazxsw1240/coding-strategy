@@ -140,6 +140,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         RandomImage.gameObject.SetActive(false);
         RandomDescription.gameObject.SetActive(false);
         StandardImage.gameObject.SetActive(true);
-        StandardDescription.text = roomId;
+        StandardDescription.gameObject.SetActive(true);
     }
 }
