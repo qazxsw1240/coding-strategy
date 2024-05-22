@@ -6,7 +6,7 @@ public class MoveAndRotate : MonoBehaviour
 {
     public float rotationSpeed = 50f; // 얼만큼 회전
     public float moveSpeed = 0.6f; // 얼만큼 빠르게
-    public float moveRange = 0.3f; // 얼만큼 이동
+    public float moveRange = 0.1f; // 얼만큼 이동
 
     public float fallDuration = 1f;
     public float fallDistance = 10f;
@@ -19,7 +19,7 @@ public class MoveAndRotate : MonoBehaviour
         StartCoroutine(AnimateItem());
     }
 
-//비트를 생성했을 때 회전 밑 아이템 이동이 
+//비트를 생성했을 때 회전 밑 아이템 이동이 될건데, bit의 y값을 1.2로 해서 instansiate 때리시면 확실하게 높이가 낮아진 상태로 적용될거에요.
     private void Update()
     {
 
@@ -28,7 +28,7 @@ public class MoveAndRotate : MonoBehaviour
             transform.Rotate(0, 0, rotationSpeed * Time.deltaTime);
 
             // Move up and down within the specified range at the specified speed
-            float newY = startPosition.y + Mathf.Sin(Time.time * moveSpeed) * moveRange;
+            float newY = startPosition.y + Mathf.Sin(Time.time * moveSpeed) * moveRange / 2;
             transform.position = new Vector3(transform.position.x, newY, transform.position.z);
         }
     }
