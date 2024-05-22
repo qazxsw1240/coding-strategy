@@ -1,38 +1,40 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 
-public class LobbyManager : MonoBehaviour
+public class LobbyManager : MonoBehaviourPunCallbacks
 {
+    /*
     public Button joinRoomButton;
     public TextMeshProUGUI nicknameText;
     public RawImage randomImage;
-    public GameObject roomEnterScroll; // ¹æ ¸ñ·ÏÀ» º¸¿©ÁÖ´Â ½ºÅ©·Ñ ºä
-    public GameObject roomEntryPrefab; // ¹æ Ç×¸ñÀ» Ç¥ÇöÇÏ´Â ÇÁ¸®ÆÕ
-    public Photon.Realtime.RoomInfo[] rooms;
+    public GameObject roomEnterScroll; // ë°© ëª©ë¡ì„ ë³´ì—¬ì£¼ëŠ” ìŠ¤í¬ë¡¤ ë·°
+    public GameObject roomEntryPrefab; // ë°© í•­ëª©ì„ í‘œí˜„í•˜ëŠ” í”„ë¦¬íŒ¹
+    public RoomInfo[] rooms;
 
     void Start()
     {
-        // ´Ğ³×ÀÓ ¼³Á¤
+        // ë‹‰ë„¤ì„ ì„¤ì •
         nicknameText.text = PhotonNetwork.NickName;
 
-        // ¹öÆ° ÀÌº¥Æ® ¼³Á¤
+        // ë²„íŠ¼ ì´ë²¤íŠ¸ ì„¤ì •
         joinRoomButton.onClick.AddListener(OnJoinRoomButtonClick);
         randomRoomButton.onClick.AddListener(OnRandomRoomButtonClick);
 
-        randomImage.gameObject.SetActive(false); // ÃÊ±â »óÅÂ´Â ºñÈ°¼ºÈ­
+        randomImage.gameObject.SetActive(false); // ì´ˆê¸° ìƒíƒœëŠ” ë¹„í™œì„±í™”
     }
 
     public void OnJoinRoomButtonClick()
     {
-        // ÇöÀç È°¼ºÈ­µÈ ¹æ¿¡ ÀÔÀå
+        // í˜„ì¬ í™œì„±í™”ëœ ë°©ì— ì…ì¥
         foreach (RoomEntry entry in roomEnterScroll.GetComponentsInChildren<RoomEntry>())
         {
-            // ¸¸¾à "Standard" ÀÌ¹ÌÁö°¡ È°¼ºÈ­µÈ ¹æÀÌ ÀÖ´Ù¸é ÇØ´ç ¹æ¿¡ ÀÔÀåÇÕ´Ï´Ù.
+            // ë§Œì•½ "Standard" ì´ë¯¸ì§€ê°€ í™œì„±í™”ëœ ë°©ì´ ìˆë‹¤ë©´ í•´ë‹¹ ë°©ì— ì…ì¥í•©ë‹ˆë‹¤.
             if (entry.standardImage.isActiveAndEnabled)
             {
                 PhotonNetwork.JoinRoom(entry.roomInfo.Name);
@@ -41,12 +43,12 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    // ¹æ ¸ñ·ÏÀÌ ¾÷µ¥ÀÌÆ®µÉ ¶§ È£ÃâµÇ´Â Äİ¹é 
+    // ë°© ëª©ë¡ì´ ì—…ë°ì´íŠ¸ë  ë•Œ í˜¸ì¶œë˜ëŠ” ì½œë°± 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         rooms = roomList.ToArray();
 
-        // ¹æ ¸ñ·Ï UI¸¦ ¾÷µ¥ÀÌÆ®ÇÕ´Ï´Ù.
+        // ë°© ëª©ë¡ UIë¥¼ ì—…ë°ì´íŠ¸í•©ë‹ˆë‹¤.
         foreach (Transform child in roomEnterScroll.transform)
         {
             Destroy(child.gameObject);
@@ -60,30 +62,31 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    // ·£´ı ¹æ Âü¿©¿¡ ½ÇÆĞÇßÀ» ¶§ È£ÃâµÇ´Â Äİ¹é
+    // ëœë¤ ë°© ì°¸ì—¬ì— ì‹¤íŒ¨í–ˆì„ ë•Œ í˜¸ì¶œë˜ëŠ” ì½œë°±
     public override void OnJoinRandomFailed(short returnCode, string message)
     {
-        // »õ·Î¿î ¹æÀ» »ı¼ºÇÕ´Ï´Ù.
+        // ìƒˆë¡œìš´ ë°©ì„ ìƒì„±í•©ë‹ˆë‹¤.
         RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 4; // ¹æÀÇ ÃÖ´ë Âü¿©ÀÚ¸¦ 4¸íÀ¸·Î ¼³Á¤
+        roomOptions.MaxPlayers = 4; // ë°©ì˜ ìµœëŒ€ ì°¸ì—¬ìë¥¼ 4ëª…ìœ¼ë¡œ ì„¤ì •
         PhotonNetwork.CreateRoom(null, roomOptions, TypedLobby.Default);
     }
 
-    // ¹æ¿¡ ÀÔÀåÇßÀ» ¶§ È£ÃâµÇ´Â Äİ¹é
+    // ë°©ì— ì…ì¥í–ˆì„ ë•Œ í˜¸ì¶œë˜ëŠ” ì½œë°±
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined Room");
-        // GameRoomSceneÀ¸·Î ÀüÈ¯
+        // GameRoomSceneìœ¼ë¡œ ì „í™˜
         SceneManager.LoadScene("GameRoomScene");
     }
 
-    // ´Ù¸¥ ÇÃ·¹ÀÌ¾î°¡ ¹æÀ» ³ª°¬À» ¶§ È£ÃâµÇ´Â Äİ¹é
+    // ë‹¤ë¥¸ í”Œë ˆì´ì–´ê°€ ë°©ì„ ë‚˜ê°”ì„ ë•Œ í˜¸ì¶œë˜ëŠ” ì½œë°±
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        // ´Ù¸¥ ÇÃ·¹ÀÌ¾î°¡ ¹æÀ» ³ª°¬À» ¶§ ±× ¹æÀÌ ºñ¾î ÀÖ´ÂÁö È®ÀÎÇÏ°í, ºñ¾î ÀÖ´Ù¸é ±× ¹æÀ» ÆÄ±«ÇÕ´Ï´Ù.
+        // ë‹¤ë¥¸ í”Œë ˆì´ì–´ê°€ ë°©ì„ ë‚˜ê°”ì„ ë•Œ ê·¸ ë°©ì´ ë¹„ì–´ ìˆëŠ”ì§€ í™•ì¸í•˜ê³ , ë¹„ì–´ ìˆë‹¤ë©´ ê·¸ ë°©ì„ íŒŒê´´í•©ë‹ˆë‹¤.
         foreach (RoomEntry entry in roomEnterScroll.GetComponentsInChildren<RoomEntry>())
         {
             entry.CheckDestroyRoom();
         }
     }
+    */
 }

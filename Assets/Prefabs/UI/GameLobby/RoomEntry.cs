@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,31 +9,31 @@ using UnityEngine.SceneManagement;
 
 public class RoomEntry : MonoBehaviour
 {
-    public TextMeshProUGUI roomNameText; // ¹æ ÀÌ¸§À» Ç¥½ÃÇÒ TextMeshProUGUI ÄÄÆ÷³ÍÆ®
-    public TextMeshProUGUI roomDescriptionText; // ¹æ ¼³¸íÀ» Ç¥½ÃÇÒ TextMeshProUGUI ÄÄÆ÷³ÍÆ®
-    public RawImage standardImage; // "Standard" ÀÌ¹ÌÁö
-    private Photon.Realtime.RoomInfo roomInfo;
+    public TextMeshProUGUI roomNameText; // ë°© ì´ë¦„ì„ í‘œì‹œí•  TextMeshProUGUI ì»´í¬ë„ŒíŠ¸
+    public TextMeshProUGUI roomDescriptionText; // ë°© ì„¤ëª…ì„ í‘œì‹œí•  TextMeshProUGUI ì»´í¬ë„ŒíŠ¸
+    public RawImage standardImage; // "Standard" ì´ë¯¸ì§€
+    public Photon.Realtime.RoomInfo roomInfo;
 
-    // ¹æ Á¤º¸ ¼³Á¤
+    // ë°© ì •ë³´ ì„¤ì •
     public void SetRoomInfo(Photon.Realtime.RoomInfo room)
     {
         roomInfo = room;
         roomNameText.text = room.Name;
-        standardImage.gameObject.SetActive(false); // ÃÊ±â¿¡´Â "Standard" ÀÌ¹ÌÁö¸¦ ºñÈ°¼ºÈ­
+        standardImage.gameObject.SetActive(false); // ì´ˆê¸°ì—ëŠ” "Standard" ì´ë¯¸ì§€ë¥¼ ë¹„í™œì„±í™”
 
         Button button = GetComponent<Button>();
         button.onClick.AddListener(() => {
-            // ¹æÀ» Å¬¸¯ÇÏ¸é "Standard" ÀÌ¹ÌÁö È°¼ºÈ­
+            // ë°©ì„ í´ë¦­í•˜ë©´ "Standard" ì´ë¯¸ì§€ í™œì„±í™”
             standardImage.gameObject.SetActive(true);
-            // ¼±ÅÃÇÑ ¹æÀÇ ¼³¸íÀ» Ç¥½Ã
+            // ì„ íƒí•œ ë°©ì˜ ì„¤ëª…ì„ í‘œì‹œ
             roomDescriptionText.text = GetRoomDescription(room);
         });
     }
 
-    // ¹æ ¼³¸íÀ» °¡Á®¿À´Â ÇÔ¼ö
+    // ë°© ì„¤ëª…ì„ ê°€ì ¸ì˜¤ëŠ” í•¨ìˆ˜
     private string GetRoomDescription(Photon.Realtime.RoomInfo room)
     {
-        // ¿©±â¿¡¼­ ¹æ ¼³¸íÀ» »ı¼ºÇÏ°í ¹İÈ¯ÇÕ´Ï´Ù.
+        // ì—¬ê¸°ì—ì„œ ë°© ì„¤ëª…ì„ ìƒì„±í•˜ê³  ë°˜í™˜í•©ë‹ˆë‹¤.
         return $"Room Name: {room.Name}\nMax Players: {room.MaxPlayers}\nCurrent Players: {room.PlayerCount}";
     }
 
