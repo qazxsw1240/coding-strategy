@@ -22,7 +22,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _direction = direction;
         }
 
-        public void Execute()
+        public void Execute(RuntimeExecutorContext context)
         {
             _robotDelegate.Rotate(_direction);
         }

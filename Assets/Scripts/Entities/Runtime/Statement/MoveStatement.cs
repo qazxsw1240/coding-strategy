@@ -25,7 +25,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _isEdge = isEdge;
         }
 
-        public void Execute()
+        public void Execute(RuntimeExecutorContext context)
         {
             Debug.LogFormat("Robot {1} Tries to move to {0}", _direction, _robotDelegate.Id);
             _isEdge = !_robotDelegate.Move(_direction);

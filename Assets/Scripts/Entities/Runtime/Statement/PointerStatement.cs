@@ -28,7 +28,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _generator = generator;
         }
 
-        public void Execute()
+        public void Execute(RuntimeExecutorContext context)
         {
             _badSectorDelegate = _generator(_boardDelegate, _robotDelegate);
             Debug.LogFormat("Robot {0} Tries to put bad sector {1}", _robotDelegate.Id, _badSectorDelegate.Id);
@@ -48,7 +48,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
                 _statement = statement;
             }
 
-            public void Execute()
+            public void Execute(RuntimeExecutorContext context)
             {
                 IBadSectorDelegate? badSectorDelegate = _statement._badSectorDelegate;
                 if (badSectorDelegate == null)
