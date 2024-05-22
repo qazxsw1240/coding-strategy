@@ -1074,7 +1074,6 @@ GameObject:
   - component: {fileID: 2644432175796857245}
   - component: {fileID: 2644432175796857246}
   - component: {fileID: 2644432175796857247}
-  - component: {fileID: 2644432175796857244}
   m_Layer: 5
   m_Name: LevelupBtn
   m_TagString: Untagged
@@ -1187,19 +1186,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2644432175796857244
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2644432175796857241}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25a35a149010a454287fa68ad73a954b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  levelupBit: {fileID: 2644432176973153923}
 --- !u!1 &2644432175838566544
 GameObject:
   m_ObjectHideFlags: 0
@@ -3670,7 +3656,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: bit
+  m_text: B
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 12f7daed921e51243896ef6890a13f8f, type: 2}
   m_sharedMaterial: {fileID: 7286016396942690916, guid: 12f7daed921e51243896ef6890a13f8f, type: 2}
