@@ -7,6 +7,7 @@ using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Placeable;
 using CodingStrategy.Entities.Runtime.Statement;
 using CodingStrategy.Factory;
+using CodingStrategy.UI.InGame;
 using CodingStrategy.Utility;
 using NUnit.Framework;
 using UnityEngine.Serialization;
