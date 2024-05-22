@@ -8,18 +8,22 @@ namespace CodingStrategy.UI.InGame
 {
     public class PlayerStatusUI : MonoBehaviour
     {
+        [SerializeField]
         public static readonly Color Red = new Vector4(230, 190, 166, 255) / 255;
+        [SerializeField]
         public static readonly Color Green = new Vector4(173, 220, 156, 255) / 255;
+        [SerializeField]
         public static readonly Color Blue = new Vector4(78, 149, 217, 255) / 255;
+        [SerializeField]
         public static readonly Color Yellow = new Vector4(245, 184, 0, 255) / 255;
 
-        private TMP_Text Rank;
-        private TMP_Text Name;
-        private TMP_Text Money;
-        private Image image;
-        private GameObject robotLife;
-        private GameObject playerLife;
-        private string userID;
+        [SerializeField] private TMP_Text Rank;
+        [SerializeField] private TMP_Text Name;
+        [SerializeField] private TMP_Text Money;
+        [SerializeField] private Image image;
+        [SerializeField] private GameObject robotLife;
+        [SerializeField] private GameObject playerLife;
+        [SerializeField] private string userID;
 
         public string GetUserID()
         {
