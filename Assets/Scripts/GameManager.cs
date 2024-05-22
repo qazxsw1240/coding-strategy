@@ -35,6 +35,19 @@ namespace CodingStrategy
             (RobotDirection.West, new Coordinate(8, 4), PlayerStatusUI.Red)
         };
 
+        private static readonly IDictionary<string, object> AbnormalityDictionary = new Dictionary<string, object>();
+
+        public static void SetAbnormalityValue(string key, object value)
+        {
+            AbnormalityDictionary[key] = value;
+        }
+
+        public static T GetAbnormalityValue<T>(string key)
+        {
+            return (T) AbnormalityDictionary[key];
+        }
+
+
         public int boardWidth = 9;
         public int boardHeight = 9;
         public InGameUI inGameUI = null!;
