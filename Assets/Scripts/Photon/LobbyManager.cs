@@ -121,8 +121,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             
 
             //프리팹 항목의 Roomname이라는 이름을 가진 textmeshPro 객체와 Usercount 라는 객체를 찾아옵니다.
-            TextMeshProUGUI roomNameText = roomObj.transform.Find("Roomname").GetComponent<TextMeshProUGUI>();
-            TextMeshProUGUI userCountText = roomObj.transform.Find("Usercount").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI roomNameText = roomObj.transform.Find("RoomName").GetComponent<TextMeshProUGUI>();
+            TextMeshProUGUI userCountText = roomObj.transform.Find("UserCount").GetComponent<TextMeshProUGUI>();
 
             //프리팹 항목의 Roomname에 방 고유 ID를 할당하고, Usercount는 이제 Usercount 대로 계산한 값을 보여주며 끝냅니다.
             roomNameText.text = room.Name;
