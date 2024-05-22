@@ -13,12 +13,23 @@ namespace CodingStrategy.UI.InGame
         public static readonly Color Blue = new Vector4(78, 149, 217, 255) / 255;
         public static readonly Color Yellow = new Vector4(245, 184, 0, 255) / 255;
 
-        public TMP_Text Rank;
-        public TMP_Text Name;
-        public TMP_Text Money;
-        public Image image;
-        public GameObject robotLife;
-        public GameObject playerLife;
+        private TMP_Text Rank;
+        private TMP_Text Name;
+        private TMP_Text Money;
+        private Image image;
+        private GameObject robotLife;
+        private GameObject playerLife;
+        private string userID;
+
+        public string GetUserID()
+        {
+            return userID;
+        }
+
+        public void SetUserID(string userID)
+        {
+            this.userID = userID;
+        }
 
         public void SetColor(Color color)
         {
