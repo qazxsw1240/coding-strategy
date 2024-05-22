@@ -58,8 +58,8 @@ namespace CodingStrategy.Entities.Runtime
 
                 try
                 {
-                    statements.Push(statement);
-                    statement.Execute(Context);
+                    statements.Push(statement!);
+                    statement!.Execute(Context);
                 }
                 catch (ExecutionException)
                 {
