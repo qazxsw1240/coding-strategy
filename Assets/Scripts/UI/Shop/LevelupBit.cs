@@ -2,22 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-public class LevelupBit : MonoBehaviour
+
+namespace CodingStrategy.UI.Shop
 {
-    public TMP_Text levelupBit;
-
-    public void setLevelupBit(int bit)
+    public class LevelupBit : MonoBehaviour
     {
-        levelupBit.SetText(bit.ToString());
-    }
-    void Start()
-    {
+        public TMP_Text levelupBit;
 
-    }
+        public void setLevelupBit(int bit)
+        {
+            levelupBit.SetText(bit.ToString());
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        void Start() {}
+
+        // Update is called once per frame
+        void Update() {}
     }
 }

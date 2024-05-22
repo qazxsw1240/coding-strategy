@@ -4,39 +4,36 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class CommandInfoLocation : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+namespace CodingStrategy.UI.GameRoom
 {
-    public Transform command;
-    public GameObject commandInfo;
-
-    /*public void OnButtonClick()
+    public class CommandInfoLocation : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
-        Vector3 commandPos = command.position;
-        commandInfo.SetActive(true);
-        commandInfo.transform.position = new Vector3(commandPos.x + 200f, commandPos.y - 100f, commandPos.z);
-    }*/
+        public Transform command;
+        public GameObject commandInfo;
 
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        Vector3 commandPos = command.position;
-        commandInfo.SetActive(true);
-        commandInfo.transform.position = new Vector3(commandPos.x + 200f, commandPos.y - 100f, commandPos.z);
-    }
+        /*public void OnButtonClick()
+        {
+            Vector3 commandPos = command.position;
+            commandInfo.SetActive(true);
+            commandInfo.transform.position = new Vector3(commandPos.x + 200f, commandPos.y - 100f, commandPos.z);
+        }*/
 
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        commandInfo.SetActive(false);
-    }
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            Vector3 commandPos = command.position;
+            commandInfo.SetActive(true);
+            commandInfo.transform.position = new Vector3(commandPos.x + 200f, commandPos.y - 100f, commandPos.z);
+        }
 
-    // Start is called before the first frame update
-    void Start()
-    {
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            commandInfo.SetActive(false);
+        }
 
-    }
+        // Start is called before the first frame update
+        void Start() {}
 
-    // Update is called once per frame
-    void Update()
-    {
- 
+        // Update is called once per frame
+        void Update() {}
     }
 }

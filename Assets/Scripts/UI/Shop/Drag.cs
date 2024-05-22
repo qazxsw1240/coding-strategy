@@ -2,41 +2,42 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class Drag : MonoBehaviour,  IDragHandler, IBeginDragHandler, IEndDragHandler
+namespace CodingStrategy.UI.Shop
 {
-	[SerializeField] private Image _image;
-    public Vector3 _oldPosition;
-
-    // Start is called before the first frame update
-    void Start()
+    public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
-        _image = GetComponent<Image>();
-        _oldPosition = _image.rectTransform.position;
-    }
+        [SerializeField] private Image _image;
+        public Vector3 _oldPosition;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+        // Start is called before the first frame update
+        void Start()
+        {
+            _image = GetComponent<Image>();
+            _oldPosition = _image.rectTransform.position;
+        }
 
-	public void OnDrag(PointerEventData eventData)
-	{
-		transform.position = eventData.position;
-	}
+        // Update is called once per frame
+        void Update() {}
 
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        _image.raycastTarget = false;
-    }
+        public void OnDrag(PointerEventData eventData)
+        {
+            transform.position = eventData.position;
+        }
 
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        transform.position = _oldPosition - new Vector3(Screen.width, 0, 0);
-		_image.raycastTarget = true;
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            _image.raycastTarget = false;
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            transform.position = _oldPosition - new Vector3(Screen.width, 0, 0);
+            _image.raycastTarget = true;
+        }
+
+        public void SetNewPosition(Vector3 newPosition)
+        {
+            _oldPosition = newPosition;
+        }
     }
-	public void SetNewPosition(Vector3 newPosition)
-	{
-		_oldPosition = newPosition;
-	}
 }

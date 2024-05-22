@@ -3,30 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Drop : MonoBehaviour, IDropHandler
-{
-    public string slotName;
 
-    public void OnDrop(PointerEventData eventData)
+namespace CodingStrategy.UI.Shop
+{
+    public class Drop : MonoBehaviour, IDropHandler
     {
-        if (eventData.pointerDrag.transform.name == slotName)
+        public string slotName;
+
+        public void OnDrop(PointerEventData eventData)
         {
-            Drag draggable = eventData.pointerDrag.GetComponent<Drag>();
-            if (draggable != null)
+            if (eventData.pointerDrag.transform.name == slotName)
             {
-                draggable._oldPosition = eventData.position + new Vector2(Screen.width, 0);
+                Drag draggable = eventData.pointerDrag.GetComponent<Drag>();
+                if (draggable != null)
+                {
+                    draggable._oldPosition = eventData.position + new Vector2(Screen.width, 0);
+                }
             }
         }
-        
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Start is called before the first frame update
+        void Start() {}
+
+        // Update is called once per frame
+        void Update() {}
     }
 }

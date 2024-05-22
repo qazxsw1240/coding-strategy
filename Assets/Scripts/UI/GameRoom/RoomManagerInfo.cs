@@ -2,24 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-public class RoomManagerInfo : MonoBehaviour
+
+namespace CodingStrategy.UI.GameRoom
 {
-    public TMP_Text Name;
-    // is called before the first frame update
-
-    public void setName(string name)
+    public class RoomManagerInfo : MonoBehaviour
     {
-        Name.SetText(name);
-    }
+        public TMP_Text Name;
+        // is called before the first frame update
 
-    void Start()
-    {
-        setName("ABC");
-    }
+        public void setName(string name)
+        {
+            Name.SetText(name);
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        void Start()
+        {
+            setName("ABC");
+        }
+
+        // Update is called once per frame
+        void Update() {}
     }
 }
