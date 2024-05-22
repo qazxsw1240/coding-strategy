@@ -1,6 +1,7 @@
 #nullable enable
 
 
+using System;
 using CodingStrategy.Entities.Board;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
@@ -41,7 +42,14 @@ namespace CodingStrategy.Entities.Placeable
 
         private void InvokeRobotTakeBitEvents(IRobotDelegate robotDelegate, Coordinate previous, Coordinate next)
         {
-            if (next != Position)
+            try
+            {
+                if (next != Position)
+                {
+                    return;
+                }
+            }
+            catch (Exception)
             {
                 return;
             }
