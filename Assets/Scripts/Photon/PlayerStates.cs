@@ -13,7 +13,7 @@ namespace CodingStrategy.PlayerStates
     // 놀랍게도 둘이 따로 두면 아예 작동이 되지 않는 것을 3시간에 걸쳐 깨달아버렸습니다.
     // 고로 우회하기 위해 해당 오브젝트에 정보를 저장해서 GameRoom쪽으로 보내버릴겁니다.
 
-    public class PlayerStates : MonoBehaviour
+    public class PlayerStates : MonoBehaviourPun
     {
         [SerializeField] public List<Player> playersinRoom;
         [SerializeField] public TextMeshProUGUI[] ready;
@@ -24,9 +24,10 @@ namespace CodingStrategy.PlayerStates
         }
 
         [PunRPC]
-        public void UpdatePlayerStates(List<Player> playersInRoom)
+        public void UpdatePlayerStates(Player playersInRoom, bool torF)
         {
-            playersinRoom = playersInRoom;
+            if (torF) { playersinRoom.Add(playersInRoom); }
+            else if (!torF) { playersinRoom.Remove(playersInRoom); }
         }
     }
 

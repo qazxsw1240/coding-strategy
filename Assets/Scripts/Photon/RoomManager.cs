@@ -18,7 +18,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public GameObject startButton; // 시작 버튼
     public GameObject readyButton; // 레디 버튼
 
-    private void Awake()
+    private void Start()
     {
         GameObject playerInfo = GameObject.Find("PlayerInfo"); // 저 Lobby에서 destroy on load를 통해 갓 온 따끈따끈한 "PlayerInfo"라는 이름의 오브젝트 찾기
         playerStates = playerInfo.GetComponent<PlayerStates>(); // PlayerStates 컴포넌트 찾기
