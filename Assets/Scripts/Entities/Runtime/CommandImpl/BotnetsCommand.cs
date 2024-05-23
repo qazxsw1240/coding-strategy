@@ -8,11 +8,11 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     using CodingStrategy.Entities.Robot;
     using Statement;
 
-    public class Botnets : AbstractCommand
+    public class BotnetsCommand : AbstractCommand
     {
         private readonly CommandBuilder _commandBuilder=new();
 
-        public Botnets(string id="12", string name="봇네츠", int enhancedLevel=1, int grade=1)
+        public BotnetsCommand(string id="12", string name="봇네츠", int enhancedLevel=1, int grade=1)
         : base(id, name, enhancedLevel, grade)
         {
         }
@@ -21,9 +21,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
         {
             if(!keepStatus)
             {
-                return new Botnets();
+                return new BotnetsCommand();
             }
-            return new Botnets(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return new BotnetsCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
 
         public override IList<IStatement> GetCommandStatements(IRobotDelegate robot)
