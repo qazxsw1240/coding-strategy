@@ -44,7 +44,7 @@ namespace CodingStrategy.Entities.Runtime
         {
             foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in Context.ExecutionQueuePool)
             {
-                if (!executionQueue.TryDequeue(out IStatement statement))
+                if (!executionQueue.TryDequeue(out IStatement? statement))
                 {
                     continue;
                 }
@@ -83,9 +83,11 @@ namespace CodingStrategy.Entities.Runtime
                 statements.Clear();
                 executionQueue.Clear();
 
-                foreach (IStatement s in badSectorDelegate.Execute(robotDelegate))
+                IList<IStatement> badSectorStatements = badSectorDelegate.Execute(robotDelegate);
+
+                foreach (IStatement s in badSectorStatements.Reverse())
                 {
-                    executionQueue.Add(s);
+                    executionQueue.EnqueueFirst(s);
                 }
             }
 
