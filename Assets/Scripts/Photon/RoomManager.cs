@@ -1,4 +1,4 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,19 +9,19 @@ using CodingStrategy.PlayerStates;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
-    public TextMeshProUGUI[] playerNicknames; // ÇÃ·¹ÀÌ¾î ´Ğ³×ÀÓ ÅØ½ºÆ® ¹è¿­
-    public TextMeshProUGUI[] playerReady; // ÇÃ·¹ÀÌ¾î ´Ğ³×ÀÓ ÅØ½ºÆ® ¹è¿­
+    public TextMeshProUGUI[] playerNicknames; // í”Œë ˆì´ì–´ ë‹‰ë„¤ì„ í…ìŠ¤íŠ¸ ë°°ì—´
+    public TextMeshProUGUI[] playerReady; // í”Œë ˆì´ì–´ ë‹‰ë„¤ì„ í…ìŠ¤íŠ¸ ë°°ì—´
     public TextMeshProUGUI[] Master;
 
     public PlayerStates playerStates;
 
-    public GameObject startButton; // ½ÃÀÛ ¹öÆ°
-    public GameObject readyButton; // ·¹µğ ¹öÆ°
+    public GameObject startButton; // ì‹œì‘ ë²„íŠ¼
+    public GameObject readyButton; // ë ˆë”” ë²„íŠ¼
 
     private void Awake()
     {
-        GameObject playerInfo = GameObject.Find("PlayerInfo"); // Àú Lobby¿¡¼­ destroy on load¸¦ ÅëÇØ °« ¿Â µû²öµû²öÇÑ "PlayerInfo"¶ó´Â ÀÌ¸§ÀÇ ¿ÀºêÁ§Æ® Ã£±â
-        playerStates = playerInfo.GetComponent<PlayerStates>(); // PlayerStates ÄÄÆ÷³ÍÆ® Ã£±â
+        GameObject playerInfo = GameObject.Find("PlayerInfo"); // ì € Lobbyì—ì„œ destroy on loadë¥¼ í†µí•´ ê°“ ì˜¨ ë”°ëˆë”°ëˆí•œ "PlayerInfo"ë¼ëŠ” ì´ë¦„ì˜ ì˜¤ë¸Œì íŠ¸ ì°¾ê¸°
+        playerStates = playerInfo.GetComponent<PlayerStates>(); // PlayerStates ì»´í¬ë„ŒíŠ¸ ì°¾ê¸°
 
         UpdatePlayerNicknames();
     }
@@ -33,14 +33,18 @@ public class RoomManager : MonoBehaviourPunCallbacks
             playerNicknames[i].text = playerStates.playersinRoom[i].NickName;
             if (playerStates.playersinRoom[i].IsMasterClient)
             {
-                playerReady[i].gameObject.SetActive(false); // playerReady[i] ºñÈ°¼ºÈ­
-                Master[i].gameObject.SetActive(true); // Master[i] È°¼ºÈ­
+                playerReady[i].gameObject.SetActive(false); // playerReady[i] ë¹„í™œì„±í™”
+                Master[i].gameObject.SetActive(true); // Master[i] í™œì„±í™”
             }
-            
-            if(playerStates.ready[i].text == "true")
+
+            if (playerStates.ready[i].text == "true")
             {
-                playerReady[i].text = "ÁØºñ ¿Ï·á!";
+                playerReady[i].text = "ì¤€ë¹„ ì™„ë£Œ!";
                 playerReady[i].color = Color.green;
+            }
+            else if (playerStates.ready[i].text == null)
+            {
+                playerReady[i].text = "ì—†ìŒ";
             }
         }
     }
@@ -64,14 +68,14 @@ public class RoomManager : MonoBehaviourPunCallbacks
         //StartCoroutine(StartButtonCountdown());
     }
 
-    //À¯ÀúµéÀÌ µé¾î¿Ã ¶§ °»½ÅÇØ¾ß°ÚÁÒ?
+    //ìœ ì €ë“¤ì´ ë“¤ì–´ì˜¬ ë•Œ ê°±ì‹ í•´ì•¼ê² ì£ ?
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         base.OnPlayerEnteredRoom(newPlayer);
         UpdatePlayerNicknames();
     }
 
-    //À¯ÀúµéÀÌ ³ª°¥ ¶§ °»½ÅÇØ¾ß°ÚÁÒ?
+    //ìœ ì €ë“¤ì´ ë‚˜ê°ˆ ë•Œ ê°±ì‹ í•´ì•¼ê² ì£ ?
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         base.OnPlayerLeftRoom(otherPlayer);
@@ -80,19 +84,19 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private IEnumerator StartButtonCountdown()
     {
-        // ¸ğµç ÇÃ·¹ÀÌ¾î°¡ ÁØºñ »óÅÂÀÎÁö È®ÀÎ
+        // ëª¨ë“  í”Œë ˆì´ì–´ê°€ ì¤€ë¹„ ìƒíƒœì¸ì§€ í™•ì¸
         foreach (TextMeshProUGUI playerStatus in playerReady)
         {
-            if (playerStatus.text != "ÁØºñ ¿Ï·á!" && playerStatus.text != "¾øÀ½") 
+            if (playerStatus.text != "ì¤€ë¹„ ì™„ë£Œ!" && playerStatus.text != "ì—†ìŒ") 
             {
-                yield break; // ¸ğµç ÇÃ·¹ÀÌ¾î°¡ ÁØºñ »óÅÂ°¡ ¾Æ´Ï¸é ÄÚ·çÆ¾ Á¾·á
+                yield break; // ëª¨ë“  í”Œë ˆì´ì–´ê°€ ì¤€ë¹„ ìƒíƒœê°€ ì•„ë‹ˆë©´ ì½”ë£¨í‹´ ì¢…ë£Œ
             }
         }
 
-        //20ÃÊ ±â´Ù·È´Ù°¡...
+        //20ì´ˆ ê¸°ë‹¤ë ¸ë‹¤ê°€...
         yield return new WaitForSeconds(20f);
 
-        // ¹æÀåÀ» °­ÅğÇÏ°í ´Ğ³×ÀÓÀ» "¾øÀ½"À¸·Î º¯°æ
+        // ë°©ì¥ì„ ê°•í‡´í•˜ê³  ë‹‰ë„¤ì„ì„ "ì—†ìŒ"ìœ¼ë¡œ ë³€ê²½
         if (PhotonNetwork.IsMasterClient)
         {
             playerStates.playersinRoom.Remove(PhotonNetwork.LocalPlayer);
@@ -106,7 +110,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             if (playerNicknames[i].text == PhotonNetwork.LocalPlayer.NickName)
             {
-                playerReady[i].text = "ÁØºñ ¿Ï·á!";
+                playerReady[i].text = "ì¤€ë¹„ ì™„ë£Œ!";
                 playerReady[i].color = Color.green;
                 playerStates.ready[i].text = "true";
                 break;
@@ -117,12 +121,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public void OnStartButtonClicked()
     {
-        // ¸ğµç ÇÃ·¹ÀÌ¾î°¡ ÁØºñ »óÅÂÀÎÁö È®ÀÎÇÕ´Ï´Ù.
+        // ëª¨ë“  í”Œë ˆì´ì–´ê°€ ì¤€ë¹„ ìƒíƒœì¸ì§€ í™•ì¸í•©ë‹ˆë‹¤.
         foreach (TextMeshProUGUI readyCheck in playerReady)
         {
-            if (readyCheck.text != "ÁØºñ ¿Ï·á!" && readyCheck.text !="¾øÀ½")
+            if (readyCheck.text != "ì¤€ë¹„ ì™„ë£Œ!" && readyCheck.text !="ì—†ìŒ")
             {
-                Debug.Log("¸ğµç ÇÃ·¹ÀÌ¾î°¡ ÁØºñ »óÅÂ°¡ ¾Æ´Õ´Ï´Ù.");
+                Debug.Log("ëª¨ë“  í”Œë ˆì´ì–´ê°€ ì¤€ë¹„ ìƒíƒœê°€ ì•„ë‹™ë‹ˆë‹¤.");
                 return;
             }
         }
@@ -131,12 +135,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public void OnGameStart()
     {
-        // Ä«¿îÆ®´Ù¿îÀ» Áß´ÜÇÕ´Ï´Ù.
+        // ì¹´ìš´íŠ¸ë‹¤ìš´ì„ ì¤‘ë‹¨í•©ë‹ˆë‹¤.
         StopCoroutine(StartButtonCountdown());
 
-        // °ÔÀÓÀ» ½ÃÀÛÇÕ´Ï´Ù.
-        Debug.Log("°ÔÀÓÀ» ½ÃÀÛÇÕ´Ï´Ù.");
-        // °ÔÀÓÀ» ½ÃÀÛÇÏ´Â ·ÎÁ÷À» ÀÌ°÷ ¾Æ·¡¿¡ ±¸ÇöÇÏ¼¼¿ä.
+        // ê²Œì„ì„ ì‹œì‘í•©ë‹ˆë‹¤.
+        Debug.Log("ê²Œì„ì„ ì‹œì‘í•©ë‹ˆë‹¤.");
+        // ê²Œì„ì„ ì‹œì‘í•˜ëŠ” ë¡œì§ì„ ì´ê³³ ì•„ë˜ì— êµ¬í˜„í•˜ì„¸ìš”.
     }
 
 }
