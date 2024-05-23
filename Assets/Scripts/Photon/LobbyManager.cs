@@ -16,7 +16,9 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public RawImage StandardImage;
     public TextMeshProUGUI StandardDescription;
     public TextMeshProUGUI Nickname;
-    
+
+    public string RoomID;
+
     public GameObject roomPrefab;
     public Transform contentRoomlist;
 
@@ -53,7 +55,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         }
         else if (StandardImage.gameObject.activeInHierarchy)
         {
-            PhotonNetwork.JoinRoom(StandardDescription.text);
+            PhotonNetwork.JoinRoom(RoomID);
         }
     }
 
@@ -116,6 +118,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         RandomDescription.gameObject.SetActive(false);
         StandardImage.gameObject.SetActive(true);
         StandardDescription.gameObject.SetActive(true);
+        RoomID = roomId;
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
