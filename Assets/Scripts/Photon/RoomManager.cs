@@ -24,6 +24,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         playerStates = playerInfo.GetComponent<PlayerStates>(); // PlayerStates 컴포넌트 찾기
         
         UpdatePlayerNicknames();
+        
     }
 
     public void UpdatePlayerNicknames()
@@ -32,7 +33,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             //playerNicknames의 0번째에 playerStates 클래스 내에 정의된 playersinRoom의 i번째의 유저의 닉네임을 가져옵니다.
             if(playerStates.playersinRoom[i].NickName!=null)
-            { playerNicknames[i+1].text = playerStates.playersinRoom[i].NickName; }
+            { playerNicknames[i].text = PhotonNetwork.PlayerList[i].NickName; }
             
             
             //만약에 해당 플레이어가 마스터 클라이언트(방장)이라면
