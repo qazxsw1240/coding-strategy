@@ -16,15 +16,14 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public PlayerStates playerStates;
 
     public GameObject startButton; // 시작 버튼
-    public GameObject readyButton; // 레디 버튼
+    public GameObject readyButton; // 레디
 
     private void Start()
     {
         GameObject playerInfo = GameObject.Find("PlayerInfo"); // 저 Lobby에서 destroy on load를 통해 갓 온 따끈따끈한 "PlayerInfo"라는 이름의 오브젝트 찾기
         playerStates = playerInfo.GetComponent<PlayerStates>(); // PlayerStates 컴포넌트 찾기
-        
-        UpdatePlayerNicknames();
-        
+
+        InvokeRepeating("UpdatePlayerNicknames", 1f, 1f);
     }
 
     public void UpdatePlayerNicknames()
@@ -37,7 +36,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
             
             
             //만약에 해당 플레이어가 마스터 클라이언트(방장)이라면
-            if (playerStates.playersinRoom[i].IsMasterClient)
+            if (PhotonNetwork.PlayerList[i].IsMasterClient)
             {
                 playerReady[i].gameObject.SetActive(false); // playerReady[i] 비활성화
                 Master[i].gameObject.SetActive(true); // Master[i] 활성화
@@ -67,6 +66,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
             startButton.SetActive(false);
             readyButton.SetActive(true);
         }
+
+        
     }
 
     private void FixedUpdate()
