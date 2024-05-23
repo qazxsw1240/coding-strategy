@@ -15,19 +15,29 @@ namespace CodingStrategy.PlayerStates
 
     public class PlayerStates : MonoBehaviourPun
     {
-        [SerializeField] public List<Player> playersinRoom;
+        public static PlayerStates Instance;
+
+        [SerializeField] public List<Player> playersinRoom = new List<Player>();
         [SerializeField] public TextMeshProUGUI[] ready;
 
         public void Start()
         {
-            DontDestroyOnLoad(gameObject);
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
 
         [PunRPC]
-        public void UpdatePlayerStates(Player playersInRoom, bool torF)
+        public void UpdatePlayerStates(Player player, bool torF)
         {
-            if (torF) { playersinRoom.Add(playersInRoom); }
-            else if (!torF) { playersinRoom.Remove(playersInRoom); }
+            if (torF) { playersinRoom.Add(player); }
+            else { playersinRoom.Remove(player); }
         }
     }
 
