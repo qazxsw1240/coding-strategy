@@ -51,7 +51,7 @@ namespace CodingStrategy.UI.InGame
 
         public void SetMoney(int money)
         {
-            Money.text = money.ToString() + " Bit";
+            Money.text = money.ToString() + " B";
             if (money < 0)
             {
                 Money.color = Color.red;

@@ -9,48 +9,7 @@ using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
-    //public GameObject RandomRoomDescribe;
-    //public GameObject StandardRoomDescribe;
-    //public TMP_Text RoomTitle;
-    //public TMP_Text UserCounts;
-    //public UnityEngine.UI.Button RandomEnterBtn;
-    //
-    //public void CreateRoom() => PhotonNetwork.CreateRoom(RoomTitle.text == "방 제목" ? "Room" + Random.Range(0, 100) : RoomTitle.text, new RoomOptions { MaxPlayers = 4 });
-    //
-    //public void JoinRandomRoom() => PhotonNetwork.JoinRandomRoom();
-    //
-    //// 랜덤 참가 버튼을 눌렀을 때
-    //public void RandomRoomEnter()
-    //{
-    //    StandardRoomDescribe.SetActive(false);
-    //    RandomRoomDescribe.SetActive(true);
-    //}
-    //
-    //// 생성되어 있는 방을 눌렀을 때
-    //public void CreatedRoomEnter()
-    //{
-    //    RandomRoomDescribe.SetActive(false);
-    //    StandardRoomDescribe.SetActive(true);
-    //}
-    //
-    //// 게임시작 버튼을 눌렀을 때
-    //public void EnterGame()
-    //{
-    //
-    //    SceneManager.LoadScene("GameScene");
-    //}
-    //
-    //
-    //void Start()
-    //{
-    //    
-    //}
-    //
-    //// Update is called once per frame
-    //void Update()
-    //{
-    //
-    //}
+    
 
     public RawImage RandomImage;
     public TextMeshProUGUI RandomDescription;
