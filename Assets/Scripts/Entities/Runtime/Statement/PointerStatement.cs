@@ -2,37 +2,47 @@
 
 
 using System;
-using CodingStrategy.Entities.BadSector;
-using CodingStrategy.Entities.Board;
 using UnityEngine;
 
 namespace CodingStrategy.Entities.Runtime.Statement
 {
+    using System.Collections.Generic;
+    using BadSector;
+    using Board;
     using Robot;
 
     public class PointerStatement : IStatement
     {
-        private readonly IBoardDelegate _boardDelegate;
+        private IBoardDelegate? _boardDelegate;
         private readonly IRobotDelegate _robotDelegate;
         private readonly Func<IBoardDelegate, IRobotDelegate, IBadSectorDelegate> _generator;
 
-        private IBadSectorDelegate? _badSectorDelegate;
+        private readonly IList<IBadSectorDelegate> _badSectorDelegates=new List<IBadSectorDelegate>();
+        private readonly IList<Coordinate> _coordinates;
 
         public PointerStatement(
-            IBoardDelegate boardDelegate,
             IRobotDelegate robotDelegate,
-            Func<IBoardDelegate, IRobotDelegate, IBadSectorDelegate> generator)
+            Func<IBoardDelegate, IRobotDelegate, IBadSectorDelegate> generator,
+            IList<Coordinate> coordinates)
         {
-            _boardDelegate = boardDelegate;
-            _robotDelegate = robotDelegate;
+            _robotDelegate=robotDelegate;
             _generator = generator;
+            _coordinates = coordinates;
         }
 
         public void Execute(RuntimeExecutorContext context)
         {
-            _badSectorDelegate = _generator(_boardDelegate, _robotDelegate);
-            Debug.LogFormat("Robot {0} Tries to put bad sector {1}", _robotDelegate.Id, _badSectorDelegate.Id);
-            _boardDelegate.Add(_badSectorDelegate, _robotDelegate.Position);
+            _boardDelegate=context.BoardDelegate;
+            foreach(Coordinate coordinate in _coordinates)
+            {
+                IBadSectorDelegate badSectorDelegate = _generator(_boardDelegate, _robotDelegate);
+                Debug.LogFormat("Robot {0} Tries to put bad sector {1}", _robotDelegate.Id, badSectorDelegate.Id);
+                Coordinate installCoordinate=_robotDelegate.Position+RotateMatrix.Rotate((int)_robotDelegate.Direction)*coordinate;    
+                if(_boardDelegate.Add(badSectorDelegate, installCoordinate))
+                {
+                    _badSectorDelegates.Add(badSectorDelegate);
+                }
+            }
         }
 
         public StatementPhase Phase => StatementPhase.Pointer;
@@ -50,13 +60,10 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
             public void Execute(RuntimeExecutorContext context)
             {
-                IBadSectorDelegate? badSectorDelegate = _statement._badSectorDelegate;
-                if (badSectorDelegate == null)
+                foreach(IBadSectorDelegate badSectorDelegate in _statement._badSectorDelegates)
                 {
-                    return;
+                    _statement._boardDelegate?.Remove(badSectorDelegate);
                 }
-
-                _statement._boardDelegate.Remove(badSectorDelegate);
             }
 
             public StatementPhase Phase => StatementPhase.Pointer;

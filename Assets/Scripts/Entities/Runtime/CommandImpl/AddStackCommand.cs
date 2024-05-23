@@ -4,14 +4,15 @@
 namespace CodingStrategy.Entities.Runtime.CommandImpl
 {
     using System.Collections.Generic;
-    using CodingStrategy.Entities.Robot;
+    using Robot;
+    using Abnormality;
     using Statement;
 
-    public class MoveRightForwardCommand : AbstractCommand
+    public class AddStackCommand : AbstractCommand
     {
         private readonly CommandBuilder _commandBuilder=new();
-        private readonly Coordinate _coordinate=new Coordinate(1,1);
-        public MoveRightForwardCommand(string id="7", string name="우측 대각선 이동", int enhancedLevel=1, int grade=1)
+
+        public AddStackCommand(string id="8", string name="스택 추가", int enhancedLevel=1, int grade=1)
         : base(id, name, enhancedLevel, grade)
         {
         }
@@ -20,17 +21,17 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
         {
             if(!keepStatus)
             {
-                return new MoveRightForwardCommand();
+                return new AddStackCommand();
             }
-            return new MoveRightForwardCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return new AddStackCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
 
         public override IList<IStatement> GetCommandStatements(IRobotDelegate robot)
         {
             _commandBuilder.Clear();
-            _commandBuilder.Append(new MoveCoordinateStatement(robot, _coordinate));
+            _commandBuilder.Append(new AddAbnormalitySpecificRobotStatement(robot, new Stack(robot), 2));
             if(Info.EnhancedLevel>=2)
-                _commandBuilder.Append(new MoveCoordinateStatement(robot, _coordinate));
+                _commandBuilder.Append(new AddAbnormalitySpecificRobotStatement(robot, new Stack(robot), 2));
             return _commandBuilder.Build();
         }
 

@@ -5,7 +5,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
 {
     using System;
     using Robot;
-
+    [Obsolete]
     public class MoveLeftDiagnolStatement : IStatement
     {
         private readonly IRobotDelegate _robotDelegate;

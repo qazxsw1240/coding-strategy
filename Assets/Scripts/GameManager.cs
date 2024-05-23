@@ -17,6 +17,7 @@ namespace CodingStrategy
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using CodingStrategy.Entities.Runtime.Abnormality;
     using Entities;
     using Entities.Board;
     using Entities.Player;
@@ -35,16 +36,20 @@ namespace CodingStrategy
             (RobotDirection.West, new Coordinate(8, 4), PlayerStatusUI.Red)
         };
 
-        private static readonly IDictionary<string, object> AbnormalityDictionary = new Dictionary<string, object>();
+        private static readonly IDictionary<string, IAbnormality> AbnormalityDictionary = new Dictionary<string, IAbnormality>();
 
-        public static void SetAbnormalityValue(string key, object value)
+        public static void SetAbnormalityValue(string key, IAbnormality abnormality)
         {
-            AbnormalityDictionary[key] = value;
+            AbnormalityDictionary[key] = abnormality;
         }
 
-        public static T GetAbnormalityValue<T>(string key)
+        public static IAbnormality? GetAbnormalityValue(string key)
         {
-            return (T) AbnormalityDictionary[key];
+            if(AbnormalityDictionary.TryGetValue(key, out IAbnormality value))
+            {
+                return value;
+            }
+            return null;
         }
 
 
