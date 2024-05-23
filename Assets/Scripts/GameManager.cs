@@ -7,9 +7,12 @@ using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Placeable;
 using CodingStrategy.Entities.Runtime.Statement;
 using CodingStrategy.Factory;
+using CodingStrategy.Network;
 using CodingStrategy.UI.InGame;
 using CodingStrategy.Utility;
 using NUnit.Framework;
+using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine.Serialization;
 
 namespace CodingStrategy
@@ -25,7 +28,7 @@ namespace CodingStrategy
     using Unity.VisualScripting;
     using UnityEngine;
 
-    public class GameManager : MonoBehaviour
+    public class GameManager : MonoBehaviourPunCallbacks
     {
         private static readonly (RobotDirection, Coordinate, Color)[] StartPositions =
         {
@@ -61,6 +64,9 @@ namespace CodingStrategy
 
         private AnimationCoroutineManager _animationCoroutineManager = null!;
         private BitDispenser _bitDispenser = null!;
+
+        private IPlayerCommandNetworkDelegate _networkDelegate = null!;
+        private IPlayerCommandCache _commandCache = null!;
 
 
         public void Awake()
@@ -98,12 +104,51 @@ namespace CodingStrategy
         public void Start()
         {
             Debug.Log("GameManager instance started.");
+
+            if (!PhotonNetwork.IsConnected)
+            {
+                PhotonNetwork.AutomaticallySyncScene = true;
+                PhotonNetwork.ConnectUsingSettings();
+            }
+
+            // StartCoroutine(StartGameManagerCoroutine());
+        }
+
+        public override void OnConnectedToMaster()
+        {
+            Debug.Log("Connected to Master.");
+            PhotonNetwork.NickName = "asdf";
+            PhotonNetwork.JoinRandomOrCreateRoom(roomOptions: new RoomOptions
+            {
+                MaxPlayers = 4,
+                PublishUserId = true
+            });
+        }
+
+        public override void OnJoinedRoom()
+        {
+            Debug.LogFormat("Connected to Room {0}", PhotonNetwork.CurrentRoom.Name);
             StartCoroutine(StartGameManagerCoroutine());
+        }
+
+        public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+        {
+            targetPlayer.SetCustomProperties(changedProps);
         }
 
         private IEnumerator StartGameManagerCoroutine()
         {
+            _networkDelegate = new PhotonPlayerCommandNetworkDelegate();
+            _commandCache = new PhotonPlayerCommandCache(_networkDelegate);
+
+            foreach (int playersKey in PhotonNetwork.CurrentRoom.Players.Keys)
+            {
+                Debug.LogFormat("Player Key: {0}", playersKey);
+            }
+
             InitializeCells();
+
+            _networkDelegate.RequestRefresh();
 
             foreach (IPlayerDelegate playerDelegate in _playerPool)
             {
