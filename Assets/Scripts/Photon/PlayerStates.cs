@@ -17,19 +17,19 @@ namespace CodingStrategy.PlayerStates
     {
         public static PlayerStates Instance;
 
-        [SerializeField] public List<Player> playersinRoom = new List<Player>();
+        [SerializeField] public List<Player> playersinRoom = null;
         [SerializeField] public TextMeshProUGUI[] ready;
 
         public void Start()
         {
-            if (Instance == null)
+            if (playersinRoom == null)
             {
-                Instance = this;
+                playersinRoom=new List<Player>();
                 DontDestroyOnLoad(gameObject);
             }
             else
             {
-                Destroy(gameObject);
+                DontDestroyOnLoad(gameObject);
             }
         }
 
