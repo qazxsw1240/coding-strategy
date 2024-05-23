@@ -6,6 +6,8 @@ namespace CodingStrategy.Network
     {
         public abstract void RequestRefresh();
 
+        public abstract void ModifyCommandCount(string id, int count);
+
         public abstract IDictionary<string, int> GetCachedCommandCount();
     }
 }
