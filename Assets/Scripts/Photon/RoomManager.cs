@@ -14,6 +14,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public TextMeshProUGUI[] Master;
 
     public PlayerStates playerStates;
+    
+    public bool[] ready = new bool[3];
 
     public GameObject startButton; // 시작 버튼
     public GameObject readyButton; // 레디
@@ -42,7 +44,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 Master[i].gameObject.SetActive(true); // Master[i] 활성화
             }
 
-            if (playerStates.ready[i] == true)
+            if (ready[i] == true)
             {
                 playerReady[i].text = "준비 완료!";
                 playerReady[i].color = Color.green;
@@ -117,7 +119,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             if (playerNicknames[i].text == PhotonNetwork.LocalPlayer.NickName)
             {
-                playerStates.ready[i] = true;
+                ready[i] = true;
                 break;
             }
         }
