@@ -6,25 +6,29 @@ using Photon.Realtime;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
+using CodingStrategy.PlayerStates;
+using System.Linq;
 
 public class LobbyManager : MonoBehaviourPunCallbacks
 {
-    
-
     public RawImage RandomImage;
     public TextMeshProUGUI RandomDescription;
     public RawImage StandardImage;
     public TextMeshProUGUI StandardDescription;
     public TextMeshProUGUI Nickname;
+    
     public GameObject roomPrefab;
     public Transform contentRoomlist;
 
+    public GameObject PlayerInfo;
+    public PlayerStates playerStates;
 
+    public List<Player> playersRoom = new List<Player>();
 
     //닉네임값 받아오기
     private void Start()
     {
-        Nickname.text = PhotonNetwork.NickName;
+        Nickname.text = PhotonNetwork.LocalPlayer.NickName;
         DontDestroyOnLoad(gameObject);
         PhotonNetwork.JoinLobby();
     }
@@ -46,14 +50,27 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         if (RandomImage.gameObject.activeInHierarchy)
         {
             PhotonNetwork.JoinRandomRoom();
-            SceneManager.LoadScene("GameRoom");
         }
         else if (StandardImage.gameObject.activeInHierarchy)
         {
             PhotonNetwork.JoinRoom(StandardDescription.text);
-            SceneManager.LoadScene("GameRoom");
         }
     }
+
+    public override void OnJoinedRoom()
+    {
+        base.OnJoinedRoom();
+        Debug.Log("Successfully joined room");
+
+        Player localPlayer = PhotonNetwork.LocalPlayer;
+        playersRoom.Add(localPlayer);
+        playerStates.UpdatePlayerStates(playersRoom);
+
+        Debug.Log("PlayerNum is " + playersRoom.Count);
+        SceneManager.LoadScene("GameRoom");
+    }
+
+
 
     //포톤은 고유한 ID를 방생성하면서 할당해줍니다. 그냥 생성만 해도 될 것 같습니다. 최대 인원 4명입니다.
     public override void OnJoinRandomFailed(short returnCode, string message)
@@ -92,7 +109,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         }
     }
 
-
     //이 함수는 이미지를 변경할 것입니다.
     void OnRoomClick(string roomId)
     {
@@ -100,5 +116,25 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         RandomDescription.gameObject.SetActive(false);
         StandardImage.gameObject.SetActive(true);
         StandardDescription.gameObject.SetActive(true);
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        Debug.Log("Player entered room");
+
+        playersRoom.Add(newPlayer);
+        playerStates.UpdatePlayerStates(playersRoom);
+
+        Debug.Log("PlayerNum is "+ playersRoom.Count);
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        Debug.Log("Player lefted room");
+
+        playersRoom.Remove(otherPlayer);
+        playerStates.UpdatePlayerStates(playersRoom);
+
+        Debug.Log("PlayerNum is " + playersRoom.Count);
     }
 }

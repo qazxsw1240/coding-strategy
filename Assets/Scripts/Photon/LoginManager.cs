@@ -37,7 +37,7 @@ public class LoginManager : MonoBehaviourPunCallbacks
         }
 
         //닉네임 설정합니다.
-        PhotonNetwork.NickName = nicknameInputField.text;
+        PhotonNetwork.LocalPlayer.NickName = nicknameInputField.text;
         
         //방을 연결합니다.
         PhotonNetwork.ConnectUsingSettings();
