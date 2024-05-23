@@ -5,6 +5,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
 {
     using System;
     using Robot;
+    [Obsolete]
     public class MoveSidewaysStatement : IStatement
     {
         private readonly IRobotDelegate _robotDelegate;
