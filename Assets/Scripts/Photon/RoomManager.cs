@@ -28,7 +28,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public void UpdatePlayerNicknames()
     {
-        for (int i = 0; i < playerStates.playersinRoom.Count; i++)
+        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
             //playerNicknames의 0번째에 playerStates 클래스 내에 정의된 playersinRoom의 i번째의 유저의 닉네임을 가져옵니다.
             if(playerStates.playersinRoom[i].NickName!=null)
@@ -47,9 +47,9 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 playerReady[i].text = "준비 완료!";
                 playerReady[i].color = Color.green;
             }
-            else if (playerStates.ready[i] == null)
+            else if (playerStates.ready[i] == false)
             {
-                playerReady[i].text = "없음";
+                playerReady[i].text = "준비 안됌";
             }
         }
     }
@@ -113,7 +113,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public void OnReadyButtonClick()
     {
-        for (int i = 0; i < playerNicknames.Length; i++)
+        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
             if (playerNicknames[i].text == PhotonNetwork.LocalPlayer.NickName)
             {
