@@ -22,7 +22,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         GameObject playerInfo = GameObject.Find("PlayerInfo"); // 저 Lobby에서 destroy on load를 통해 갓 온 따끈따끈한 "PlayerInfo"라는 이름의 오브젝트 찾기
         playerStates = playerInfo.GetComponent<PlayerStates>(); // PlayerStates 컴포넌트 찾기
-
+        
         UpdatePlayerNicknames();
     }
 
@@ -30,19 +30,24 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         for (int i = 0; i < playerStates.playersinRoom.Count; i++)
         {
-            playerNicknames[i].text = playerStates.playersinRoom[i].NickName;
+            //playerNicknames의 0번째에 playerStates 클래스 내에 정의된 playersinRoom의 i번째의 유저의 닉네임을 가져옵니다.
+            if(playerStates.playersinRoom[i].NickName!=null)
+            { playerNicknames[i+1].text = playerStates.playersinRoom[i].NickName; }
+            
+            
+            //만약에 해당 플레이어가 마스터 클라이언트(방장)이라면
             if (playerStates.playersinRoom[i].IsMasterClient)
             {
                 playerReady[i].gameObject.SetActive(false); // playerReady[i] 비활성화
                 Master[i].gameObject.SetActive(true); // Master[i] 활성화
             }
 
-            if (playerStates.ready[i].text == "true")
+            if (playerStates.ready[i] == true)
             {
                 playerReady[i].text = "준비 완료!";
                 playerReady[i].color = Color.green;
             }
-            else if (playerStates.ready[i].text == null)
+            else if (playerStates.ready[i] == null)
             {
                 playerReady[i].text = "없음";
             }
@@ -112,7 +117,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
             {
                 playerReady[i].text = "준비 완료!";
                 playerReady[i].color = Color.green;
-                playerStates.ready[i].text = "true";
+                playerStates.ready[i] = true;
                 break;
             }
         }

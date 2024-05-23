@@ -5,6 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+
 
 namespace CodingStrategy.PlayerStates
 {
@@ -15,10 +17,8 @@ namespace CodingStrategy.PlayerStates
 
     public class PlayerStates : MonoBehaviourPun
     {
-        public static PlayerStates Instance;
-
         [SerializeField] public List<Player> playersinRoom = null;
-        [SerializeField] public TextMeshProUGUI[] ready;
+        [SerializeField] public bool[] ready = new bool[4];
 
         public void Start()
         {
@@ -36,7 +36,11 @@ namespace CodingStrategy.PlayerStates
         [PunRPC]
         public void UpdatePlayerStates(Player player, bool torF)
         {
-            if (torF) { playersinRoom.Add(player); }
+            if (torF) 
+            {
+                playersinRoom.Add(player);
+                Debug.Log(playersinRoom[0].NickName);
+            }
             else { playersinRoom.Remove(player); }
         }
     }
