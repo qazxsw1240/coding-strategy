@@ -12,7 +12,7 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     {
         private readonly CommandBuilder _commandBuilder=new();
 
-        public BotnetsCommand(string id="12", string name="봇네츠", int enhancedLevel=1, int grade=1)
+        public BotnetsCommand(string id="12", string name="봇네츠", int enhancedLevel=1, int grade=5)
         : base(id, name, enhancedLevel, grade)
         {
         }

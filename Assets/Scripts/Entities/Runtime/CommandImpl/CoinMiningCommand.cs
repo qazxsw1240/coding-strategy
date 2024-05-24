@@ -11,7 +11,7 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     {
         private readonly CommandBuilder _commandBuilder=new();
 
-        public CoinMiningCommand(string id="11", string name="코인 채굴", int enhancedLevel=1, int grade=1)
+        public CoinMiningCommand(string id="11", string name="코인 채굴", int enhancedLevel=1, int grade=4)
         : base(id, name, enhancedLevel, grade)
         {
         }
