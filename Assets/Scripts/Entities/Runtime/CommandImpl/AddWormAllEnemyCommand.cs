@@ -12,7 +12,7 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     {
         private readonly CommandBuilder _commandBuilder=new();
 
-        public AddWormAllEnemyCommand(string id="9", string name="전역 웜 추가", int enhancedLevel=1, int grade=1)
+        public AddWormAllEnemyCommand(string id="9", string name="전역 웜 추가", int enhancedLevel=1, int grade=2)
         : base(id, name, enhancedLevel, grade)
         {
         }

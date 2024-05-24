@@ -12,7 +12,7 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     {
         private readonly CommandBuilder _commandBuilder=new();
 
-        public AddStackCommand(string id="8", string name="스택 추가", int enhancedLevel=1, int grade=1)
+        public AddStackCommand(string id="8", string name="스택 추가", int enhancedLevel=1, int grade=2)
         : base(id, name, enhancedLevel, grade)
         {
         }

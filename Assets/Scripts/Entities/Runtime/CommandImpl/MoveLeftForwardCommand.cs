@@ -11,7 +11,7 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     {
         private readonly CommandBuilder _commandBuilder=new();
         private readonly Coordinate _coordinate=new Coordinate(-1,1);
-        public MoveLeftForwardCommand(string id="6", string name="좌측 대각선 이동", int enhancedLevel=1, int grade=1)
+        public MoveLeftForwardCommand(string id="6", string name="좌측 대각선 이동", int enhancedLevel=1, int grade=2)
         : base(id, name, enhancedLevel, grade)
         {
         }
