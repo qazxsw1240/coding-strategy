@@ -12,8 +12,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public TextMeshProUGUI[] playerNicknames; // 플레이어 닉네임 텍스트 배열
     public TextMeshProUGUI[] playerReady; // 플레이어 닉네임 텍스트 배열
     public TextMeshProUGUI[] Master;
-
-    public PlayerStates playerStates;
     
     public bool[] ready = new bool[3];
 
@@ -22,15 +20,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        GameObject playerInfo = GameObject.Find("PlayerInfo"); // 저 Lobby에서 destroy on load를 통해 갓 온 따끈따끈한 "PlayerInfo"라는 이름의 오브젝트 찾기
-        playerStates = playerInfo.GetComponent<PlayerStates>(); // PlayerStates 컴포넌트 찾기
-        
         InvokeRepeating("UpdatePlayerNicknames", 1f, 1f);
     }
 
     public void UpdatePlayerNicknames()
     {
-        Debug.Log("리로드");
+        //Debug.Log("리로드");
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
             //playerNicknames의 0번째에 playerStates 클래스 내에 정의된 playersinRoom의 i번째의 유저의 닉네임을 가져옵니다.
@@ -109,7 +104,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
            }
             else //모두가 스타트 버튼을 누른 상태일 경우 StartButtonCountdown() 실행
             {
-                StopCoroutine(StartButtonCountdown());
+                StartCoroutine(StartButtonCountdown());
                 return;
             }
         }
@@ -182,5 +177,4 @@ public class RoomManager : MonoBehaviourPunCallbacks
         Debug.Log("게임을 시작합니다.");
         // 게임을 시작하는 로직을 이곳 아래에 구현하세요.
     }
-
 }

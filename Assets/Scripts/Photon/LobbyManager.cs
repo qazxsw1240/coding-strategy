@@ -22,9 +22,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public GameObject roomPrefab;
     public Transform contentRoomlist;
 
-    public GameObject PlayerInfo;
-    public PlayerStates playerStates;
-
 
     //닉네임값 받아오기
     private void Start()
@@ -64,9 +61,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         Debug.Log("Successfully joined room");
 
         Player localPlayer = PhotonNetwork.LocalPlayer;
-        playerStates.UpdatePlayerStates(localPlayer, true);
 
-        Debug.Log("PlayerNum is " + playerStates.playersinRoom.Count);
         SceneManager.LoadScene("GameRoom");
     }
 
@@ -122,18 +117,10 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         Debug.Log("Player entered room");
-
-        playerStates.UpdatePlayerStates(newPlayer, true);
-
-        Debug.Log("PlayerNum is "+ playerStates.playersinRoom.Count);
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         Debug.Log("Player lefted room");
-
-        playerStates.UpdatePlayerStates(otherPlayer, false);
-
-        Debug.Log("PlayerNum is " + playerStates.playersinRoom.Count);
     }
 }
