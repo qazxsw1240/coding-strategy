@@ -30,6 +30,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public void UpdatePlayerNicknames()
     {
+        Debug.Log("리로드");
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
             //playerNicknames의 0번째에 playerStates 클래스 내에 정의된 playersinRoom의 i번째의 유저의 닉네임을 가져옵니다.
@@ -43,7 +44,10 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 playerReady[i].gameObject.SetActive(false); // playerReady[i] 비활성화
                 Master[i].gameObject.SetActive(true); // Master[i] 활성화
             }
-            bool isReady = (bool)PhotonNetwork.PlayerList[i].CustomProperties["isReady"];
+
+            bool isReady = PhotonNetwork.PlayerList[i].CustomProperties.ContainsKey("isReady")
+                       && (bool)PhotonNetwork.PlayerList[i].CustomProperties["isReady"];
+
             if (isReady)
             {
                 playerReady[i].text = "준비 완료!";
