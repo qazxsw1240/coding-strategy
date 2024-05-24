@@ -91,6 +91,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             playerNicknames[i].text = "(없음)";
             playerReady[i].text = "--";
+            playerReady[i].color = Color.black;
             Master[i].gameObject.SetActive(false);
         }
     }
