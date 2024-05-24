@@ -15,10 +15,19 @@ public class LoginManager : MonoBehaviourPunCallbacks
     public TMP_Text warningText; // 경고 메시지를 표시할 TextMeshPro 컴포넌트
     public TMP_Text loadingText; // 로딩 메시지를 표시할 TextMeshPro 컴포넌트
 
+    private SoundManager soundManager;
+
     void Start()
     {
+        soundManager = FindObjectOfType<SoundManager>();
+        soundManager.Init();
+
         // startbutton이 클릭되면 이벤트 실행하게 설정해줍니다.
         startButton.onClick.AddListener(OnStartButtonClick);
+
+        // 닉네임 입력 필드의 이벤트에 리스너 추가
+        nicknameInputField.onValueChanged.AddListener(OnNicknameChanged);
+
     }
 
     void Update()
@@ -29,6 +38,11 @@ public class LoginManager : MonoBehaviourPunCallbacks
 
     public void OnStartButtonClick()
     {
+        // 효과음을 불러오고 재생합니다.
+        AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_Experience_Up");
+        soundManager.Play(effectClip, Sound.Effect, 1.0f);
+        Debug.Log("Sounding!");
+
         if (string.IsNullOrEmpty(nicknameInputField.text))
         {
             // 입력 필드가 비어있다면 경고 메시지를 표시하고 함수를 종료합니다.
@@ -51,7 +65,6 @@ public class LoginManager : MonoBehaviourPunCallbacks
         // 로딩 텍스트를 활성화합니다.
         loadingText.gameObject.SetActive(true);
 
-
         //이 Login Manager는 다른 씬에서도 남아있도록 합니다.
         DontDestroyOnLoad(gameObject);
     }
@@ -62,5 +75,13 @@ public class LoginManager : MonoBehaviourPunCallbacks
         //로비 씬으로 이동합니다.
         SceneManager.LoadScene("GameLobby");
         Debug.Log(PhotonNetwork.NickName + "님 환영합니다.");
+    }
+
+    // 닉네임이 변경될 때마다 호출되는 콜백 함수
+    private void OnNicknameChanged(string newNickname)
+    {
+        // 닉네임이 변경될 때마다 효과음 재생
+        AudioClip typingSoundClip = Resources.Load<AudioClip>("Sound/Keyboard_Click_Sound");
+        soundManager.Play(typingSoundClip, Sound.Effect, 3.0f);
     }
 }
