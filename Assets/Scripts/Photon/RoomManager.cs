@@ -43,13 +43,13 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 playerReady[i].gameObject.SetActive(false); // playerReady[i] 비활성화
                 Master[i].gameObject.SetActive(true); // Master[i] 활성화
             }
-
-            if (ready[i] == true)
+            bool isReady = (bool)PhotonNetwork.PlayerList[i].CustomProperties["isReady"];
+            if (isReady)
             {
                 playerReady[i].text = "준비 완료!";
                 playerReady[i].color = Color.green;
             }
-            else if (playerStates.ready[i] == false)
+            else
             {
                 playerReady[i].text = "준비 안함";
             }
@@ -68,9 +68,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
             startButton.SetActive(false);
             readyButton.SetActive(true);
         }
-
-        
     }
+
 
     private void FixedUpdate()
     {
@@ -112,19 +111,25 @@ public class RoomManager : MonoBehaviourPunCallbacks
             UpdatePlayerNicknames();
         }
     }
-
+    
     public void OnReadyButtonClick()
     {
-        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
-        {
-            if (playerNicknames[i].text == PhotonNetwork.LocalPlayer.NickName)
+        //for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        //{
+        //    if (playerNicknames[i].text == PhotonNetwork.LocalPlayer.NickName)
+        //    {
+        //        ready[i] = true;
+        //        break;
+        //    }
+        //}
+        ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable
             {
-                ready[i] = true;
-                break;
-            }
-        }
+                { "isReady", true }
+            };
+        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         UpdatePlayerNicknames();
     }
+    
 
     public void OnStartButtonClicked()
     {
