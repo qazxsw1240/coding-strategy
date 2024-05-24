@@ -24,7 +24,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         GameObject playerInfo = GameObject.Find("PlayerInfo"); // 저 Lobby에서 destroy on load를 통해 갓 온 따끈따끈한 "PlayerInfo"라는 이름의 오브젝트 찾기
         playerStates = playerInfo.GetComponent<PlayerStates>(); // PlayerStates 컴포넌트 찾기
-
+        
         InvokeRepeating("UpdatePlayerNicknames", 1f, 1f);
     }
 
@@ -35,27 +35,33 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             //playerNicknames의 0번째에 playerStates 클래스 내에 정의된 playersinRoom의 i번째의 유저의 닉네임을 가져옵니다.
             if(PhotonNetwork.PlayerList[i].NickName!=null)
-            { playerNicknames[i].text = PhotonNetwork.PlayerList[i].NickName; }
-            
-            
-            //만약에 해당 플레이어가 마스터 클라이언트(방장)이라면
-            if (PhotonNetwork.PlayerList[i].IsMasterClient)
-            {
-                playerReady[i].gameObject.SetActive(false); // playerReady[i] 비활성화
-                Master[i].gameObject.SetActive(true); // Master[i] 활성화
-            }
-
-            bool isReady = PhotonNetwork.PlayerList[i].CustomProperties.ContainsKey("isReady")
+            { 
+                playerNicknames[i].text = PhotonNetwork.PlayerList[i].NickName;
+                
+                bool isReady = PhotonNetwork.PlayerList[i].CustomProperties.ContainsKey("isReady")
                        && (bool)PhotonNetwork.PlayerList[i].CustomProperties["isReady"];
 
-            if (isReady)
-            {
-                playerReady[i].text = "준비 완료!";
-                playerReady[i].color = Color.green;
+                if (isReady)
+                {
+                    playerReady[i].text = "준비 완료!";
+                    playerReady[i].color = Color.green;
+                }
+                else
+                {
+                    playerReady[i].text = "준비 안함";
+                }
+
+                //만약에 해당 플레이어가 마스터 클라이언트(방장)이라면
+                if (PhotonNetwork.PlayerList[i].IsMasterClient)
+                {
+                    playerReady[i].gameObject.SetActive(false); // playerReady[i] 비활성화
+                    Master[i].gameObject.SetActive(true); // Master[i] 활성화
+                }
             }
             else
             {
-                playerReady[i].text = "준비 안함";
+                playerNicknames[i].text = "(없음)";
+                playerReady[i].text = "--";
             }
         }
     }
@@ -74,10 +80,21 @@ public class RoomManager : MonoBehaviourPunCallbacks
         }
     }
 
-
-    private void FixedUpdate()
+    public void LateUpdate()
     {
-        //StartCoroutine(StartButtonCountdown());
+        // 모든 플레이어가 준비 상태인지 확인합니다.
+        foreach (TextMeshProUGUI readyCheck in playerReady)
+        {
+           if (readyCheck.text != "준비 완료!" && readyCheck.text != "없음")
+           {
+                StopCoroutine(StartButtonCountdown());
+                return;
+           }
+           else 
+           {
+                StartCoroutine(StartButtonCountdown());
+           }
+        }
     }
 
     //유저들이 들어올 때 갱신해야겠죠?
@@ -96,15 +113,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private IEnumerator StartButtonCountdown()
     {
-        // 모든 플레이어가 준비 상태인지 확인
-        foreach (TextMeshProUGUI playerStatus in playerReady)
-        {
-            if (playerStatus.text != "준비 완료!" && playerStatus.text != "없음") 
-            {
-                yield break; // 모든 플레이어가 준비 상태가 아니면 코루틴 종료
-            }
-        }
-
         //20초 기다렸다가...
         yield return new WaitForSeconds(20f);
 
@@ -118,14 +126,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
     
     public void OnReadyButtonClick()
     {
-        //for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
-        //{
-        //    if (playerNicknames[i].text == PhotonNetwork.LocalPlayer.NickName)
-        //    {
-        //        ready[i] = true;
-        //        break;
-        //    }
-        //}
         ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable
             {
                 { "isReady", true }
