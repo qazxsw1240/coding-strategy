@@ -154,11 +154,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(20f);
 
         // 방장을 강퇴하고 닉네임을 "없음"으로 변경
-        if (PhotonNetwork.IsMasterClient)
-        {
-            LeavePlayer();
-            UpdatePlayerNicknames();
-        }
+        LeaveMasterPlayer();
+        UpdatePlayerNicknames();
     }
     
     public void OnReadyButtonClick()
@@ -191,7 +188,17 @@ public class RoomManager : MonoBehaviourPunCallbacks
         OnGameStart();
     }
 
-    public void LeavePlayer() 
+    public void LeaveMasterPlayer() 
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            Debug.Log("방장 잠수 강제 종료");
+            PhotonNetwork.LeaveRoom();
+            SceneManager.LoadScene("GameLobby");
+        }
+    }
+
+    public void LeavePlayer()
     {
         PhotonNetwork.LeaveRoom();
         SceneManager.LoadScene("GameLobby");
