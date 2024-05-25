@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using CodingStrategy.Photon.Chat;
 using UnityEditor.VersionControl;
+using UnityEngine.SceneManagement;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
@@ -21,7 +22,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public ChatManager ChatManager;
 
-    private bool isCountdownStarted = false;
+    private bool isCountdownStarted = true;
 
     private void Start()
     {
@@ -56,6 +57,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 //만약에 해당 플레이어가 마스터 클라이언트(방장)이라면 레디고 뭐고 방장인걸 표시해야겠죠?
                 if (PhotonNetwork.PlayerList[i].IsMasterClient)
                 {
+                    playerReady[i].text = "준비 완료!";
+                    playerReady[i].color = Color.green;
                     playerReady[i].gameObject.SetActive(false); // playerReady[i] 비활성화
                     Master[i].gameObject.SetActive(true); // Master[i] 활성화
                 }
@@ -104,13 +107,24 @@ public class RoomManager : MonoBehaviourPunCallbacks
            //한명이라도 준비 안함 상태라는 상태일 경우
             if (readyCheck.text == "준비 안함")
            {
-                StopCoroutine(StartButtonCountdown()); 
+                StopCoroutine(StartButtonCountdown());
+                isCountdownStarted = false;
                 return;
            }
             else //모두가 스타트 버튼을 누른 상태일 경우 StartButtonCountdown() 실행
             {
+                if (PhotonNetwork.PlayerList.Length < 2)
+                {
+                    return;
+                }
+
+                if (!isCountdownStarted)
+                {
+                    ChatManager.Announce("모든 플레이어가 준비 완료되었습니다.");
+                    isCountdownStarted = true; // 코루틴이 시작되었으므로 상태를 true로 설정합니다.
+                }
+                
                 StartCoroutine(StartButtonCountdown());
-                isCountdownStarted = false;
                 return;
             }
         }
@@ -136,19 +150,13 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private IEnumerator StartButtonCountdown()
     {
-        if (!isCountdownStarted)
-        {
-            ChatManager.Announce("모든 플레이어가 레디가 되었습니다. 방장은 20초내로 시작 버튼을 눌러주세요.");
-            isCountdownStarted = true;
-        }
-
         //20초 기다렸다가...
         yield return new WaitForSeconds(20f);
 
         // 방장을 강퇴하고 닉네임을 "없음"으로 변경
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.LeaveRoom();
+            LeavePlayer();
             UpdatePlayerNicknames();
         }
     }
@@ -171,16 +179,22 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             if (readyCheck.text == "준비 안함")
             {
-                Debug.Log("모든 플레이어가 준비 상태가 아닙니다.");
+                ChatManager.Announce("모든 플레이어가 준비 상태가 아닙니다.");
                 return;
             }
             else if (PhotonNetwork.PlayerList.Length < 2)
             {
-                Debug.Log("1명이서는 게임이 불가능합니다.");
+                ChatManager.Announce("1명이서는 게임이 불가능합니다.");
                 return;
             }
         }
         OnGameStart();
+    }
+
+    public void LeavePlayer() 
+    {
+        PhotonNetwork.LeaveRoom();
+        SceneManager.LoadScene("GameLobby");
     }
 
     public void OnGameStart()

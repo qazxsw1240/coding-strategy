@@ -26,8 +26,21 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         Nickname.text = PhotonNetwork.LocalPlayer.NickName;
-        DontDestroyOnLoad(gameObject);
-        PhotonNetwork.JoinLobby();
+
+        // 이미 존재하는 LobbyManager를 찾습니다.
+        LobbyManager existingLobbyManager = FindObjectsOfType<LobbyManager>().FirstOrDefault(lm => lm != this);
+
+        if (existingLobbyManager != null)
+        {
+            // 이미 LobbyManager가 존재하므로, 현재 GameObject를 파괴합니다.
+            Destroy(gameObject);
+        }
+        else
+        {
+            // LobbyManager가 존재하지 않으므로, 현재 LobbyManager를 유지합니다.
+            DontDestroyOnLoad(gameObject);
+            PhotonNetwork.JoinLobby();
+        }
     }
 
     //버튼 클릭시 오브젝트 설명 변경. (standard 설명의 경우 false로 할당하여 room을 클릭했다가 random을 클릭할 경우를 고려하였음)
