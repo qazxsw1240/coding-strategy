@@ -49,6 +49,15 @@ public class ChatManager : MonoBehaviour, IChatClientListener
 
 	#endregion General
 
+	#region Announce
+
+	public void Announce(string message)
+	{
+		chatClient.PublishMessage("RegionChannel", message);
+	}
+
+	#endregion Announce
+
 	#region PublicChat
 
 	public void SubmitPublicChatOnClick()
@@ -102,7 +111,7 @@ public class ChatManager : MonoBehaviour, IChatClientListener
 	public void OnConnected()
 	{
 		Debug.Log("Connected");
-		chatClient.Subscribe(new string[] { "RegionChannel" });
+		chatClient.Subscribe(new string[] { "RegionChannel", "AnnounceChannel" });
 	}
 
 	public void OnDisconnected()
