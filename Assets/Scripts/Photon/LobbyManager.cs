@@ -26,19 +26,9 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         Nickname.text = PhotonNetwork.LocalPlayer.NickName;
-
-        // 이미 존재하는 LobbyManager를 찾습니다.
-        LobbyManager existingLobbyManager = FindObjectsOfType<LobbyManager>().FirstOrDefault(lm => lm != this);
-
-        if (existingLobbyManager != null)
+        DontDestroyOnLoad(gameObject);
+        if (!PhotonNetwork.InLobby)
         {
-            // 이미 LobbyManager가 존재하므로, 현재 GameObject를 파괴합니다.
-            Destroy(gameObject);
-        }
-        else
-        {
-            // LobbyManager가 존재하지 않으므로, 현재 LobbyManager를 유지합니다.
-            DontDestroyOnLoad(gameObject);
             PhotonNetwork.JoinLobby();
         }
     }

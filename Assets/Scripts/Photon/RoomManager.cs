@@ -99,7 +99,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         }
     }
 
-    /*
+    /* // 이거 전시때 못써먹을 기능이라 생각되기도 하고, 무리수인 기능이라 죽여버려달라는 요청이 있었습니다. 그냥 지워버려.
     public void LateUpdate()
     {
         // 모든 플레이어가 준비 상태인지 확인합니다.
@@ -148,16 +148,16 @@ public class RoomManager : MonoBehaviourPunCallbacks
         ResetPlayerArrays();
         UpdatePlayerNicknames();
     }
-
-    private IEnumerator StartButtonCountdown()
-    {
-        //20초 기다렸다가...
-        yield return new WaitForSeconds(20f);
-
-        // 방장을 강퇴하고 닉네임을 "없음"으로 변경
-        //LeaveMasterPlayer();
-        UpdatePlayerNicknames();
-    }
+    
+    //private IEnumerator StartButtonCountdown()
+    //{
+    //    //20초 기다렸다가...
+    //    yield return new WaitForSeconds(20f);
+    //
+    //    // 방장을 강퇴하고 닉네임을 "없음"으로 변경
+    //    //LeaveMasterPlayer();
+    //    UpdatePlayerNicknames();
+    //}
     
     public void OnReadyButtonClick()
     {
@@ -195,20 +195,29 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             Debug.Log("방장 잠수 강제 종료");
             PhotonNetwork.LeaveRoom();
+            
+            GameObject existingLobbyManager = GameObject.Find("LobbyManager");
+            Destroy(existingLobbyManager);
+            
             SceneManager.LoadScene("GameLobby");
         }
     }
 
     public void LeavePlayer()
     {
+        Debug.Log("방에서 나갑니다.");
         PhotonNetwork.LeaveRoom();
+
+        GameObject existingLobbyManager = GameObject.Find("LobbyManager");
+        Destroy(existingLobbyManager);
+        
         SceneManager.LoadScene("GameLobby");
     }
 
     public void OnGameStart()
     {
         // 카운트다운을 중단합니다.
-        StopCoroutine(StartButtonCountdown());
+        //StopCoroutine(StartButtonCountdown());
 
         // 게임을 시작합니다.
         Debug.Log("게임을 시작합니다.");
