@@ -21,6 +21,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public ChatManager ChatManager;
 
+    private bool isCountdownStarted = false;
+
     private void Start()
     {
         InvokeRepeating("UpdatePlayerNicknames", 1f, 1f);
@@ -68,6 +70,18 @@ public class RoomManager : MonoBehaviourPunCallbacks
         }
     }
 
+    private void ResetPlayerArrays()
+    {
+        // 모든 텍스트 필드를 초기 상태로 리셋합니다.
+        for (int i = 0; i < playerNicknames.Length; i++)
+        {
+            playerNicknames[i].text = "(없음)";
+            playerReady[i].text = "--";
+            playerReady[i].color = Color.black;
+            Master[i].gameObject.SetActive(false);
+        }
+    }
+
     void Update()
     {
         if (PhotonNetwork.IsMasterClient)
@@ -79,18 +93,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             startButton.SetActive(false);
             readyButton.SetActive(true);
-        }
-    }
-
-    private void ResetPlayerArrays()
-    {
-        // 모든 텍스트 필드를 초기 상태로 리셋합니다.
-        for (int i = 0; i < playerNicknames.Length; i++)
-        {
-            playerNicknames[i].text = "(없음)";
-            playerReady[i].text = "--";
-            playerReady[i].color = Color.black;
-            Master[i].gameObject.SetActive(false);
         }
     }
 
@@ -108,10 +110,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
             else //모두가 스타트 버튼을 누른 상태일 경우 StartButtonCountdown() 실행
             {
                 StartCoroutine(StartButtonCountdown());
+                isCountdownStarted = false;
                 return;
             }
         }
     }
+
 
     //유저들이 들어올 때 갱신해야겠죠?
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -132,14 +136,19 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private IEnumerator StartButtonCountdown()
     {
-        ChatManager.Announce("모두가 준비 완료가 되었습니다. 방장은 시작버튼을 20초 내로 눌러주세요.");
+        if (!isCountdownStarted)
+        {
+            ChatManager.Announce("모든 플레이어가 레디가 되었습니다. 방장은 20초내로 시작 버튼을 눌러주세요.");
+            isCountdownStarted = true;
+        }
+
         //20초 기다렸다가...
         yield return new WaitForSeconds(20f);
 
         // 방장을 강퇴하고 닉네임을 "없음"으로 변경
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.CloseConnection(PhotonNetwork.LocalPlayer);
+            PhotonNetwork.LeaveRoom();
             UpdatePlayerNicknames();
         }
     }
