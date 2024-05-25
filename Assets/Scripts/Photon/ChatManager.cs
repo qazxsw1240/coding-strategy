@@ -123,16 +123,30 @@ namespace CodingStrategy.Photon.Chat
 
 		public void OnGetMessages(string channelName, string[] senders, object[] messages)
 		{
-			string msgs = "";
-			for (int i = 0; i < senders.Length; i++)
-			{
-				msgs = string.Format("{0}: {1}", senders[i], messages[i]);
+            if (channelName == "AnnounceChannel")
+            {
+				string msgs = "";
+				for (int i = 0; i < senders.Length; i++)
+				{
+					msgs = string.Format("{0}: {1}", "시스템", messages[i]);
 
-				chatDisplay.text += "\n" + msgs;
+					chatDisplay.text += "\n" + msgs;
 
-				Debug.Log(msgs);
+					Debug.Log(msgs);
+				}
 			}
+			else
+			{
+				string msgs = "";
+				for (int i = 0; i < senders.Length; i++)
+				{
+					msgs = string.Format("{0}: {1}", senders[i], messages[i]);
 
+					chatDisplay.text += "\n" + msgs;
+
+					Debug.Log(msgs);
+				}
+			}
 		}
 
 		public void OnPrivateMessage(string sender, object message, string channelName)
