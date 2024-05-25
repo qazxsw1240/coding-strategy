@@ -55,7 +55,7 @@ namespace CodingStrategy.Photon.Chat
 
 		public void Announce(string message)
 		{
-			chatClient.PublishMessage("Announce", message);
+			chatClient.PublishMessage("AnnounceChannel", message);
 		}
 
 		#endregion Announce
