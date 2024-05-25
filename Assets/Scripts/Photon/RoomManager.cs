@@ -5,6 +5,8 @@ using UnityEngine;
 using Photon.Realtime;
 using UnityEngine.UI;
 using TMPro;
+using CodingStrategy.Photon.Chat;
+using UnityEditor.VersionControl;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
@@ -16,6 +18,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public GameObject startButton; // 시작 버튼
     public GameObject readyButton; // 레디
+
+    public ChatManager ChatManager;
 
     private void Start()
     {
@@ -113,6 +117,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         base.OnPlayerEnteredRoom(newPlayer);
+        ChatManager.Announce(newPlayer.NickName + "가 입장하였습니다.");
         UpdatePlayerNicknames();
     }
 
@@ -120,12 +125,14 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         base.OnPlayerLeftRoom(otherPlayer);
+        ChatManager.Announce(otherPlayer.NickName + "가 퇴장하였습니다.");
         ResetPlayerArrays();
         UpdatePlayerNicknames();
     }
 
     private IEnumerator StartButtonCountdown()
     {
+        ChatManager.Announce("모두가 준비 완료가 되었습니다. 방장은 시작버튼을 20초 내로 눌러주세요.");
         //20초 기다렸다가...
         yield return new WaitForSeconds(20f);
 
