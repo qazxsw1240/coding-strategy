@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -884,6 +884,7 @@ MonoBehaviour:
   StandardImage: {fileID: 1664348660}
   StandardDescription: {fileID: 386331289}
   Nickname: {fileID: 664984778}
+  RoomID: 
   roomPrefab: {fileID: 4817986621349432130, guid: 878959fbb8cae1c4bbf6e72eac5e3efa, type: 3}
   contentRoomlist: {fileID: 585288245}
   PlayerInfo: {fileID: 1793798938}
@@ -2236,6 +2237,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daebdc7727aacd0418d57d5da2a567a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ready: 00000000
 --- !u!114 &1793798943
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -33,7 +33,7 @@ public class SoundManager : MonoBehaviour
         if (root == null) 
         {
             root = new GameObject { name = "@Sound" };
-            Object.DontDestroyOnLoad(root);
+            //Object.DontDestroyOnLoad(root); // Bgm을 씬마다 다르게 할거라면 주석처리 해야함.
 
             string[] soundNames = System.Enum.GetNames(typeof(Sound)); // "Bgm", "Effect"
             for (int i = 0; i < soundNames.Length - 1; i++)

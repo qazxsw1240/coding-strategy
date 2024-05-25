@@ -20,12 +20,24 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public GameObject startButton; // 시작 버튼
     public GameObject readyButton; // 레디
 
+    private SoundManager soundManager;
+
     private void Start()
     {
         GameObject playerInfo = GameObject.Find("PlayerInfo"); // 저 Lobby에서 destroy on load를 통해 갓 온 따끈따끈한 "PlayerInfo"라는 이름의 오브젝트 찾기
         playerStates = playerInfo.GetComponent<PlayerStates>(); // PlayerStates 컴포넌트 찾기
         
         InvokeRepeating("UpdatePlayerNicknames", 1f, 1f);
+
+
+        //// RoomScene Bgm을 바꾸고 싶으면 여기
+        //soundManager = FindObjectOfType<SoundManager>();
+        //soundManager.Init();
+        //// Bgm을 불러오고 재생합니다.
+        //AudioClip BgmClip = Resources.Load<AudioClip>("Sound/Game_Play_Ost");
+        //soundManager.Play(BgmClip, Sound.Bgm, 1.0f);
+        //Debug.Log("Sounding!");
+
     }
 
     public void UpdatePlayerNicknames()
@@ -45,6 +57,11 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
                 if (isReady)
                 {
+                    // 효과음을 불러오고 재생합니다.
+                    AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameRoom_Ready");
+                    soundManager.Play(effectClip, Sound.Effect, 1.0f);
+                    Debug.Log("Sounding!");
+
                     playerReady[i].text = "준비 완료!";
                     playerReady[i].color = Color.green;
                 }
@@ -170,6 +187,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 return;
             }
         }
+
+        // 효과음을 불러오고 재생합니다.
+        AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameRoom_GameStartSound");
+        soundManager.Play(effectClip, Sound.Effect, 1.0f);
+        Debug.Log("Sounding!");
+
         OnGameStart();
     }
 

@@ -26,9 +26,20 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public PlayerStates playerStates;
 
 
+    private SoundManager soundManager;
+
     //닉네임값 받아오기
     private void Start()
     {
+        // SounManager
+        soundManager = FindObjectOfType<SoundManager>();
+        soundManager.Init();
+
+        //// LobbyScene Bgm을 바꾸고 싶으면 여기
+        //AudioClip BgmClip = Resources.Load<AudioClip>("Sound/Game_Play_Ost");
+        //soundManager.Play(BgmClip, Sound.Bgm, 1.0f);
+        //Debug.Log("Sounding!");
+
         Nickname.text = PhotonNetwork.LocalPlayer.NickName;
         DontDestroyOnLoad(gameObject);
         PhotonNetwork.JoinLobby();
@@ -48,6 +59,11 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     // standard 이미지일 경우 해당 방의 ID를 받아와서 참가할 것입니다.
     public void OnJoinedRoomButtonClick()
     {
+        // 효과음을 불러오고 재생합니다.
+        AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameLobby_EnterRoom_ClickSound");
+        soundManager.Play(effectClip, Sound.Effect, 1.0f);
+        Debug.Log("Sounding!");
+
         if (RandomImage.gameObject.activeInHierarchy)
         {
             PhotonNetwork.JoinRandomRoom();

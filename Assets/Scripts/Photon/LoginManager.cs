@@ -22,6 +22,11 @@ public class LoginManager : MonoBehaviourPunCallbacks
         soundManager = FindObjectOfType<SoundManager>();
         soundManager.Init();
 
+        // Bgm을 불러오고 재생합니다.
+        AudioClip BgmClip = Resources.Load<AudioClip>("Sound/Game_Play_Ost");
+        soundManager.Play(BgmClip, Sound.Bgm, 1.0f);
+        Debug.Log("Bgm is comming out!");
+
         // startbutton이 클릭되면 이벤트 실행하게 설정해줍니다.
         startButton.onClick.AddListener(OnStartButtonClick);
 
@@ -41,7 +46,7 @@ public class LoginManager : MonoBehaviourPunCallbacks
         // 효과음을 불러오고 재생합니다.
         AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_Experience_Up");
         soundManager.Play(effectClip, Sound.Effect, 1.0f);
-        Debug.Log("Sounding!");
+        Debug.Log("Start button sound is comming out!");
 
         if (string.IsNullOrEmpty(nicknameInputField.text))
         {
