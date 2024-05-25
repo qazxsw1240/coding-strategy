@@ -1860,6 +1860,7 @@ MonoBehaviour:
   startButton: {fileID: 1153006294}
   readyButton: {fileID: 793820288}
   ChatManager: {fileID: 876854814}
+  existingLobbyManager: {fileID: 0}
 --- !u!1 &265744713
 GameObject:
   m_ObjectHideFlags: 0
@@ -5601,7 +5602,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -106.84438}
+  m_AnchoredPosition: {x: 0, y: -106.75794}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &759429614
@@ -8057,7 +8058,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1226285366}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99998885
+  m_Size: 0.99029946
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9402,7 +9403,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1136296061}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 876854814}
+        m_TargetAssemblyTypeName: CodingStrategy.Photon.Chat.ChatManager, Assembly-CSharp
+        m_MethodName: SubmitPublicChatOnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1136296061
 MonoBehaviour:
   m_ObjectHideFlags: 0
