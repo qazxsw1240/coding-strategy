@@ -24,7 +24,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public GameObject existingLoginManager;
 
     // 갱신된 방 리스트를 저장해 둘 변수
-    public static List<RoomInfo> cachedRoomList;
+    public static List<RoomInfo> cachedRoomList = new List<RoomInfo>();
 
     private void Awake()
     {
@@ -92,7 +92,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         // 방 리스트가 갱신되면 cachedRoomList에 저장해 둡니다.
-        cachedRoomList = new List<RoomInfo>();
+        //cachedRoomList = new List<RoomInfo>();
         cachedRoomList = roomList;
         UpdateRoomListUI();
     }
