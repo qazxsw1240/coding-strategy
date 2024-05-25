@@ -213,6 +213,11 @@ public class RoomManager : MonoBehaviourPunCallbacks
         SceneManager.LoadScene("GameLobby");
     }
 
+    public override void OnLeftRoom()
+    {
+        PhotonNetwork.JoinLobby();
+    }
+
     public void OnGameStart()
     {
         // 카운트다운을 중단합니다.
