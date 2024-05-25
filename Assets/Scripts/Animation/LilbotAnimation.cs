@@ -5,7 +5,7 @@ using DG.Tweening;
 
 namespace CodingStrategy.Entities.Animations
 {
-    public class LilbotController : MonoBehaviour
+    public class LilbotAnimation : MonoBehaviour
     {
         private static readonly int Speed = Animator.StringToHash("Speed");
         private static readonly int Jump = Animator.StringToHash("Jump");

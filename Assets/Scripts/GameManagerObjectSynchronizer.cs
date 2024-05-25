@@ -8,7 +8,6 @@ using CodingStrategy.Entities;
 using CodingStrategy.Entities.Animations;
 using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Placeable;
-using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
 using Photon.Pun;
 using Photon.Realtime;
@@ -65,8 +64,8 @@ namespace CodingStrategy
             GameObject robotObject = Instantiate(prefab, vectorPosition, quaternion, transform);
             robotObject.name = robotDelegate.Id;
             robotObject.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
-            LilbotController lilbotController = robotObject.AddComponent<LilbotController>();
-            lilbotController.animator = robotObject.GetComponent<Animator>();
+            LilbotAnimation lilbotAnimation = robotObject.AddComponent<LilbotAnimation>();
+            lilbotAnimation.animator = robotObject.GetComponent<Animator>();
             _robotDelegateObjects[robotDelegate] = robotObject;
         }
 
@@ -79,9 +78,9 @@ namespace CodingStrategy
                 return;
             }
 
-            LilbotController controller = robotObject.GetComponent<LilbotController>();
+            LilbotAnimation animation = robotObject.GetComponent<LilbotAnimation>();
             Vector3 end = ConvertToVector(next, 0.5f);
-            IEnumerator controllerAnimation = controller.Walk(0.5f, (int) end.x, (int) end.z);
+            IEnumerator controllerAnimation = animation.Walk(0.5f, (int) end.x, (int) end.z);
             GameManager.AnimationCoroutineManager.AddAnimation(robotObject, controllerAnimation);
         }
 
@@ -125,8 +124,6 @@ namespace CodingStrategy
                 Instantiate(GameManager.badSectorPrefab, vectorPosition, Quaternion.identity, transform);
             robotObject.name = badSectorDelegate.Id;
             robotObject.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
-            LilbotController lilbotController = robotObject.AddComponent<LilbotController>();
-            lilbotController.animator = robotObject.GetComponent<Animator>();
             _badSectorDelegateObjects[badSectorDelegate] = robotObject;
         }
 
