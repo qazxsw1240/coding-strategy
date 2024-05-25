@@ -19617,6 +19617,15 @@ MonoBehaviour:
   Botnet: {fileID: 21300000, guid: 209429b484a857145845418159870e64, type: 3}
   Malware: {fileID: 21300000, guid: 29a00c91c4eaadf498474356993147cc, type: 3}
   Worm: {fileID: 21300000, guid: 08ca34640bba30848ae6c10230af1c46, type: 3}
+  OnBuyCommandEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSellCommandEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  OnChangeCommandEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!224 &2644432177346083702
 RectTransform:
   m_ObjectHideFlags: 0
@@ -20930,10 +20939,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 0}
-      propertyPath: userName
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 5046715543361471387, guid: eb39e368aa04c124b8809977e83bbf08, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -0.0000024859241
@@ -21777,6 +21782,10 @@ PrefabInstance:
     - target: {fileID: 7376239964817283384, guid: 93ed27a927270364a935b364fa643af8, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8706438473591863898, guid: 93ed27a927270364a935b364fa643af8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 93ed27a927270364a935b364fa643af8, type: 3}
