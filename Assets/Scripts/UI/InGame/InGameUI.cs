@@ -1,3 +1,4 @@
+using CodingStrategy.UI.Shop;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace CodingStrategy.UI.InGame
         private static readonly int playerCount = 4;
         public GameTurn gameturn;
         public PlayerStatusUI[] playerStatusUI;
+        public ShopUi shopUi;
 
         // Start is called before the first frame update
         void Start() {}
