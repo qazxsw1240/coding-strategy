@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CodingStrategy.Entities;
 using CodingStrategy.Entities.Animations;
+using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Robot;
 using Photon.Pun;
 using Photon.Realtime;
@@ -20,6 +21,9 @@ namespace CodingStrategy
         private readonly IDictionary<IRobotDelegate, GameObject> _robotDelegateObjects =
             new Dictionary<IRobotDelegate, GameObject>();
 
+        private readonly IDictionary<IBadSectorDelegate, GameObject> _badSectorDelegateObjects =
+            new Dictionary<IBadSectorDelegate, GameObject>();
+
         private static Vector3 ConvertToVector(Coordinate coordinate, float heightOffset)
         {
             return new Vector3(coordinate.X, heightOffset, coordinate.Y);
@@ -31,6 +35,9 @@ namespace CodingStrategy
             GameManager.BoardDelegate.OnRobotRemove.AddListener(RemoveRobotObject);
             GameManager.BoardDelegate.OnRobotChangePosition.AddListener(MoveRobotObject);
             GameManager.BoardDelegate.OnRobotChangeDirection.AddListener(RotateRobotObject);
+
+            GameManager.BoardDelegate.OnBadSectorAdd.AddListener(AddBadSectorObject);
+            GameManager.BoardDelegate.OnBadSectorRemove.AddListener(RemoveBadSectorObject);
         }
 
         public void AddRobotObject(IRobotDelegate robotDelegate)
@@ -93,6 +100,35 @@ namespace CodingStrategy
         private void RemoveRobotDelegateObject(IRobotDelegate robotDelegate)
         {
             _robotDelegateObjects.Remove(robotDelegate);
+        }
+
+        public void AddBadSectorObject(IBadSectorDelegate badSectorDelegate)
+        {
+            Coordinate position = badSectorDelegate.Position;
+            Vector3 vectorPosition = ConvertToVector(position, 0.5f);
+            GameObject robotObject = Instantiate(GameManager.badSectorPrefab, vectorPosition, Quaternion.identity, transform);
+            robotObject.name = badSectorDelegate.Id;
+            robotObject.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
+            LilbotController lilbotController = robotObject.AddComponent<LilbotController>();
+            lilbotController.animator = robotObject.GetComponent<Animator>();
+            _badSectorDelegateObjects[badSectorDelegate] = robotObject;
+        }
+
+        public void RemoveBadSectorObject(IBadSectorDelegate badSectorDelegate)
+        {
+            GameObject? robotGameObject = FindBadSectorDelegateObject(badSectorDelegate);
+            RemoveBadSectorDelegateObject(badSectorDelegate);
+            Destroy(robotGameObject);
+        }
+
+        private GameObject? FindBadSectorDelegateObject(IBadSectorDelegate badSectorDelegate)
+        {
+            return !_badSectorDelegateObjects.TryGetValue(badSectorDelegate, out GameObject? o) ? null : o;
+        }
+
+        private void RemoveBadSectorDelegateObject(IBadSectorDelegate badSectorDelegate)
+        {
+            _badSectorDelegateObjects.Remove(badSectorDelegate);
         }
 
         private GameObject FindRobotPrefab(IRobotDelegate robotDelegate)
