@@ -14,23 +14,30 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public TextMeshProUGUI RandomDescription;
     public RawImage StandardImage;
     public TextMeshProUGUI StandardDescription;
-    public TextMeshProUGUI Nickname;
+    public TextMeshProUGUI LobbyNickname;
 
     public string RoomID;
 
     public GameObject roomPrefab;
     public Transform contentRoomlist;
 
+    public GameObject existingLoginManager;
 
-    //닉네임값 받아오기
-    private void Start()
+
+    private void Awake()
     {
-        Nickname.text = PhotonNetwork.LocalPlayer.NickName;
-        DontDestroyOnLoad(gameObject);
+        LobbyNickname.text = PhotonNetwork.LocalPlayer.NickName;
+        existingLoginManager = GameObject.Find("LoginManager");
         if (!PhotonNetwork.InLobby)
         {
             PhotonNetwork.JoinLobby();
         }
+    }
+
+    //닉네임값 받아오기
+    private void Start()
+    {
+        DontDestroyOnLoad(gameObject);
     }
 
     //버튼 클릭시 오브젝트 설명 변경. (standard 설명의 경우 false로 할당하여 room을 클릭했다가 random을 클릭할 경우를 고려하였음)
@@ -61,9 +68,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         base.OnJoinedRoom();
         Debug.Log("Successfully joined room");
-
-        Player localPlayer = PhotonNetwork.LocalPlayer;
-
+        Destroy(existingLoginManager);
         SceneManager.LoadScene("GameRoom");
     }
 

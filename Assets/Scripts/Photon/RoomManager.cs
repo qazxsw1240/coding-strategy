@@ -21,11 +21,11 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public GameObject readyButton; // 레디
 
     public ChatManager ChatManager;
-
-    private bool isCountdownStarted = true;
+    public GameObject existingLobbyManager;
 
     private void Start()
     {
+        existingLobbyManager = GameObject.Find("LobbyManager");
         InvokeRepeating("UpdatePlayerNicknames", 1f, 1f);
     }
 
@@ -189,26 +189,25 @@ public class RoomManager : MonoBehaviourPunCallbacks
         OnGameStart();
     }
 
-    public void LeaveMasterPlayer() 
-    {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            Debug.Log("방장 잠수 강제 종료");
-            PhotonNetwork.LeaveRoom();
-            
-            GameObject existingLobbyManager = GameObject.Find("LobbyManager");
-            Destroy(existingLobbyManager);
-            
-            SceneManager.LoadScene("GameLobby");
-        }
-    }
+    //public void LeaveMasterPlayer() 
+    //{
+    //    if (PhotonNetwork.IsMasterClient)
+    //    {
+    //        Debug.Log("방장 잠수 강제 종료");
+    //        PhotonNetwork.LeaveRoom();
+    //        
+    //        GameObject existingLobbyManager = GameObject.Find("LobbyManager");
+    //        Destroy(existingLobbyManager);
+    //        
+    //        SceneManager.LoadScene("GameLobby");
+    //    }
+    //}
 
     public void LeavePlayer()
     {
         Debug.Log("방에서 나갑니다.");
         PhotonNetwork.LeaveRoom();
 
-        GameObject existingLobbyManager = GameObject.Find("LobbyManager");
         Destroy(existingLobbyManager);
         
         SceneManager.LoadScene("GameLobby");
