@@ -154,7 +154,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(20f);
 
         // 방장을 강퇴하고 닉네임을 "없음"으로 변경
-        LeaveMasterPlayer();
+        //LeaveMasterPlayer();
         UpdatePlayerNicknames();
     }
     
