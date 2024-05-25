@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace Photon.Pun
+namespace CodingStrategy.Photon.Chat
 {
 	public class ChatManager : MonoBehaviour, IChatClientListener
 	{
