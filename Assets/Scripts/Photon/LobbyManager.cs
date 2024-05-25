@@ -6,7 +6,6 @@ using Photon.Realtime;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
-using CodingStrategy.PlayerStates;
 using System.Linq;
 
 public class LobbyManager : MonoBehaviourPunCallbacks

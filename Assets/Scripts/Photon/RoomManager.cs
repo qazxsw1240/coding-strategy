@@ -5,7 +5,6 @@ using UnityEngine;
 using Photon.Realtime;
 using UnityEngine.UI;
 using TMPro;
-using CodingStrategy.PlayerStates;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
