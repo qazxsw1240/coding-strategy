@@ -99,6 +99,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         }
     }
 
+    /*
     public void LateUpdate()
     {
         // 모든 플레이어가 준비 상태인지 확인합니다.
@@ -129,7 +130,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
             }
         }
     }
-
+    */
 
     //유저들이 들어올 때 갱신해야겠죠?
     public override void OnPlayerEnteredRoom(Player newPlayer)
