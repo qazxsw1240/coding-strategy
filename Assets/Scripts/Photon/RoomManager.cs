@@ -216,6 +216,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         PhotonNetwork.JoinLobby();
+        
     }
 
     public void OnGameStart()

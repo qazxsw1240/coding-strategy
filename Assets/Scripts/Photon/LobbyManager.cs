@@ -92,7 +92,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         // 방 리스트가 갱신되면 cachedRoomList에 저장해 둡니다.
-        //cachedRoomList = new List<RoomInfo>();
         cachedRoomList = roomList;
         UpdateRoomListUI();
     }

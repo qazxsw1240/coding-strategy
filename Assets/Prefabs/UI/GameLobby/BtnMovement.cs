@@ -26,7 +26,7 @@ public class BtnMovement : MonoBehaviour
 
         isAnimating = true;
 
-        DG.Tweening.Sequence sequence = DG.Tweening.DOTween.Sequence();
+        DG.Tweening.Sequence sequence = DOTween.Sequence();
 
         // 애니메이션 시작 시 activeAnimations 값을 증가
         sequence.AppendCallback(() =>
@@ -36,7 +36,7 @@ public class BtnMovement : MonoBehaviour
         });
 
         sequence.Append(this.transform.DOMove(targetPos, 0.5f));
-        sequence.Append(this.transform.DOMove(originalPos, 0.5f));
+        sequence.Append(this.transform.DOMove(originalPos, 0.25f));
 
         // 애니메이션 종료 시 activeAnimations 값을 감소
         sequence.AppendCallback(() =>
