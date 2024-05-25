@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using CodingStrategy.Entities;
 using CodingStrategy.Entities.Animations;
 using CodingStrategy.Entities.BadSector;
+using CodingStrategy.Entities.Placeable;
+using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
 using Photon.Pun;
 using Photon.Realtime;
@@ -24,6 +26,9 @@ namespace CodingStrategy
         private readonly IDictionary<IBadSectorDelegate, GameObject> _badSectorDelegateObjects =
             new Dictionary<IBadSectorDelegate, GameObject>();
 
+        private readonly IDictionary<IPlaceable, GameObject> _placeableObjects =
+            new Dictionary<IPlaceable, GameObject>();
+
         private static Vector3 ConvertToVector(Coordinate coordinate, float heightOffset)
         {
             return new Vector3(coordinate.X, heightOffset, coordinate.Y);
@@ -38,6 +43,16 @@ namespace CodingStrategy
 
             GameManager.BoardDelegate.OnBadSectorAdd.AddListener(AddBadSectorObject);
             GameManager.BoardDelegate.OnBadSectorRemove.AddListener(RemoveBadSectorObject);
+
+            GameManager.BoardDelegate.OnPlaceableAdd.AddListener(AddPlaceableObject);
+            GameManager.BoardDelegate.OnPlaceableRemove.AddListener(RemovePlaceableObject);
+        }
+
+        public void OnDestroy()
+        {
+            _robotDelegateObjects.Clear();
+            _badSectorDelegateObjects.Clear();
+            _placeableObjects.Clear();
         }
 
         public void AddRobotObject(IRobotDelegate robotDelegate)
@@ -106,7 +121,8 @@ namespace CodingStrategy
         {
             Coordinate position = badSectorDelegate.Position;
             Vector3 vectorPosition = ConvertToVector(position, 0.5f);
-            GameObject robotObject = Instantiate(GameManager.badSectorPrefab, vectorPosition, Quaternion.identity, transform);
+            GameObject robotObject =
+                Instantiate(GameManager.badSectorPrefab, vectorPosition, Quaternion.identity, transform);
             robotObject.name = badSectorDelegate.Id;
             robotObject.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
             LilbotController lilbotController = robotObject.AddComponent<LilbotController>();
@@ -129,6 +145,47 @@ namespace CodingStrategy
         private void RemoveBadSectorDelegateObject(IBadSectorDelegate badSectorDelegate)
         {
             _badSectorDelegateObjects.Remove(badSectorDelegate);
+        }
+
+        public void AddPlaceableObject(IPlaceable placeable)
+        {
+            if (placeable is not IBitDelegate bitDelegate)
+            {
+                return;
+            }
+
+            Coordinate coordinate = bitDelegate.Position;
+            Vector3 position = ConvertToVector(coordinate, 1.5f);
+            GameObject bitGameObject =
+                Instantiate(GameManager.bitPrefab, position, Quaternion.Euler(90f, 0, 0), transform);
+            bitDelegate.OnRobotTakeInEvents.AddListener(_ => bitGameObject.SetActive(false));
+            bitDelegate.OnRobotTakeAwayEvents.AddListener(_ => bitGameObject.SetActive(true));
+            _placeableObjects[placeable] = bitGameObject;
+        }
+
+        public void RemovePlaceableObject(IPlaceable placeable)
+        {
+            if (placeable is not IBitDelegate bitDelegate)
+            {
+                return;
+            }
+
+            GameObject? bitGameObject = FindPlaceableObject(bitDelegate);
+
+            if (bitGameObject == null)
+            {
+                return;
+            }
+
+            BitAnimation bitAnimation = bitGameObject.GetComponent<BitAnimation>();
+            bitAnimation.GetBit();
+
+            _placeableObjects.Remove(placeable);
+        }
+
+        private GameObject? FindPlaceableObject(IPlaceable placeable)
+        {
+            return !_placeableObjects.TryGetValue(placeable, out GameObject? o) ? null : o;
         }
 
         private GameObject FindRobotPrefab(IRobotDelegate robotDelegate)
