@@ -14,7 +14,6 @@ namespace CodingStrategy.UI.InGame
         public static readonly Color Green = new Vector4(173, 220, 156, 255) / 255;
         public static readonly Color Blue = new Vector4(78, 149, 217, 255) / 255;
         public static readonly Color Yellow = new Vector4(245, 184, 0, 255) / 255;
-        public static Vector2 ButtonSize;
 
         public TMP_Text Rank;
         public TMP_Text Name;
@@ -22,10 +21,8 @@ namespace CodingStrategy.UI.InGame
         public Image image;
         public GameObject robotLife;
         public GameObject playerLife;
-        public Button button;
+        public Button button, bigButton;
         public GameObject status;
-
-		private UnityAction unityAction;
 
 		public void SetColor(Color color)
         {
@@ -94,26 +91,10 @@ namespace CodingStrategy.UI.InGame
         // Start is called before the first frame update
         void Start()
         {
-            ButtonSize = status.GetComponent<RectTransform>().sizeDelta;
-			unityAction += ToggleActive;
-            button.onClick.AddListener(unityAction);
-            status.GetComponent<Button>().onClick.AddListener(unityAction);
-        }
-
-        
-        private void ToggleActive()
-        {
-			if (status.activeSelf)
-            {
-                status.SetActive(false);
-                button.GetComponent<RectTransform>().sizeDelta = ButtonSize;
-            }
-            else
-            {
-                status.SetActive(true);
-				button.GetComponent<RectTransform>().sizeDelta = 10 * ButtonSize;
-			}
-        }
+            button = transform.GetChild(transform.childCount - 1).GetComponent<Button>();
+            button.onClick.AddListener(() => { status.SetActive(true); bigButton.gameObject.SetActive(true); });
+            bigButton.onClick.AddListener(() => { status.SetActive(false); bigButton.gameObject.SetActive(false); });
+		}
 
         // Update is called once per frame
         void Update() {}
