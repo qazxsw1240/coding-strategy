@@ -53,7 +53,7 @@ public class ChatManager : MonoBehaviour, IChatClientListener
 
 	public void Announce(string message)
 	{
-		chatClient.PublishMessage("RegionChannel", message);
+		chatClient.PublishMessage("Announce", message);
 	}
 
 	#endregion Announce
