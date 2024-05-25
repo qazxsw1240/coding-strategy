@@ -13,12 +13,6 @@ public class ChatManager : MonoBehaviour, IChatClientListener
 
 	ChatClient chatClient;
 	bool isConnected;
-	[SerializeField] string username;
-
-	public void UsernameOnValueChange(string valueIn)
-	{
-		username = valueIn;
-	}
 
 	#endregion Setup
 
@@ -35,7 +29,7 @@ public class ChatManager : MonoBehaviour, IChatClientListener
 		isConnected = true;
 		chatClient = new ChatClient(this);
 		chatClient.ChatRegion = "kr";
-		chatClient.Connect(PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat, PhotonNetwork.AppVersion, new AuthenticationValues(username));
+		chatClient.Connect(PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat, PhotonNetwork.AppVersion, new AuthenticationValues(PhotonNetwork.NickName));
 		Debug.Log("Connecting");
 	}
 
