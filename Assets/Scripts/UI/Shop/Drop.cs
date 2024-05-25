@@ -24,17 +24,17 @@ namespace CodingStrategy.UI.Shop
             Drag draggable = eventData.pointerDrag.GetComponent<Drag>();
             if (draggable == null) return;
 
-            if (slotName == "ShopItem")
+            if (slotName == "ShopCommand")
             {
                 Drag drag = SetDrag();
-                name = slotName = "SelectedItem";
+                name = slotName = "MyCommand";
                 OnBuyCommandEvent.Invoke(draggable.GetIndex(), drag.GetIndex());
                 //transform.GetChild(0).GetComponent<Image>().sprite = draggable.transform.GetChild(0).GetComponent<Image>().sprite;
                 //draggable.SetVisible(false);
             }
-            else if (slotName == "SelectedItem")
+            else if (slotName == "MyCommand")
             {
-                if (name == "SelectedItem")
+                if (name == "MyCommand")
                 {
                     Drag drag = SetDrag();
                     OnChangeCommandEvent.Invoke(draggable.GetIndex(), drag.GetIndex());
