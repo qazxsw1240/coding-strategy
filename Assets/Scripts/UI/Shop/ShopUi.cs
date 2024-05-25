@@ -1,13 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using CodingStrategy.Entities;
 using TMPro;
 using UnityEngine.UI;
-using NUnit.Framework;
-using System;
-using System.Xml.Linq;
+using UnityEngine.Events;
 using Unity.VisualScripting;
 
 
@@ -36,12 +31,15 @@ namespace CodingStrategy.UI.Shop
 
         public Sprite Empty, Plus, Lock, UpArrow, LeftArrow, RightArrow, LeftUpArrow, RightUpArrow, LeftRotation, RightRotation, MineCoin, Botnet, Malware, Worm;
 
+        public UnityEvent<int, int> OnBuyCommandEvent;
+        public UnityEvent<int> OnSellCommandEvent;
+        public UnityEvent<int, int> OnChangeCommandEvent;
 
         public void ClearShop()
         {
             foreach (Transform child in shopItemList.transform)
             {
-                child.gameObject.SetActive(true);
+                child.GetComponent<Drag>().SetVisible(true);
             }
         }
 

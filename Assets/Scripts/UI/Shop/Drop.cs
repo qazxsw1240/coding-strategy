@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -11,37 +12,58 @@ namespace CodingStrategy.UI.Shop
     public class Drop : MonoBehaviour, IDropHandler
     {
         public string slotName;
-        private Sprite emptySprite;
+        private UnityEvent<int, int> OnBuyCommandEvent;
+        private UnityEvent<int> OnSellCommandEvent;
+        private UnityEvent<int, int> OnChangeCommandEvent;
 
         public void OnDrop(PointerEventData eventData)
         {
-            if (eventData.pointerDrag.name == slotName)
+            if (gameObject == eventData.pointerDrag) return;
+            if (eventData.pointerDrag.name != slotName) return;
+
+            Drag draggable = eventData.pointerDrag.GetComponent<Drag>();
+            if (draggable == null) return;
+
+            if (slotName == "ShopItem")
             {
-                if (slotName == "ShopItem")
+                Drag drag = SetDrag();
+                name = slotName = "SelectedItem";
+                OnBuyCommandEvent.Invoke(draggable.GetIndex(), drag.GetIndex());
+                //transform.GetChild(0).GetComponent<Image>().sprite = draggable.transform.GetChild(0).GetComponent<Image>().sprite;
+                //draggable.SetVisible(false);
+            }
+            else if (slotName == "SelectedItem")
+            {
+                if (name == "SelectedItem")
                 {
-                    Drag draggable = eventData.pointerDrag.GetComponent<Drag>();
-                    if (draggable == null) return;
-                    Debug.Log("Ondrop Buy index " + draggable.transform.GetSiblingIndex() + " to " + transform.GetSiblingIndex());
-                    transform.GetChild(0).GetComponent<Image>().sprite = draggable.transform.GetChild(0).GetComponent<Image>().sprite;
-                    transform.name = "SelectedItem";
-                    transform.AddComponent<Drag>();
-                    //Destroy(GetComponent<Drop>());
-                    slotName = "SelectedItem";
-                    //draggable.ResetPosition();
+                    Drag drag = SetDrag();
+                    OnChangeCommandEvent.Invoke(draggable.GetIndex(), drag.GetIndex());
                 }
-                else if (slotName == "SelectedItem")
+                else if (name == "ItemSelectInfo")
                 {
-					Drag draggable = eventData.pointerDrag.GetComponent<Drag>();
-                    if (draggable == null) return;
-					Debug.Log("Ondrop Sell index " + draggable.transform.GetSiblingIndex());
-				}
-			}
+                    OnSellCommandEvent.Invoke(draggable.GetIndex());
+                }
+            }
+        }
+
+        private Drag SetDrag()
+        {
+            Drag drag = transform.GetComponent<Drag>();
+            if (drag == null)
+            {
+                drag = transform.AddComponent<Drag>();
+            }
+            drag.SetIndex(transform.GetSiblingIndex());
+            return drag;
         }
 
         // Start is called before the first frame update
         void Start()
         {
-            ;
+            ShopUi shopUi = GameObject.Find("ShopUI").GetComponent<ShopUi>();
+            OnBuyCommandEvent = shopUi.OnBuyCommandEvent;
+            OnSellCommandEvent = shopUi.OnSellCommandEvent;
+            OnChangeCommandEvent = shopUi.OnChangeCommandEvent;
         }
 
         // Update is called once per frame
