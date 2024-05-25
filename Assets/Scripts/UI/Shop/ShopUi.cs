@@ -24,74 +24,58 @@ namespace CodingStrategy.UI.Shop
         //ReroadBit
         public TMP_Text reroadBit;
 
-        public GameObject plusIcon;
+        public Transform shopCommandList;
+        public Transform myCommandList;
 
-        public GameObject shopItemList;
-        public GameObject myItemList;
-
-        public Sprite Empty, Plus, Lock, UpArrow, LeftArrow, RightArrow, LeftUpArrow, RightUpArrow, LeftRotation, RightRotation, MineCoin, Botnet, Malware, Worm;
+        public GameObject[] iconList;
 
         public UnityEvent<int, int> OnBuyCommandEvent;
         public UnityEvent<int> OnSellCommandEvent;
         public UnityEvent<int, int> OnChangeCommandEvent;
 
-        public void ClearShop()
+        public void DestoryChildren(Transform transform)
         {
-            foreach (Transform child in shopItemList.transform)
-            {
-                child.GetComponent<Drag>().SetVisible(true);
-            }
+			while (transform.childCount > 0)
+			{
+				Destroy(transform.GetChild(0).gameObject);
+			}
         }
 
-        private Sprite GetCommandSprite(ICommand command)
+        public void ClearShopCommandList()
         {
-            return command.Info.Name == "UpArrow" ? UpArrow
-                    : command.Info.Name == "LeftArrow" ? LeftArrow
-                    : command.Info.Name == "RightArrow" ? RightArrow
-                    : command.Info.Name == "LeftUpArrow" ? LeftUpArrow
-                    : command.Info.Name == "RightUpArrow" ? RightUpArrow
-                    : command.Info.Name == "LeftRotation" ? LeftRotation
-                    : command.Info.Name == "RightRotation" ? RightRotation
-                    : command.Info.Name == "MineCoin" ? MineCoin
-                    : command.Info.Name == "Botnet" ? Botnet
-                    : command.Info.Name == "Malware" ? Malware
-                    : command.Info.Name == "Worm" ? Worm
-                    : Plus;
+            DestoryChildren(shopCommandList);
         }
 
-        public void SetShopCommand(int index, Sprite sprite)
-        {
-            shopItemList.transform.GetChild(index).GetChild(0).GetComponent<Image>().sprite = sprite;
-        }
-
-        public void SetShopCommandList(ICommand[] commandList)
-        {
-            for (int i = 0; i < 5 && i < commandList.Length; i++)
-            {
-                SetShopCommand(i, GetCommandSprite(commandList[i]));
-            }
-        }
-
-        public void AddMyEmptyCommand(int index)
-        {
-            Transform _parent = gameObject.transform.Find("SelectedCommandList");
-            GameObject _object = Instantiate(plusIcon, _parent);
-            _object.transform.SetSiblingIndex(index);
-        }
-
-        public void SetMyCommand(int index, Sprite sprite)
-        {
-            Transform _object = myItemList.transform.GetChild(index);
-			_object.GetChild(0).GetComponent<Image>().sprite = sprite;
-			_object.name = "SelectedItem";
-            _object.AddComponent<Drag>();
+		public void ClearMyCommandList()
+		{
+            DestoryChildren(myCommandList);
 		}
 
-        public void SetMyCommandList(ICommand[] commandList)
+		public void SetShopCommandList(ICommand[] commandList)
         {
-			for (int i = 0; i < commandList.Length; i++)
+            ClearShopCommandList();
+            foreach (ICommand command in commandList)
+            {
+                GameObject _object = Instantiate(iconList[int.Parse(command.Id)], shopCommandList.parent);
+                Drop drop = _object.GetComponent<Drop>();
+                if (drop != null)
+                {
+                    drop.slotName = "ShopCommand";
+                }
+            }
+        }
+
+		public void SetMyCommandList(ICommand[] commandList)
+        {
+            ClearMyCommandList();
+			foreach (ICommand command in commandList)
 			{
-				SetMyCommand(i, GetCommandSprite(commandList[i]));
+				GameObject _object = Instantiate(iconList[int.Parse(command.Id)], shopCommandList.parent);
+				Drop drop = _object.GetComponent<Drop>();
+				if (drop != null)
+				{
+					drop.slotName = "MyCommand";
+				}
 			}
 		}
 
@@ -132,17 +116,7 @@ namespace CodingStrategy.UI.Shop
         }
 
         // Start is called before the first frame update
-        void Start() {
-            SetShopCommand(0, MineCoin);
-            SetShopCommand(1, Botnet);
-            SetShopCommand(2, LeftUpArrow);
-            SetShopCommand(3, LeftRotation);
-            SetShopCommand(4, Malware);
-
-            AddMyEmptyCommand(0);
-            AddMyEmptyCommand(0);
-            AddMyEmptyCommand(0);
-        }
+        void Start() {}
 
         // Update is called once per frame
         void Update() {}
