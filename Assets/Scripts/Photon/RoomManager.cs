@@ -1,11 +1,10 @@
 ﻿using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using Photon.Realtime;
-using UnityEngine.UI;
 using TMPro;
 using CodingStrategy.Photon.Chat;
+using CodingStrategy.Utility;
 using UnityEngine.SceneManagement;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -14,39 +13,47 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public TextMeshProUGUI[] playerNicknames; // 플레이어 닉네임 텍스트 배열
     public TextMeshProUGUI[] playerReady; // 플레이어 닉네임 텍스트 배열
     public TextMeshProUGUI[] Master;
-    
+
     public bool[] ready = new bool[3];
 
     public GameObject startButton; // 시작 버튼
     public GameObject readyButton; // 레디
 
     public ChatManager ChatManager;
-    public GameObject existingLobbyManager;
 
     private void Start()
     {
-        existingLobbyManager = GameObject.Find("LobbyManager");
-        // InvokeRepeating("UpdatePlayerNicknames", 1f, 1f);
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
+            {
+                { "isReady", PhotonNetwork.IsMasterClient ? 1 : 0 }
+            });
+        }
 
-        UpdatePlayerNicknames();
+        // UpdatePlayerNicknames();
+    }
+
+    public override void OnJoinedRoom()
+    {
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
+        {
+            { "isReady", PhotonNetwork.IsMasterClient ? 1 : 0 }
+        });
+        // UpdatePlayerNicknames();
     }
 
     public void UpdatePlayerNicknames()
     {
-        //Debug.Log("리로드");
-        for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
+        foreach ((int i, Player player) in PhotonNetwork.PlayerList.ToIndexed())
         {
-            //playerNicknames의 0번째에 playerStates 클래스 내에 정의된 playersinRoom의 i번째의 유저의 닉네임을 가져옵니다.
-            //근데 PlayerList[i]의 값이 Null이 아니야! >> 그러면 이제 그 위치의 닉네임 변경해주는겁니다.
-            if (PhotonNetwork.PlayerList[i].NickName!=null)
-            { 
-                playerNicknames[i].text = PhotonNetwork.PlayerList[i].NickName;
-                
-                // 그리고 그 PlayerList의 customProperties의 Hashtage "isReady"의 값을 받아와서, 그게 true일 경우 "준비 완료!"를 띄울겁니다.
-                bool isReady = PhotonNetwork.PlayerList[i].CustomProperties.ContainsKey("isReady")
-                       && (bool)PhotonNetwork.PlayerList[i].CustomProperties["isReady"];
+            if (player.NickName != null)
+            {
+                playerNicknames[i].text = player.NickName;
 
-                if (isReady)
+                int isReady = (int) player.CustomProperties["isReady"];
+
+                if (isReady == 1)
                 {
                     playerReady[i].text = "준비 완료!";
                     playerReady[i].color = Color.green;
@@ -57,7 +64,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 }
 
                 //만약에 해당 플레이어가 마스터 클라이언트(방장)이라면 레디고 뭐고 방장인걸 표시해야겠죠?
-                if (PhotonNetwork.PlayerList[i].IsMasterClient)
+                if (player.IsMasterClient)
                 {
                     playerReady[i].text = "준비 완료!";
                     playerReady[i].color = Color.green;
@@ -126,7 +133,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
                     ChatManager.Announce("모든 플레이어가 준비 완료되었습니다.");
                     isCountdownStarted = true; // 코루틴이 시작되었으므로 상태를 true로 설정합니다.
                 }
-                
+
                 StartCoroutine(StartButtonCountdown());
                 return;
             }
@@ -137,26 +144,73 @@ public class RoomManager : MonoBehaviourPunCallbacks
     //유저들이 들어올 때 갱신해야겠죠?
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
+        LogPlayerProperties(newPlayer);
         // base.OnPlayerEnteredRoom(newPlayer);
         ChatManager.Announce(newPlayer.NickName + "가 입장하였습니다.");
-        UpdatePlayerNicknames();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
+            {
+                { "C1", PhotonNetwork.CurrentRoom.PlayerCount }
+            });
+        }
+
+        // UpdatePlayerNicknames();
     }
 
     //유저들이 나갈 때 갱신해야겠죠?
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        LogPlayerProperties(otherPlayer);
         // base.OnPlayerLeftRoom(otherPlayer);
         ChatManager.Announce(otherPlayer.NickName + "가 퇴장하였습니다.");
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
+            {
+                { "C1", PhotonNetwork.CurrentRoom.PlayerCount }
+            });
+        }
+
         ResetPlayerArrays();
         UpdatePlayerNicknames();
     }
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
+        LogPlayerProperties(targetPlayer);
         if (changedProps.ContainsKey("isReady"))
         {
+            ResetPlayerArrays();
             UpdatePlayerNicknames();
         }
+    }
+
+    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+    {
+        LogRoomProperties();
+    }
+
+    public void LogPlayerProperties(Player player)
+    {
+        StringBuilder builder = new StringBuilder();
+        foreach ((object key, object value) in player.CustomProperties)
+        {
+            builder.AppendLine($"{key}: {value}");
+        }
+
+        Debug.Log(builder.ToString());
+    }
+
+    public void LogRoomProperties()
+    {
+        StringBuilder builder = new StringBuilder();
+        foreach ((object key, object value) in PhotonNetwork.CurrentRoom.CustomProperties)
+        {
+            builder.AppendLine($"{key}: {value}");
+        }
+
+        Debug.Log(builder.ToString());
     }
 
     //private IEnumerator StartButtonCountdown()
@@ -168,17 +222,17 @@ public class RoomManager : MonoBehaviourPunCallbacks
     //    //LeaveMasterPlayer();
     //    UpdatePlayerNicknames();
     //}
-    
+
     public void OnReadyButtonClick()
     {
-        ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable
-            {
-                { "isReady", true }
-            };
+        Hashtable props = new Hashtable
+        {
+            { "isReady", 1 }
+        };
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         // UpdatePlayerNicknames();
     }
-    
+
 
     public void OnStartButtonClicked()
     {
@@ -196,6 +250,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 return;
             }
         }
+
         OnGameStart();
     }
 
@@ -216,23 +271,13 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public void LeavePlayer()
     {
         Debug.Log("방에서 나갑니다.");
-        int currentPlayerCount = (int) PhotonNetwork.CurrentRoom.CustomProperties["C1"];
-        PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
-        {
-            { "C1", (currentPlayerCount - 1) }
-        });
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { {"isReady", 0 } });
         PhotonNetwork.LeaveRoom();
-
-        // Destroy(existingLobbyManager);
-        
-        // SceneManager.LoadScene("GameLobby");
     }
 
     public override void OnLeftRoom()
     {
-        // PhotonNetwork.JoinLobby();
         SceneManager.LoadScene("GameLobby");
-        Debug.LogFormat("In Lobby after Room leaving: {0} ", PhotonNetwork.CurrentLobby);
     }
 
     public void OnGameStart()
