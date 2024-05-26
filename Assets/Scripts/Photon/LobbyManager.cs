@@ -91,6 +91,11 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             });
         }
 
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
+        {
+            { "isReady", PhotonNetwork.IsMasterClient ? 1 : 0 }
+        });
+
         SceneManager.LoadScene("GameRoom");
     }
 
