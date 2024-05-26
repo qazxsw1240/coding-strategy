@@ -45,8 +45,9 @@ public class LoginManager : MonoBehaviourPunCallbacks
     public void OnStartButtonClick()
     {
         // 효과음을 불러오고 재생합니다.
-        AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_Experience_Up");
-        soundManager.Play(effectClip, Sound.Effect, 1.0f);
+        //AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_Experience_Up");
+        //soundManager.Play(effectClip, Sound.Effect, 1.0f);
+
         Debug.Log("Start button sound is comming out!");
 
         if (string.IsNullOrEmpty(nicknameInputField.text))
