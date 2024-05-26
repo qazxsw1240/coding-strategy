@@ -31,6 +31,8 @@ namespace CodingStrategy.Entities.Runtime
 
         private int _currentCountdown;
 
+        private ICommandContext _commandContext = null!;
+
         public IBoardDelegate BoardDelegate { private get; set; } = null!;
 
         public IRobotDelegatePool RobotDelegatePool { private get; set; } = null!;
@@ -96,6 +98,10 @@ namespace CodingStrategy.Entities.Runtime
                 }
 
                 ICommand command = algorithm[_currentCountdown % algorithm.Count];
+                ICommandContext commandContext = BuildCommandContext(robotDelegate);
+
+                // TODO : use
+
                 foreach (IStatement statement in command.GetCommandStatements(robotDelegate))
                 {
                     executionQueue.Add(statement);
@@ -170,6 +176,16 @@ namespace CodingStrategy.Entities.Runtime
         private static bool IsExecutionQueueEmpty(ExecutionQueuePool pool)
         {
             return pool.Values.All(executionQueue => executionQueue.Count == 0);
+        }
+
+        private ICommandContext BuildCommandContext(IRobotDelegate robotDelegate)
+        {
+            IPlayerDelegate playerDelegate = PlayerPool[robotDelegate.Id];
+            return new CommandContextImpl(BoardDelegate,
+                RobotDelegatePool,
+                PlayerPool,
+                robotDelegate,
+                playerDelegate);
         }
     }
 }
