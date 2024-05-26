@@ -59,15 +59,15 @@ namespace CodingStrategy.UI.InGame
             shopScrollRect.horizontalNormalizedPosition += direction * Time.deltaTime / time;
             if (shopScrollRect.horizontalNormalizedPosition < 0.01f)
             {
-                shopScrollRect.StopMovement();
                 shopScrollRect.horizontalNormalizedPosition = 0.0f;
+                shopScrollRect.StopMovement();
                 shopScrollRect.enabled = true;
                 direction = 0;
             }
             else if (0.99f < shopScrollRect.horizontalNormalizedPosition)
             {
-                shopScrollRect.StopMovement();
                 shopScrollRect.horizontalNormalizedPosition = 1.0f;
+                shopScrollRect.StopMovement();
                 shopScrollRect.enabled = true;
                 direction = 0;
             }
