@@ -26,10 +26,11 @@ namespace CodingStrategy.UI.InGame
         [SerializeField] private GameObject robotLife;
         [SerializeField] private GameObject playerLife;
         [SerializeField] private string userID;
-        public Button button, bigButton;
-        public GameObject status;
+		[SerializeField] public Button button, bigButton;
+		[SerializeField] public GameObject status;
+		[SerializeField] public UnityEvent OnPlayerUIClickEvent;
 
-        public string GetUserID()
+		public string GetUserID()
         {
             return userID;
         }
@@ -112,8 +113,13 @@ namespace CodingStrategy.UI.InGame
         void Start()
         {
             button = transform.GetChild(transform.childCount - 1).GetComponent<Button>();
-            button.onClick.AddListener(() => { status.SetActive(true); bigButton.gameObject.SetActive(true); });
-            bigButton.onClick.AddListener(() => { status.SetActive(false); bigButton.gameObject.SetActive(false); });
+            button.onClick.AddListener(() => { 
+                status.SetActive(true); 
+                bigButton.gameObject.SetActive(true);
+                OnPlayerUIClickEvent.Invoke(); });
+            bigButton.onClick.AddListener(() => {
+                status.SetActive(false);
+                bigButton.gameObject.SetActive(false); });
 	}
 
         // Update is called once per frame
