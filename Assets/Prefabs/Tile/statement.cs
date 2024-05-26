@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class statement : MonoBehaviour
@@ -32,7 +33,7 @@ public class statement : MonoBehaviour
     public IEnumerator AnimateItem()
     {
         // 동시에 시작할 애니메이션들을 담은 Sequence를 생성합니다.
-        Sequence sequence = DOTween.Sequence();
+        DG.Tweening.Sequence sequence = DOTween.Sequence();
 
         //
         Vector3 endPosition = transform.position;
@@ -55,9 +56,9 @@ public class statement : MonoBehaviour
 
     public IEnumerator AnimateItemReverse()
     {
-        Sequence sequence = DOTween.Sequence();
+        DG.Tweening.Sequence sequence = DOTween.Sequence();
 
-        Vector3 startPosition = new Vector3(transform.position.x, transform.position.y+10, transform.position.z);
+        Vector3 startPosition = new Vector3(transform.position.x, transform.position.y + 10, transform.position.z);
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         sequence.Insert(0, transform.DOMove(startPosition, fallDuration).SetEase(Ease.InCubic));
 
@@ -66,4 +67,14 @@ public class statement : MonoBehaviour
         yield return sequence.WaitForCompletion();
         Destroy(gameObject);
     }
+
+    public IEnumerator ActivateBadsector()
+    {
+        DG.Tweening.Sequence sequence = DOTween.Sequence();
+
+
+        yield return sequence.WaitForCompletion();
+        Destroy(gameObject);
+    }
+
 }
