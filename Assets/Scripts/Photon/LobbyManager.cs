@@ -30,7 +30,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private void Awake()
     {
         LobbyNickname.text = PhotonNetwork.LocalPlayer.NickName;
-        existingLoginManager = GameObject.Find("LoginManager");
+        // existingLoginManager = GameObject.Find("LoginManager");
 
         // PhotonNetwork.JoinLobby();
     }
@@ -40,6 +40,16 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         // DontDestroyOnLoad(gameObject);
         // UpdateRoomListUI();
+
+        if (PhotonNetwork.InLobby)
+        {
+            Debug.LogFormat("In Lobby :{0}", PhotonNetwork.CurrentLobby);
+            Invoke(nameof(QueryRoomList), 2f);
+        }
+        else
+        {
+            Debug.Log("You're not in any lobbies.");
+        }
     }
 
     //버튼 클릭시 오브젝트 설명 변경. (standard 설명의 경우 false로 할당하여 room을 클릭했다가 random을 클릭할 경우를 고려하였음)
@@ -51,16 +61,17 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         RandomDescription.gameObject.SetActive(true);
     }
 
+    public override void OnConnectedToMaster()
+    {
+        TypedLobby lobby = new TypedLobby("coding-strategy", LobbyType.SqlLobby);
+        PhotonNetwork.JoinLobby(lobby);
+    }
+
 
     // 버튼을 눌렀을 때, 실행되어있는 이미지가 random 이미지면 랜덤 방 참가
     // standard 이미지일 경우 해당 방의 ID를 받아와서 참가할 것입니다.
     public void OnJoinedRoomButtonClick()
     {
-        if (!PhotonNetwork.InLobby)
-        {
-            return;
-        }
-
         if (RandomImage.gameObject.activeInHierarchy)
         {
             PhotonNetwork.JoinRandomOrCreateRoom(roomOptions: new RoomOptions
@@ -68,7 +79,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
                 MaxPlayers = 4,
                 IsVisible = true,
                 PublishUserId = true,
-                CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
+                CustomRoomProperties = new Hashtable
                 {
                     { "C0", "coding-strategy" },
                     { "C1", 0 }
@@ -86,7 +97,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         Debug.LogFormat("Connected to Master {0}", PhotonNetwork.CurrentLobby);
 
-        Invoke(nameof(QueryRoomList), 5f);
+        Invoke(nameof(QueryRoomList), 2f);
         // PhotonNetwork.GetCustomRoomList(PhotonNetwork.CurrentLobby, "C0='coding-strategy' AND C1 < 4");
         // PhotonNetwork.JoinRandomOrCreateRoom(roomOptions: new RoomOptions
         // {
@@ -106,12 +117,12 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("Successfully joined room");
         // Destroy(existingLoginManager);
-        SceneManager.LoadScene("GameRoom");
         int currentPlayerCount = (int) PhotonNetwork.CurrentRoom.CustomProperties["C1"];
         PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
         {
             { "C1", (currentPlayerCount + 1) }
         });
+        SceneManager.LoadScene("GameRoom");
     }
 
 
@@ -135,6 +146,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     private void QueryRoomList()
     {
+        Debug.Log("Request to update room list");
         PhotonNetwork.GetCustomRoomList(PhotonNetwork.CurrentLobby, "C0='coding-strategy' AND C1 < 4");
     }
 
