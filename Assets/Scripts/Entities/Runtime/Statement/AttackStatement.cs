@@ -5,23 +5,23 @@ using CodingStrategy.Entities.Robot;
 
 namespace CodingStrategy.Entities.Runtime.Statement
 {
-    public class AttackStatement : IStatement
+    public class AttackStatement : AbstractStatement
     {
         private readonly IRobotAttackStrategy _strategy;
-        private readonly IRobotDelegate _robotDelegate;
         private readonly Coordinate[] _coordinates;
 
         public AttackStatement(
-            IRobotAttackStrategy strategy,
             IRobotDelegate robotDelegate,
+            int energy,
+            IRobotAttackStrategy strategy,
             Coordinate[] coordinates)
+            : base(robotDelegate, energy)
         {
             _strategy = strategy;
-            _robotDelegate = robotDelegate;
             _coordinates = coordinates;
         }
 
-        public void Execute(RuntimeExecutorContext context)
+        public override void Execute(RuntimeExecutorContext context)
         {
             bool result = _robotDelegate.Attack(_strategy, _coordinates);
             if (!result)
@@ -30,10 +30,10 @@ namespace CodingStrategy.Entities.Runtime.Statement
             }
         }
 
-        public StatementPhase Phase => StatementPhase.Attack;
+        public override StatementPhase Phase => StatementPhase.Attack;
 
-        public IStatement Reverse =>
-            new AttackStatement(new RobotAttackReverseStrategy(_strategy), _robotDelegate, _coordinates);
+        public override IStatement Reverse =>
+            new AttackStatement(_robotDelegate, _energy, new RobotAttackReverseStrategy(_strategy), _coordinates);
 
         private class RobotAttackReverseStrategy : IRobotAttackStrategy
         {

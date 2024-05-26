@@ -6,21 +6,21 @@ namespace CodingStrategy.Entities.Runtime.Statement
     using Abnormality;
     using Robot;
 
-    public class AddAbnormalityAllEnemyStatement : IStatement
+    public class AddAbnormalityAllEnemyStatement : AbstractStatement
     {
-        private readonly IRobotDelegate _robotDelegate;
         private readonly IAbnormality _abnormality;
         private readonly int _value;
 
-        public AddAbnormalityAllEnemyStatement(IRobotDelegate robotDelegate, IAbnormality abnormality, int value)
+        public AddAbnormalityAllEnemyStatement(IRobotDelegate robotDelegate, int energy, IAbnormality abnormality, int value)
+        : base(robotDelegate, energy)
         {
-            _robotDelegate = robotDelegate;
             _abnormality = abnormality;
             _value = value;
         }
 
-        public void Execute(RuntimeExecutorContext context)
+        public override void Execute(RuntimeExecutorContext context)
         {
+            base.Execute(context);
             foreach(IRobotDelegate robotDelegate in context.RobotDelegatePool)
             {
                 if(robotDelegate == _robotDelegate) continue;
@@ -35,8 +35,8 @@ namespace CodingStrategy.Entities.Runtime.Statement
             }
         }
 
-        public StatementPhase Phase => StatementPhase.Static;
+        public override StatementPhase Phase => StatementPhase.Static;
 
-        public IStatement Reverse => new AddAbnormalityAllEnemyStatement(_robotDelegate, _abnormality, -_value);
+        public override IStatement Reverse => new AddAbnormalityAllEnemyStatement(_robotDelegate, _energy, _abnormality, -_value);
     }
 }

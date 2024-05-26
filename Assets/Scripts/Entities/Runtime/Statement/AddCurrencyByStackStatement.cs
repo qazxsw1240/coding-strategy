@@ -7,19 +7,19 @@ namespace CodingStrategy.Entities.Runtime.Statement
     using CodingStrategy.Entities.Runtime.Abnormality;
     using Robot;
 
-    public class AddCurrencyByStackStatement : IStatement
+    public class AddCurrencyByStackStatement : AbstractStatement
     {
-        private readonly IRobotDelegate _robotDelegate;
         private readonly int _coefficient;
 
-        public AddCurrencyByStackStatement(IRobotDelegate robotDelegate, int coefficient)
+        public AddCurrencyByStackStatement(IRobotDelegate robotDelegate, int energy, int coefficient)
+        :base(robotDelegate, energy)
         {
-            _robotDelegate = robotDelegate;
             _coefficient = coefficient;
         }
 
-        public void Execute(RuntimeExecutorContext context)
+        public override void Execute(RuntimeExecutorContext context)
         {
+            base.Execute(context);
             IAbnormality? abnormality=GameManager.GetAbnormalityValue(_robotDelegate.Id+"-"+Stack.Name);
             if(abnormality==null)
             {
@@ -39,8 +39,8 @@ namespace CodingStrategy.Entities.Runtime.Statement
                 player.Currency+=addNum;
         }
 
-        public StatementPhase Phase => StatementPhase.Static;
+        public override StatementPhase Phase => StatementPhase.Static;
 
-        public IStatement Reverse => new AddCurrencyByStackStatement(_robotDelegate, -_coefficient);
+        public override IStatement Reverse => new AddCurrencyByStackStatement(_robotDelegate, _energy, -_coefficient);
     }
 }
