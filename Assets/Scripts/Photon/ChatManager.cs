@@ -55,7 +55,7 @@ namespace CodingStrategy.Photon.Chat
 
 		public void Announce(string message)
 		{
-			chatClient.PublishMessage("AnnounceChannel", message);
+			chatClient.PublishMessage("AnnounceChannel" + PhotonNetwork.CurrentRoom.Name, message);
 		}
 
 		#endregion Announce
@@ -66,7 +66,7 @@ namespace CodingStrategy.Photon.Chat
 		{
 			if (privateReceiver == "")
 			{
-				chatClient.PublishMessage("RegionChannel", currentChat);
+				chatClient.PublishMessage("RegionChannel" + PhotonNetwork.CurrentRoom.Name, currentChat);
 				chatField.text = "";
 				currentChat = "";
 			}
@@ -113,7 +113,7 @@ namespace CodingStrategy.Photon.Chat
 		public void OnConnected()
 		{
 			Debug.Log("Connected");
-			chatClient.Subscribe(new string[] { "RegionChannel", "AnnounceChannel" });
+			chatClient.Subscribe(new string[] { "RegionChannel" + PhotonNetwork.CurrentRoom.Name, "AnnounceChannel" + PhotonNetwork.CurrentRoom.Name });
 		}
 
 		public void OnDisconnected()
@@ -123,7 +123,7 @@ namespace CodingStrategy.Photon.Chat
 
 		public void OnGetMessages(string channelName, string[] senders, object[] messages)
 		{
-            if (channelName == "AnnounceChannel")
+            if (channelName == "AnnounceChannel" + PhotonNetwork.CurrentRoom.Name)
             {
 				string msgs = "";
 				for (int i = 0; i < senders.Length; i++)
