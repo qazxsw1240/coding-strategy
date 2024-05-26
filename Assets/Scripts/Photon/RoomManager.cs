@@ -6,8 +6,8 @@ using Photon.Realtime;
 using UnityEngine.UI;
 using TMPro;
 using CodingStrategy.Photon.Chat;
-using UnityEditor.VersionControl;
 using UnityEngine.SceneManagement;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
@@ -26,7 +26,9 @@ public class RoomManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         existingLobbyManager = GameObject.Find("LobbyManager");
-        InvokeRepeating("UpdatePlayerNicknames", 1f, 1f);
+        // InvokeRepeating("UpdatePlayerNicknames", 1f, 1f);
+
+        UpdatePlayerNicknames();
     }
 
     public void UpdatePlayerNicknames()
@@ -135,7 +137,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     //유저들이 들어올 때 갱신해야겠죠?
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        base.OnPlayerEnteredRoom(newPlayer);
+        // base.OnPlayerEnteredRoom(newPlayer);
         ChatManager.Announce(newPlayer.NickName + "가 입장하였습니다.");
         UpdatePlayerNicknames();
     }
@@ -143,12 +145,20 @@ public class RoomManager : MonoBehaviourPunCallbacks
     //유저들이 나갈 때 갱신해야겠죠?
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        base.OnPlayerLeftRoom(otherPlayer);
+        // base.OnPlayerLeftRoom(otherPlayer);
         ChatManager.Announce(otherPlayer.NickName + "가 퇴장하였습니다.");
         ResetPlayerArrays();
         UpdatePlayerNicknames();
     }
-    
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        if (changedProps.ContainsKey("isReady"))
+        {
+            UpdatePlayerNicknames();
+        }
+    }
+
     //private IEnumerator StartButtonCountdown()
     //{
     //    //20초 기다렸다가...
@@ -166,7 +176,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 { "isReady", true }
             };
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
-        UpdatePlayerNicknames();
+        // UpdatePlayerNicknames();
     }
     
 
@@ -206,17 +216,22 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public void LeavePlayer()
     {
         Debug.Log("방에서 나갑니다.");
+        int currentPlayerCount = (int) PhotonNetwork.CurrentRoom.CustomProperties["C1"];
+        PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
+        {
+            { "C1", (currentPlayerCount - 1) }
+        });
         PhotonNetwork.LeaveRoom();
 
-        Destroy(existingLobbyManager);
+        // Destroy(existingLobbyManager);
         
-        SceneManager.LoadScene("GameLobby");
+        // SceneManager.LoadScene("GameLobby");
     }
 
     public override void OnLeftRoom()
     {
-        PhotonNetwork.JoinLobby();
-        
+        // PhotonNetwork.JoinLobby();
+        SceneManager.LoadScene("GameLobby");
     }
 
     public void OnGameStart()
