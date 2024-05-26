@@ -6,12 +6,12 @@ namespace CodingStrategy.Entities.Animations
 {
     public class BadSectorAnimation : MonoBehaviour
     {
-        public float fadeInDuration = 1000f;
-        public float fallDuration = 1f;
-        public float fallDistance = 0.5f;
+        public float fadeInDuration = 0.5f;
+        public float fallDuration = 0.5f;
+        public float fallDistance = 10f;
         public float shakeDuration = 0.1f;
         public float shakeStrength = 1f;
-        public int shakeVibrato = 10;
+        public int shakeVibrato = 1;
         public Camera[] cameras;
 
         private Renderer _itemRenderer;

@@ -179,8 +179,8 @@ GameObject:
   - component: {fileID: 3212966907446845943}
   - component: {fileID: 3212966907446845936}
   - component: {fileID: 3212966907446845937}
+  - component: {fileID: 9091081896208534084}
   - component: {fileID: 3212966907446845938}
-  - component: {fileID: 2489379837401908451}
   - component: {fileID: 2043034053}
   m_Layer: 0
   m_Name: Badsector
@@ -197,7 +197,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3212966907446845900}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.8707, z: 0}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
   m_LocalScale: {x: 1.05, y: 1.0386902, z: 1.05}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -260,6 +260,29 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &9091081896208534084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3212966907446845900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 374ff65774738364dbb2d8ad96b93c6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeInDuration: 0.5
+  fallDuration: 1
+  fallDistance: 1000
+  shakeDuration: 0.1
+  shakeStrength: 1
+  shakeVibrato: 10
+  cameras:
+  - {fileID: 4750102568455761031, guid: b6343e7979a55184598c87d1d1679303, type: 3}
+  - {fileID: 1337390001023819556, guid: 69f0881acb2d119488a90adbb9b3c7ba, type: 3}
+  - {fileID: 4145803407653465969, guid: 91aa3292f02cb2943b291cf322e482c6, type: 3}
+  - {fileID: 2674993235291121413, guid: 83e9d470c5b63ff41a425fa0611baf4c, type: 3}
 --- !u!65 &3212966907446845938
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -273,39 +296,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2489379837401908451
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3212966907446845900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4926ea32f4c1bb14e92fed25ce36702f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fadeInDuration: 1
-  fallDuration: 1
-  fallDistance: 10
-  shakeDuration: 0.5
-  shakeStrength: 1
-  shakeVibrato: 10
-  cameras:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  material: {fileID: 0}
-  childSprites:
-  - {fileID: 7777214155942844206}
-  - {fileID: 3970125155588343043}
-  - {fileID: 3067181472571788113}
-  - {fileID: 3605152803350495910}
-  - {fileID: 6833914254708096587}
-  - {fileID: 5906129502624952301}
-  cutOffHeight: -10
-  duration: 2
 --- !u!54 &2043034053
 Rigidbody:
   m_ObjectHideFlags: 0
