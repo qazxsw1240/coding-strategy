@@ -27,6 +27,11 @@ namespace CodingStrategy.Network
             return CommandCache;
         }
 
+        public static void AttachCommand(ICommand command)
+        {
+            CommandCache[command.Id] = command;
+        }
+
         public static void AttachCommands(IDictionary<string, ICommand> commands)
         {
             foreach ((string key, ICommand value) in commands)

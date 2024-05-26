@@ -12,13 +12,17 @@ namespace CodingStrategy.Network
 {
     public class PhotonPlayerCommandNetworkDelegate : IPlayerCommandNetworkDelegate, IOnEventCallback
     {
-        private static readonly IDictionary<string, int> CommandCountDictionary = new Dictionary<string, int>
+        private static readonly IDictionary<string, int> CommandCountDictionary = new Dictionary<string, int>();
+
+        public static IDictionary<string, int> GetCachedCommandCounts()
         {
-            { "1", 100 },
-            { "2", 101 },
-            { "3", 102 },
-            { "4", 103 }
-        };
+            return CommandCountDictionary;
+        }
+
+        public static void AttachCommandIdCount(string id, int count)
+        {
+            CommandCountDictionary[id] = count;
+        }
 
         public PhotonPlayerCommandNetworkDelegate()
         {
