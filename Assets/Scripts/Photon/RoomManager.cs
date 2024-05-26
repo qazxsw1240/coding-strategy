@@ -36,6 +36,14 @@ public class RoomManager : MonoBehaviourPunCallbacks
         UpdatePlayerNicknames();
     }
 
+    private IEnumerator AwaitJoiningRoom()
+    {
+        yield return new WaitUntil(() => PhotonNetwork.NetworkingClient.State == ClientState.Joined);
+
+        ResetPlayerArrays();
+        UpdatePlayerNicknames();
+    }
+
     public override void OnJoinedRoom()
     {
         PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
