@@ -32,6 +32,8 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
             _commandBuilder.Append(new MoveCoordinateStatement(robot, _coordinate));
             if(Info.EnhancedLevel>=2)
                 _commandBuilder.Append(new MoveCoordinateStatement(robot, _coordinate));
+            if(Info.EnhancedLevel>=3)
+                _commandBuilder.Append(new SuperStatement(robot));
             return _commandBuilder.Build();
         }
 

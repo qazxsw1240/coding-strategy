@@ -31,6 +31,8 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
             _commandBuilder.Append(new RotateStatement(robot, 1));
             if(Info.EnhancedLevel>=2)
                 _commandBuilder.Append(new RotateStatement(robot, 1));
+            if(Info.EnhancedLevel>=3)
+                _commandBuilder.Append(new SuperStatement(robot));
             return _commandBuilder.Build();
         }
 
