@@ -8,11 +8,11 @@ namespace CodingStrategy.Entities.Animations
     {
         public float fadeInDuration = 0.5f;
         public float fallDuration = 0.5f;
-        public float fallDistance = 12f;
+        public float fallDistance = 5f;
         public float shakeDuration = 0.3f;
         public float shakeStrength = 0.2f;
         public int shakeVibrato = 1;
-        public Camera[] cameras;
+        public Camera camera;
 
         private Renderer _itemRenderer;
         public SpriteRenderer[] childSprites; // 자식 스프라이트
@@ -53,10 +53,7 @@ namespace CodingStrategy.Entities.Animations
             yield return sequence.WaitForCompletion();
 
             // 카메라 흔들기 애니메이션
-            foreach (Camera camera in cameras)
-            {
-                camera.DOShakePosition(shakeDuration, shakeStrength, shakeVibrato);
-            }
+            camera.DOShakePosition(shakeDuration, shakeStrength, shakeVibrato);
         }
 
 
@@ -66,7 +63,7 @@ namespace CodingStrategy.Entities.Animations
 
             Vector3 startPosition = new Vector3(transform.position.x, transform.position.y + 10, transform.position.z);
             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
-            sequence.Insert(0, transform.DOMove(startPosition, fallDuration).SetEase(Ease.InCubic));
+            sequence.Insert(0, transform.DOMove(startPosition, fallDuration).SetEase(Ease.OutCubic));
 
 
             sequence.Insert(0, _itemRenderer.material.DOFade(0, fadeInDuration));
