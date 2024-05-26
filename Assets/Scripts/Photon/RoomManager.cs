@@ -232,6 +232,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         // PhotonNetwork.JoinLobby();
         SceneManager.LoadScene("GameLobby");
+        Debug.LogFormat("In Lobby after Room leaving: {0} ", PhotonNetwork.CurrentLobby);
     }
 
     public void OnGameStart()
