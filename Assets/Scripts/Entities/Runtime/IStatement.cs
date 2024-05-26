@@ -11,7 +11,7 @@ namespace CodingStrategy.Entities.Runtime
         /// <summary>
         /// 명령문을 실행합니다.
         /// </summary>
-        public abstract void Execute();
+        public abstract void Execute(RuntimeExecutorContext context);
 
         public abstract StatementPhase Phase { get; }
 

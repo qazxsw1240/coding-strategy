@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CodingStrategy.Entities.Board;
@@ -24,15 +25,25 @@ namespace CodingStrategy.Entities
             _bits = new HashSet<IBitDelegate>();
         }
 
-        public void Dispense()
+        public IList<Coordinate> GetBitPositions(int count)
         {
             IList<Coordinate> coordinates = GetBitPositionCandidates();
-            IList<Coordinate> choices = Choice(coordinates, _playerPool.Count() * 2);
-            foreach (Coordinate choice in choices)
+            IList<Coordinate> choices = Choice(coordinates, count);
+            return choices;
+        }
+
+        public void Dispense()
+        {
+            Dispense(GetBitPositions(_playerPool.Count() * 2));
+        }
+
+        public void Dispense(IList<Coordinate> positions)
+        {
+            foreach (Coordinate position in positions)
             {
-                Debug.LogFormat("Bit placed on {0}", choice);
+                Debug.LogFormat("Bit placed on {0}", position);
                 IBitDelegate bitDelegate = new BitDelegateImpl(_playerPool, _boardDelegate, 4);
-                _boardDelegate.Add(bitDelegate, choice);
+                _boardDelegate.Add(bitDelegate, position);
                 _bits.Add(bitDelegate);
             }
         }
@@ -63,8 +74,10 @@ namespace CodingStrategy.Entities
             {
                 _boardDelegate.Remove(bitDelegate);
             }
+
             _bits.Clear();
         }
+
         private IList<Coordinate> GetCoordinates()
         {
             int width = _boardDelegate.Width;

@@ -21,7 +21,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _coordinates = coordinates;
         }
 
-        public void Execute()
+        public void Execute(RuntimeExecutorContext context)
         {
             bool result = _robotDelegate.Attack(_strategy, _coordinates);
             if (!result)

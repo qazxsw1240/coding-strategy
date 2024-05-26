@@ -10,21 +10,36 @@ namespace CodingStrategy.UI.InGame
 {
     public class PlayerStatusUI : MonoBehaviour
     {
+        [SerializeField]
         public static readonly Color Red = new Vector4(230, 190, 166, 255) / 255;
+        [SerializeField]
         public static readonly Color Green = new Vector4(173, 220, 156, 255) / 255;
+        [SerializeField]
         public static readonly Color Blue = new Vector4(78, 149, 217, 255) / 255;
+        [SerializeField]
         public static readonly Color Yellow = new Vector4(245, 184, 0, 255) / 255;
 
-        public TMP_Text Rank;
-        public TMP_Text Name;
-        public TMP_Text Money;
-        public Image image;
-        public GameObject robotLife;
-        public GameObject playerLife;
+        [SerializeField] private TMP_Text Rank;
+        [SerializeField] private TMP_Text Name;
+        [SerializeField] private TMP_Text Money;
+        [SerializeField] private Image image;
+        [SerializeField] private GameObject robotLife;
+        [SerializeField] private GameObject playerLife;
+        [SerializeField] private string userID;
         public Button button, bigButton;
         public GameObject status;
 
-		public void SetColor(Color color)
+        public string GetUserID()
+        {
+            return userID;
+        }
+
+        public void SetUserID(string userID)
+        {
+            this.userID = userID;
+        }
+
+        public void SetColor(Color color)
         {
             image.color = color;
         }
@@ -94,9 +109,9 @@ namespace CodingStrategy.UI.InGame
             button = transform.GetChild(transform.childCount - 1).GetComponent<Button>();
             button.onClick.AddListener(() => { status.SetActive(true); bigButton.gameObject.SetActive(true); });
             bigButton.onClick.AddListener(() => { status.SetActive(false); bigButton.gameObject.SetActive(false); });
-		}
+	}
 
         // Update is called once per frame
-        void Update() {}
+        void Update() { }
     }
 }

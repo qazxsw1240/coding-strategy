@@ -10,6 +10,7 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     public class MoveLeftCommand : AbstractCommand
     {
         private readonly CommandBuilder _commandBuilder=new();
+        private readonly Coordinate _coordinate=new Coordinate(-1,0);
 
         public MoveLeftCommand(string id="2", string name="왼쪽으로 이동", int enhancedLevel=1, int grade=1)
         : base(id, name, enhancedLevel, grade)
@@ -28,7 +29,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
         public override IList<IStatement> GetCommandStatements(IRobotDelegate robot)
         {
             _commandBuilder.Clear();
-            _commandBuilder.Append(new MoveSidewaysStatement(robot, -1));
+            _commandBuilder.Append(new MoveCoordinateStatement(robot, _coordinate));
+            if(Info.EnhancedLevel>=2)
+                _commandBuilder.Append(new MoveCoordinateStatement(robot, _coordinate));
             return _commandBuilder.Build();
         }
 

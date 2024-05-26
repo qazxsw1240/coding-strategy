@@ -5,6 +5,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
 {
     using System;
     using Robot;
+    [Obsolete]
     public class MoveSidewaysStatement : IStatement
     {
         private readonly IRobotDelegate _robotDelegate;
@@ -22,7 +23,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _isEdge = isEdge;
         }
 
-        public void Execute()
+        public void Execute(RuntimeExecutorContext context)
         {
             int range = Enum.GetValues(typeof(RobotDirection)).Length;
             RobotDirection robotDirection=_robotDelegate.Direction;

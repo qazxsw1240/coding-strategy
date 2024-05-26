@@ -1,7 +1,10 @@
 #nullable enable
 
 
+using System;
 using CodingStrategy.Entities.BadSector;
+using CodingStrategy.Entities.Board;
+using UnityEngine;
 
 namespace CodingStrategy.Entities.Runtime
 {
@@ -56,7 +59,7 @@ namespace CodingStrategy.Entities.Runtime
                 try
                 {
                     statements.Push(statement!);
-                    statement!.Execute();
+                    statement!.Execute(Context);
                 }
                 catch (ExecutionException)
                 {

@@ -10,7 +10,8 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     public class MoveRightForwardCommand : AbstractCommand
     {
         private readonly CommandBuilder _commandBuilder=new();
-        public MoveRightForwardCommand(string id="7", string name="우측 대각선 이동", int enhancedLevel=1, int grade=1)
+        private readonly Coordinate _coordinate=new Coordinate(1,1);
+        public MoveRightForwardCommand(string id="7", string name="우측 대각선 이동", int enhancedLevel=1, int grade=2)
         : base(id, name, enhancedLevel, grade)
         {
         }
@@ -27,7 +28,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
         public override IList<IStatement> GetCommandStatements(IRobotDelegate robot)
         {
             _commandBuilder.Clear();
-            _commandBuilder.Append(new MoveRightDiagnolStatement(robot, 1));
+            _commandBuilder.Append(new MoveCoordinateStatement(robot, _coordinate));
+            if(Info.EnhancedLevel>=2)
+                _commandBuilder.Append(new MoveCoordinateStatement(robot, _coordinate));
             return _commandBuilder.Build();
         }
 
