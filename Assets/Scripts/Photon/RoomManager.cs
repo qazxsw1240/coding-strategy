@@ -25,17 +25,15 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        // if (PhotonNetwork.InRoom)
-        // {
-        //     PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
-        //     {
-        //         { "isReady", PhotonNetwork.IsMasterClient ? 1 : 0 }
-        //     });
-        // }
-
         StartCoroutine(AwaitJoiningRoom());
+    }
 
-        // UpdatePlayerNicknames();
+    private IEnumerator AwaitJoiningRoom()
+    {
+        yield return new WaitUntil(() => PhotonNetwork.NetworkingClient.State == ClientState.Joined);
+
+        ResetPlayerArrays();
+        UpdatePlayerNicknames();
     }
 
     private IEnumerator AwaitJoiningRoom()
@@ -52,7 +50,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             { "isReady", PhotonNetwork.IsMasterClient ? 1 : 0 }
         });
-        // UpdatePlayerNicknames();
     }
 
     public void UpdatePlayerNicknames()
@@ -70,7 +67,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 if (isReady == 1)
                 {
                     playerReady[i].text = "준비 완료!";
-                    playerReady[i].color = Color.green;
+                    playerReady[i].color = Color.white;
                 }
                 else
                 {
@@ -81,7 +78,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 if (player.IsMasterClient)
                 {
                     playerReady[i].text = "준비 완료!";
-                    playerReady[i].color = Color.green;
+                    playerReady[i].color = Color.white;
                     playerReady[i].gameObject.SetActive(false); // playerReady[i] 비활성화
                     Master[i].gameObject.SetActive(true); // Master[i] 활성화
                 }
@@ -158,8 +155,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
     //유저들이 들어올 때 갱신해야겠죠?
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        LogPlayerProperties(newPlayer);
-        // base.OnPlayerEnteredRoom(newPlayer);
         ChatManager.Announce(newPlayer.NickName + "가 입장하였습니다.");
         if (PhotonNetwork.IsMasterClient)
         {
@@ -168,15 +163,11 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 { "C1", PhotonNetwork.CurrentRoom.PlayerCount }
             });
         }
-
-        // UpdatePlayerNicknames();
     }
 
     //유저들이 나갈 때 갱신해야겠죠?
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        LogPlayerProperties(otherPlayer);
-        // base.OnPlayerLeftRoom(otherPlayer);
         ChatManager.Announce(otherPlayer.NickName + "가 퇴장하였습니다.");
         if (PhotonNetwork.IsMasterClient)
         {
@@ -192,7 +183,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
-        LogPlayerProperties(targetPlayer);
         if (changedProps.ContainsKey("isReady"))
         {
             ResetPlayerArrays();
@@ -203,17 +193,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
         LogRoomProperties();
-    }
-
-    public void LogPlayerProperties(Player player)
-    {
-        StringBuilder builder = new StringBuilder();
-        foreach ((object key, object value) in player.CustomProperties)
-        {
-            builder.AppendLine($"{key}: {value}");
-        }
-
-        Debug.Log(builder.ToString());
     }
 
     public void LogRoomProperties()
