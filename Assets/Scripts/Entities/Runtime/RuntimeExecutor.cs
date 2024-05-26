@@ -81,6 +81,11 @@ namespace CodingStrategy.Entities.Runtime
                 return false;
             }
 
+            foreach (IExecutionQueue executionQueue in _executionQueuePool.Values)
+            {
+                executionQueue.IsProtected = false;
+            }
+
             foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in _executionQueuePool)
             {
                 IAlgorithm algorithm = robotDelegate.Algorithm;

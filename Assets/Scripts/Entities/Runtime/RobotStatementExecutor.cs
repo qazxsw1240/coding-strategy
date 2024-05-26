@@ -5,6 +5,7 @@ using System;
 using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Board;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace CodingStrategy.Entities.Runtime
 {
@@ -23,6 +24,8 @@ namespace CodingStrategy.Entities.Runtime
         public IExecutionValidator Validator { get; set; } = null!;
 
         public RuntimeExecutorContext Context { get; set; } = null!;
+
+        public UnityEvent<IStatement> OnStatementExecuteEvents { get; } = new UnityEvent<IStatement>();
 
         public void Awake()
         {
@@ -60,6 +63,7 @@ namespace CodingStrategy.Entities.Runtime
                 {
                     statements.Push(statement!);
                     statement!.Execute(Context);
+                    OnStatementExecuteEvents.Invoke(statement);
                 }
                 catch (ExecutionException)
                 {
@@ -78,8 +82,7 @@ namespace CodingStrategy.Entities.Runtime
                     continue;
                 }
 
-                Context.BoardDelegate.Remove(badSectorDelegate);
-
+                badSectorDelegate.Remove();
                 statements.Clear();
                 executionQueue.Clear();
 
