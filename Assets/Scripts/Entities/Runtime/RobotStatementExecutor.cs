@@ -82,6 +82,11 @@ namespace CodingStrategy.Entities.Runtime
                     continue;
                 }
 
+                if (executionQueue.IsProtected)
+                {
+                    continue;
+                }
+
                 badSectorDelegate.Remove();
                 statements.Clear();
                 executionQueue.Clear();
