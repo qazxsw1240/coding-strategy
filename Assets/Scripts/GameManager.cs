@@ -2,25 +2,23 @@
 
 
 using System.Linq;
-using CodingStrategy.Entities.Animations;
+using System.Text;
 using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Placeable;
 using CodingStrategy.Entities.Runtime.Statement;
 using CodingStrategy.Factory;
 using CodingStrategy.Network;
 using CodingStrategy.UI.InGame;
-using CodingStrategy.Utility;
-using NUnit.Framework;
 using Photon.Pun;
 using Photon.Realtime;
-using UnityEngine.Serialization;
+using UnityEngine.SceneManagement;
 
 namespace CodingStrategy
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using CodingStrategy.Entities.Runtime.Abnormality;
+    using Entities.Runtime.Abnormality;
     using Entities;
     using Entities.Board;
     using Entities.Player;
@@ -39,7 +37,8 @@ namespace CodingStrategy
             (RobotDirection.West, new Coordinate(8, 4), PlayerStatusUI.Red)
         };
 
-        private static readonly IDictionary<string, IAbnormality> AbnormalityDictionary = new Dictionary<string, IAbnormality>();
+        private static readonly IDictionary<string, IAbnormality> AbnormalityDictionary =
+            new Dictionary<string, IAbnormality>();
 
         public static void SetAbnormalityValue(string key, IAbnormality abnormality)
         {
@@ -48,12 +47,19 @@ namespace CodingStrategy
 
         public static IAbnormality? GetAbnormalityValue(string key)
         {
-            if(AbnormalityDictionary.TryGetValue(key, out IAbnormality value))
+            if (AbnormalityDictionary.TryGetValue(key, out IAbnormality value))
             {
                 return value;
             }
+
             return null;
         }
+
+        private const string ReadyStatus = "ready";
+        private const string RobotPlaceStatus = "robot-place";
+        private const string PlaceablePlaceStatus = "placeable-place";
+        private const string CodingTimeStatus = "coding-time";
+        private const string RuntimeStatus = "runtime";
 
 
         public int boardWidth = 9;
@@ -61,84 +67,181 @@ namespace CodingStrategy
         public InGameUI inGameUI = null!;
         public GameObject boardCellPrefab = null!;
         public GameObject bitPrefab = null!;
+        public GameObject badSectorPrefab = null!;
         public List<GameObject> robotPrefabs = new List<GameObject>();
 
-        private IBoardDelegate _boardDelegate = null!;
-        private IRobotDelegatePool _robotDelegatePool = null!;
-        private IPlayerPool _playerPool = null!;
+        public IBoardDelegate BoardDelegate { get; private set; } = null!;
+        public IRobotDelegatePool RobotDelegatePool { get; private set; } = null!;
+        public IPlayerPool PlayerPool { get; private set; } = null!;
+        public AnimationCoroutineManager AnimationCoroutineManager { get; private set; } = null!;
 
-        private AnimationCoroutineManager _animationCoroutineManager = null!;
         private BitDispenser _bitDispenser = null!;
-
         private IPlayerCommandNetworkDelegate _networkDelegate = null!;
         private IPlayerCommandCache _commandCache = null!;
 
+        private GameManagerObjectSynchronizer _objectSynchronizer = null!;
+        private GameManagerPlayerStatusSynchronizer _playerStatusSynchronizer = null!;
+
+        public static IPlayerDelegate BuildPlayerDelegate(string id)
+        {
+            IPlayerDelegateCreateStrategy strategy = new PlayerDelegateCreateStrategy(id);
+            IPlayerDelegateCreateFactory factory = new PlayerDelegateCreateFactory(strategy);
+            return factory.Build();
+        }
+
+        public static IRobotDelegate BuildRobotDelegate(IBoardDelegate boardDelegate, IPlayerDelegate playerDelegate)
+        {
+            IRobotDelegateCreateStrategy strategy = new RobotDelegateCreateStrategy();
+            IRobotDelegateCreateFactory factory =
+                new RobotDelegateCreateFactory(strategy, boardDelegate, playerDelegate);
+            return factory.Build();
+        }
 
         public void Awake()
         {
-            _boardDelegate = new BoardDelegateImpl(boardWidth, boardHeight);
-            _robotDelegatePool = new RobotDelegatePoolImpl();
-            _playerPool = new PlayerPoolImpl();
-            _bitDispenser = new BitDispenser(_boardDelegate, _playerPool);
-            _animationCoroutineManager = gameObject.GetOrAddComponent<AnimationCoroutineManager>();
+            GameInitializer.Initialize();
 
-            foreach (IPlayerDelegate mockPlayerDelegate in MockPlayerDelegates)
-            {
-                _playerPool[mockPlayerDelegate.Id] = mockPlayerDelegate;
-                IRobotDelegate robotDelegate = new RobotDelegateCreateFactory(new RobotDelegateCreateStrategy(),
-                        _boardDelegate,
-                        mockPlayerDelegate)
-                    .Build();
-                mockPlayerDelegate.Robot = robotDelegate;
-                _robotDelegatePool[mockPlayerDelegate.Id] = robotDelegate;
-            }
-
-            foreach ((int index, IPlayerDelegate playerDelegate) in _playerPool.ToIndexed())
-            {
-                (RobotDirection direction, Coordinate position, Color color) = StartPositions[index];
-                IRobotDelegate robotDelegate = _robotDelegatePool[playerDelegate.Id];
-                PreparePlayerUI(playerDelegate, inGameUI.playerStatusUI[index], color);
-                PrepareRobotDelegate(robotDelegate, position, direction, robotPrefabs[index]);
-                _boardDelegate.Add(robotDelegate, position, direction);
-            }
-
-            _boardDelegate.OnBadSectorAdd.AddListener(CreateBadSectorInstance);
-            _boardDelegate.OnPlaceableAdd.AddListener(CreateBitInstance);
+            BoardDelegate = new BoardDelegateImpl(boardWidth, boardHeight);
+            RobotDelegatePool = new RobotDelegatePoolImpl();
+            PlayerPool = new PlayerPoolImpl();
+            _bitDispenser = new BitDispenser(BoardDelegate, PlayerPool);
+            AnimationCoroutineManager = gameObject.GetOrAddComponent<AnimationCoroutineManager>();
+            _objectSynchronizer = SetUpObjectSynchronizer();
+            // _playerStatusSynchronizer = SetUpPlayerStatusSynchronizer();
         }
 
         public void Start()
         {
             Debug.Log("GameManager instance started.");
 
+#if UNITY_EDITOR
             if (!PhotonNetwork.IsConnected)
             {
                 PhotonNetwork.AutomaticallySyncScene = true;
+                PhotonNetwork.PhotonServerSettings.AppSettings.EnableLobbyStatistics = true;
+                PhotonNetwork.NetworkingClient.EnableLobbyStatistics = true;
+                PhotonNetwork.IsMessageQueueRunning = true;
                 PhotonNetwork.ConnectUsingSettings();
             }
 
-            // StartCoroutine(StartGameManagerCoroutine());
+#else
+            StartCoroutine(StartGameManagerCoroutine());
+
+#endif
+        }
+
+        public void OnDestroy()
+        {
+            // TODO
         }
 
         public override void OnConnectedToMaster()
         {
-            Debug.Log("Connected to Master.");
+            TypedLobby lobby = new TypedLobby("coding-strategy", LobbyType.SqlLobby);
+            PhotonNetwork.JoinLobby(lobby);
+        }
+
+        public override void OnJoinedLobby()
+        {
+            Debug.LogFormat("Connected to Master {0}", PhotonNetwork.CurrentLobby);
+            PhotonNetwork.GetCustomRoomList(PhotonNetwork.CurrentLobby, "C0='coding-strategy'");
             PhotonNetwork.NickName = "asdf";
             PhotonNetwork.JoinRandomOrCreateRoom(roomOptions: new RoomOptions
             {
                 MaxPlayers = 4,
-                PublishUserId = true
+                IsVisible = true,
+                PublishUserId = true,
+                CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
+                {
+                    { "C0", "coding-strategy" }
+                },
+                CustomRoomPropertiesForLobby = new string[] { "C0" }
             });
         }
 
         public override void OnJoinedRoom()
         {
             Debug.LogFormat("Connected to Room {0}", PhotonNetwork.CurrentRoom.Name);
+
+            foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
+            {
+                string id = player.UserId;
+                IPlayerDelegate playerDelegate = BuildPlayerDelegate(id);
+                IRobotDelegate robotDelegate = BuildRobotDelegate(BoardDelegate, playerDelegate);
+                PlayerPool[id] = playerDelegate;
+                RobotDelegatePool[id] = robotDelegate;
+            }
+
             StartCoroutine(StartGameManagerCoroutine());
         }
 
-        public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+        public override void OnPlayerLeftRoom(Player otherPlayer)
         {
-            targetPlayer.SetCustomProperties(changedProps);
+            string id = otherPlayer.UserId;
+            PlayerPool.Remove(id);
+        }
+
+        public override void OnPlayerPropertiesUpdate(
+            Player targetPlayer,
+            ExitGames.Client.Photon.Hashtable changedProps)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach ((object key, object value) in changedProps)
+            {
+                builder.AppendLine($"{key}: {value}");
+            }
+
+            Debug.Log(builder.ToString());
+        }
+
+        public override void OnRoomListUpdate(List<RoomInfo> roomList)
+        {
+            Debug.LogFormat("Room list count: {0}", roomList.Count);
+        }
+
+        private GameManagerObjectSynchronizer SetUpObjectSynchronizer()
+        {
+            GameManagerObjectSynchronizer objectSynchronizer =
+                gameObject.GetOrAddComponent<GameManagerObjectSynchronizer>();
+            objectSynchronizer.GameManager = this;
+            return objectSynchronizer;
+        }
+
+        private GameManagerPlayerStatusSynchronizer SetUpPlayerStatusSynchronizer()
+        {
+            GameManagerPlayerStatusSynchronizer playerStatusSynchronizer =
+                gameObject.GetOrAddComponent<GameManagerPlayerStatusSynchronizer>();
+            playerStatusSynchronizer.GameManager = this;
+            return playerStatusSynchronizer;
+        }
+
+        private IEnumerator AwaitAllPlayersStatus(string status)
+        {
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
+            {
+                { "status", status }
+            });
+
+            yield return new WaitUntil(() =>
+            {
+                Dictionary<int, Player>.ValueCollection players = PhotonNetwork.CurrentRoom.Players.Values;
+                foreach (Player player in players)
+                {
+                    ExitGames.Client.Photon.Hashtable properties = player.CustomProperties;
+                    if (properties.TryGetValue("status", out object value))
+                    {
+                        continue;
+                    }
+
+                    string statusValue = (string) value!;
+                    if (statusValue != status)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
         }
 
         private IEnumerator StartGameManagerCoroutine()
@@ -151,11 +254,29 @@ namespace CodingStrategy
                 Debug.LogFormat("Player Key: {0}", playersKey);
             }
 
+            yield return StartCoroutine(AwaitAllPlayersStatus(ReadyStatus));
+
             InitializeCells();
+
+
+            foreach ((int index, Player photonPlayer) in PhotonNetwork.CurrentRoom.Players)
+            {
+                // player index start from 1
+                int realIndex = index - 1;
+                (RobotDirection direction, Coordinate position, Color color) = StartPositions[realIndex];
+                IPlayerDelegate playerDelegate = PlayerPool[photonPlayer.UserId];
+                IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
+                PreparePlayerUI(photonPlayer, inGameUI.playerStatusUI[realIndex], color);
+                BoardDelegate.Add(robotDelegate, position, direction);
+            }
+
+            _playerStatusSynchronizer = SetUpPlayerStatusSynchronizer();
+
+            #region ITERATION
 
             _networkDelegate.RequestRefresh();
 
-            foreach (IPlayerDelegate playerDelegate in _playerPool)
+            foreach (IPlayerDelegate playerDelegate in PlayerPool)
             {
                 playerDelegate.Algorithm.Add(new TestCommand());
             }
@@ -175,14 +296,17 @@ namespace CodingStrategy
             yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(runtimeExecutor);
 
             _bitDispenser.Clear();
+
+            #endregion
         }
 
-        private void PreparePlayerUI(IPlayerDelegate playerDelegate, PlayerStatusUI playerStatusUI, Color color)
+        private void PreparePlayerUI(Player photonPlayer, PlayerStatusUI playerStatusUI, Color color)
         {
-            IRobotDelegate robotDelegate = _robotDelegatePool[playerDelegate.Id];
+            IPlayerDelegate playerDelegate = PlayerPool[photonPlayer.UserId];
+            IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
             playerStatusUI.SetUserID(playerDelegate.Id);
             playerStatusUI.SetColor(color);
-            playerStatusUI.SetName(playerDelegate.Id);
+            playerStatusUI.SetName(photonPlayer.NickName);
             playerStatusUI.SetRank(1);
             playerStatusUI.SetMoney(playerDelegate.Currency);
             playerStatusUI.SetPlayerHP(playerDelegate.HealthPoint);
@@ -193,96 +317,26 @@ namespace CodingStrategy
             robotDelegate.OnHealthPointChange.AddListener((_, _, hp) => playerStatusUI.SetRobotHP(Math.Max(hp, 0)));
         }
 
+        private void DetachPlayerUI(Player photonPlayer)
+        {
+            IPlayerDelegate playerDelegate = PlayerPool[photonPlayer.UserId];
+        }
+
         private void PrepareRuntimeExecutor(RuntimeExecutor runtimeExecutor)
         {
-            runtimeExecutor.BoardDelegate = _boardDelegate;
-            runtimeExecutor.RobotDelegatePool = _robotDelegatePool;
-            runtimeExecutor.PlayerPool = _playerPool;
+            runtimeExecutor.BoardDelegate = BoardDelegate;
+            runtimeExecutor.RobotDelegatePool = RobotDelegatePool;
+            runtimeExecutor.PlayerPool = PlayerPool;
             runtimeExecutor.BitDispenser = _bitDispenser;
-            runtimeExecutor.AnimationCoroutineManager = _animationCoroutineManager;
+            runtimeExecutor.AnimationCoroutineManager = AnimationCoroutineManager;
             runtimeExecutor.OnRoundNumberChange.AddListener((_, round) => inGameUI.gameturn.SetTurn(round));
-        }
-
-        private void PrepareRobotDelegate(
-            IRobotDelegate robotDelegate,
-            Coordinate position,
-            RobotDirection direction,
-            GameObject prefab)
-        {
-            _boardDelegate.Add(robotDelegate, position, direction);
-            Vector3 vectorPosition = ConvertToVector(position, 0.5f);
-            Quaternion quaternion = Quaternion.Euler(0, (int) direction * 90f, 0);
-            GameObject robotObject = Instantiate(prefab, vectorPosition, quaternion, transform);
-            robotObject.name = robotDelegate.Id;
-            robotObject.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
-            LilbotController lilbotController = robotObject.AddComponent<LilbotController>();
-            lilbotController.animator = robotObject.GetComponent<Animator>();
-            robotDelegate.OnRobotChangePosition.AddListener((_, previous, next) =>
-            {
-                Debug.LogFormat("Robot {2} moved from {0} to {1}", previous, next, robotDelegate.Id);
-                LilbotController controller = robotObject.GetComponent<LilbotController>();
-                Vector3 end = ConvertToVector(next, 0.5f);
-                IEnumerator controllerAnimation = controller.Walk(0.5f, (int) end.x, (int) end.z);
-                _animationCoroutineManager.AddAnimation(robotObject, controllerAnimation);
-            });
-            robotDelegate.OnRobotChangeDirection.AddListener((_, previous, next) =>
-            {
-                Debug.LogFormat("Robot rotated from {0} to {1}", previous, next);
-                Quaternion start = Quaternion.Euler(0, (int) previous * 90f, 0);
-                Quaternion end = Quaternion.Euler(0, (int) next * 90f, 0);
-                RotateAnimation rotateAnimation = new RotateAnimation(robotObject, start, end, 0.125f);
-                _animationCoroutineManager.AddAnimation(robotObject, rotateAnimation);
-            });
-        }
-
-        private void CreateBadSectorInstance(IBadSectorDelegate badSectorDelegate)
-        {
-            GameObject? prefab = Resources.Load<GameObject>(badSectorDelegate.Id);
-            if (ReferenceEquals(prefab, null))
-            {
-                throw new NullReferenceException("Cannot find prefab: " + badSectorDelegate.Id);
-            }
-
-            Coordinate coordinate = badSectorDelegate.Position;
-            Vector3 position = ConvertToVector(coordinate, 0.5f);
-            GameObject badSectorObject = Instantiate(prefab, position, Quaternion.identity, transform);
-            badSectorObject.name = $"{badSectorDelegate.Installer.Id}${badSectorDelegate.Id}";
-            _boardDelegate.OnBadSectorRemove.AddListener(b =>
-            {
-                if (b == badSectorDelegate)
-                {
-                    Destroy(badSectorObject);
-                }
-            });
-        }
-
-        private void CreateBitInstance(IPlaceable placeable)
-        {
-            if (placeable is not IBitDelegate bitDelegate)
-            {
-                return;
-            }
-
-            Coordinate coordinate = bitDelegate.Position;
-            Vector3 position = ConvertToVector(coordinate, 1.5f);
-            GameObject bitGameObject = Instantiate(bitPrefab, position, Quaternion.Euler(90f, 0, 0), transform);
-            bitDelegate.OnRobotTakeInEvents.AddListener(_ => bitGameObject.SetActive(false));
-            bitDelegate.OnRobotTakeAwayEvents.AddListener(_ => bitGameObject.SetActive(true));
-            _boardDelegate.OnPlaceableRemove.AddListener(p =>
-            {
-                if (p == bitDelegate)
-                {
-                    MoveAndRotate moveAndRotate = bitGameObject.GetComponent<MoveAndRotate>();
-                    moveAndRotate.GetBit();
-                }
-            });
         }
 
         private void InitializeCells()
         {
-            for (int i = 0; i < _boardDelegate.Width; i++)
+            for (int i = 0; i < BoardDelegate.Width; i++)
             {
-                for (int j = 0; j < _boardDelegate.Height; j++)
+                for (int j = 0; j < BoardDelegate.Height; j++)
                 {
                     Vector3 position = ConvertToVector(new Coordinate(i, j), 0);
                     Instantiate(boardCellPrefab, position, Quaternion.identity, transform);
@@ -290,7 +344,7 @@ namespace CodingStrategy
             }
         }
 
-        private PlayerStatusUI? FindPlayerStatusUI(IPlayerDelegate playerDelegate)
+        public PlayerStatusUI? FindPlayerStatusUI(IPlayerDelegate playerDelegate)
         {
             foreach (PlayerStatusUI playerStatusUI in inGameUI.playerStatusUI)
             {
@@ -303,9 +357,9 @@ namespace CodingStrategy
             return null;
         }
 
-        private void UpdatePlayerRanks()
+        public void UpdatePlayerRanks()
         {
-            IPlayerDelegate[] playerDelegates = _playerPool.ToArray();
+            IPlayerDelegate[] playerDelegates = PlayerPool.ToArray();
             Array.Sort(playerDelegates, (x, y) => y.Currency - x.Currency);
             int rank = 1;
             for (int i = 0; i < playerDelegates.Length; i++)
@@ -329,14 +383,6 @@ namespace CodingStrategy
                 playerStatusUI.SetRank(rank);
             }
         }
-
-        private static readonly IPlayerDelegate[] MockPlayerDelegates =
-        {
-            new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("Player1")).Build(),
-            new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("Player2")).Build(),
-            new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("Player3")).Build(),
-            new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("Player4")).Build()
-        };
 
         private static Vector3 ConvertToVector(Coordinate coordinate, float heightOffset)
         {
