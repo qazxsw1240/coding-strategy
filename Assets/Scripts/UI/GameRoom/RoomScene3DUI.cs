@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using DG.Tweening;
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -13,26 +14,62 @@ public class RoomScene3DUI : MonoBehaviour
     public GameObject CommandView;
     public Button button;
 
+    private string[] lastNicknames;
+
+    private void Start()
+    {
+        lastNicknames = new string[nicknames.Length];
+    }
+
     // Update is called once per frame
     void Update()
     {
-        Nicknamecheck();
+        NickNamechanged();
     }
 
-    public void Nicknamecheck()
+    public void NickNamechanged()
     {
-        for(int i = 0; i < nicknames.Length; i++)
+        for (int i = 0; i < nicknames.Length; i++)
         {
-            if (nicknames[i].text != "(없음)")
+            if (nicknames[i].text != lastNicknames[i])
             {
-                lilrobot[i].SetActive(true);
-            }
-            else
-            {
-                lilrobot[i].SetActive(false);
+                Nicknamecheck(i);
+                lastNicknames[i] = nicknames[i].text;
             }
         }
     }
+
+
+
+    public void Nicknamecheck(int i)
+    {
+        
+        if (nicknames[i].text != "(없음)")
+        {
+            //lilrobot[i].SetActive(true);
+            StartCoroutine(ActivateWithAnimation(lilrobot[i], 10.0f, 1.0f));
+        }
+        else
+        {
+            lilrobot[i].SetActive(false);
+        }
+    }
+
+    public IEnumerator ActivateWithAnimation(GameObject obj, float fallDistance, float fallDuration)
+    {
+        obj.SetActive(true);
+
+        Sequence sequence = DOTween.Sequence();
+
+        Vector3 endPosition = obj.transform.position;
+
+        obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y + fallDistance, obj.transform.position.z);
+        
+        sequence.Insert(0, obj.transform.DOMove(endPosition, fallDuration).SetEase(Ease.OutCubic));
+        
+        yield return sequence.WaitForCompletion();
+    }
+
 
     public void OnScrollView()
     {
