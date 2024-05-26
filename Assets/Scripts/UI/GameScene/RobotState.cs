@@ -14,6 +14,8 @@ namespace CodingStrategy.UI.InGame
         public TMP_Text robotState;
         public TMP_Text robotInfo;
 
+
+
         public void setStatement()
         {
             if (Statement != null)

@@ -11,6 +11,8 @@ namespace CodingStrategy.UI.GameRoom
         public Transform command;
         public GameObject commandInfo;
 
+        private SoundManager soundManager;
+
         /*public void OnButtonClick()
         {
             Vector3 commandPos = command.position;
@@ -20,6 +22,13 @@ namespace CodingStrategy.UI.GameRoom
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            soundManager = FindObjectOfType<SoundManager>();
+            soundManager.Init();
+            // Effect sound를 불러오고 재생합니다.
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/InfoCreateSound");
+            soundManager.Play(effectClip, Sound.Effect, 1.0f);
+            Debug.Log("Sounding!");
+
             Vector3 commandPos = command.position;
             commandInfo.SetActive(true);
             commandInfo.transform.position = new Vector3(commandPos.x + 200f, commandPos.y - 100f, commandPos.z);
