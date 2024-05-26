@@ -11,9 +11,9 @@ namespace CodingStrategy.UI.InGame
     public class PlayerStatusUI : MonoBehaviour
     {
         [SerializeField]
-        public static readonly Color Red = new Vector4(230, 190, 166, 255) / 255;
+        public static readonly Color Red = new Vector4(224, 0, 4, 204) / 255;
         [SerializeField]
-        public static readonly Color Green = new Vector4(173, 220, 156, 255) / 255;
+        public static readonly Color Green = new Vector4(83, 219, 57, 255) / 255;
         [SerializeField]
         public static readonly Color Blue = new Vector4(78, 149, 217, 255) / 255;
         [SerializeField]
