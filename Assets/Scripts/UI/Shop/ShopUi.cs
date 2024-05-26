@@ -20,9 +20,11 @@ namespace CodingStrategy.UI.Shop
 
         //LevelupBit
         public TMP_Text levelupBit;
+        public Button levelUpButton;
 
         //ReroadBit
         public TMP_Text reroadBit;
+        public Button rerollButton;
 
         public Transform shopCommandList;
         public Transform myCommandList;
@@ -32,6 +34,8 @@ namespace CodingStrategy.UI.Shop
         public UnityEvent<int, int> OnBuyCommandEvent;
         public UnityEvent<int> OnSellCommandEvent;
         public UnityEvent<int, int> OnChangeCommandEvent;
+        public UnityEvent OnShopLevelUpEvent;
+        public UnityEvent OnShopRerollEvent;
 
 		public void DestoryChildren(Transform transform)
 		{
@@ -116,7 +120,11 @@ namespace CodingStrategy.UI.Shop
         }
 
         // Start is called before the first frame update
-        void Start() {}
+        void Start()
+        {
+            levelUpButton.onClick.AddListener(() => { OnShopLevelUpEvent.Invoke(); });
+            rerollButton.onClick.AddListener(() => { OnShopRerollEvent.Invoke(); });
+        }
 
         // Update is called once per frame
         void Update() {}
