@@ -273,16 +273,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadeInDuration: 0.5
-  fallDuration: 1
-  fallDistance: 1000
+  fallDuration: 0.5
+  fallDistance: 10
   shakeDuration: 0.1
   shakeStrength: 1
-  shakeVibrato: 10
+  shakeVibrato: 1
   cameras:
-  - {fileID: 4750102568455761031, guid: b6343e7979a55184598c87d1d1679303, type: 3}
-  - {fileID: 1337390001023819556, guid: 69f0881acb2d119488a90adbb9b3c7ba, type: 3}
-  - {fileID: 4145803407653465969, guid: 91aa3292f02cb2943b291cf322e482c6, type: 3}
-  - {fileID: 2674993235291121413, guid: 83e9d470c5b63ff41a425fa0611baf4c, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  childSprites:
+  - {fileID: 5906129502624952301}
+  - {fileID: 3067181472571788113}
+  - {fileID: 7777214155942844206}
+  - {fileID: 6833914254708096587}
+  - {fileID: 3970125155588343043}
+  - {fileID: 3605152803350495910}
 --- !u!65 &3212966907446845938
 BoxCollider:
   m_ObjectHideFlags: 0
