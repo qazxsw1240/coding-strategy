@@ -1,4 +1,6 @@
-﻿using Photon.Pun;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Photon.Pun;
 using System.Text;
 using UnityEngine;
 using Photon.Realtime;
@@ -23,15 +25,25 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        if (PhotonNetwork.InRoom)
-        {
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
-            {
-                { "isReady", PhotonNetwork.IsMasterClient ? 1 : 0 }
-            });
-        }
+        // if (PhotonNetwork.InRoom)
+        // {
+        //     PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
+        //     {
+        //         { "isReady", PhotonNetwork.IsMasterClient ? 1 : 0 }
+        //     });
+        // }
+
+        StartCoroutine(AwaitJoiningRoom());
 
         // UpdatePlayerNicknames();
+    }
+
+    private IEnumerator AwaitJoiningRoom()
+    {
+        yield return new WaitUntil(() => PhotonNetwork.NetworkingClient.State == ClientState.Joined);
+
+        ResetPlayerArrays();
+        UpdatePlayerNicknames();
     }
 
     public override void OnJoinedRoom()
@@ -51,7 +63,9 @@ public class RoomManager : MonoBehaviourPunCallbacks
             {
                 playerNicknames[i].text = player.NickName;
 
-                int isReady = (int) player.CustomProperties["isReady"];
+                int isReady = (int) (player.CustomProperties.ContainsKey("isReady")
+                    ? player.CustomProperties["isReady"]
+                    : 0);
 
                 if (isReady == 1)
                 {
@@ -271,7 +285,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public void LeavePlayer()
     {
         Debug.Log("방에서 나갑니다.");
-        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { {"isReady", 0 } });
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { "isReady", 0 } });
         PhotonNetwork.LeaveRoom();
     }
 
