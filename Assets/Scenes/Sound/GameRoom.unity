@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1856,10 +1856,11 @@ MonoBehaviour:
   - {fileID: 1446683062}
   - {fileID: 1364794765}
   - {fileID: 1752811196}
-  playerStates: {fileID: 0}
   ready: 00000000
   startButton: {fileID: 1153006294}
   readyButton: {fileID: 793820288}
+  ChatManager: {fileID: 876854814}
+  existingLobbyManager: {fileID: 0}
 --- !u!1 &265744713
 GameObject:
   m_ObjectHideFlags: 0
@@ -3000,50 +3001,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   command: {fileID: 412155955}
   commandInfo: {fileID: 1292672293}
---- !u!1 &413687484
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 413687486}
-  - component: {fileID: 413687485}
-  m_Layer: 0
-  m_Name: GameRoomSoundManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &413687485
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 413687484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a557914f1bd05514da985d0a0ec20a70, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &413687486
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 413687484}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 871.75476, y: 608.5544, z: 68.80237}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &449463233
 GameObject:
   m_ObjectHideFlags: 0
@@ -3261,7 +3218,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 22}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &478766709
@@ -4065,8 +4022,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 64bf1d3ffe6717641a13aec9cce42ca3, type: 2}
-  m_sharedMaterial: {fileID: 1544233027052241481, guid: 64bf1d3ffe6717641a13aec9cce42ca3, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8e25c692fab635b45a236b409a1a1b1c, type: 2}
+  m_sharedMaterial: {fileID: 206699236531032823, guid: 8e25c692fab635b45a236b409a1a1b1c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5619,6 +5576,8 @@ GameObject:
   - component: {fileID: 759429613}
   - component: {fileID: 759429615}
   - component: {fileID: 759429614}
+  - component: {fileID: 759429617}
+  - component: {fileID: 759429616}
   m_Layer: 5
   m_Name: ChatDisplay
   m_TagString: Untagged
@@ -5643,9 +5602,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.0002670288}
-  m_SizeDelta: {x: 800, y: 200}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -106.845}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &759429614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5701,7 +5660,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 1024
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -5743,6 +5702,40 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 759429612}
   m_CullTransparentMesh: 1
+--- !u!114 &759429616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 759429612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
+--- !u!114 &759429617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 759429612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 200
+  m_PreferredWidth: 820
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!114 &760054646 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2337769897302373840, guid: 0a3c0cc4ed2b8044f8ffd587adff933c, type: 3}
@@ -6297,7 +6290,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 541.9568, y: -310.47888}
+  m_AnchoredPosition: {x: 541.9568, y: -288.47888}
   m_SizeDelta: {x: 682.7225, y: 158.6958}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &793820290
@@ -6857,18 +6850,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 413687485}
-        m_TargetAssemblyTypeName: ChatSoundManager, Assembly-CSharp
-        m_MethodName: ChatSound
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
   m_OnTouchScreenKeyboardStatusChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -7346,7 +7327,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad3b9110443048a4fbd3a367bbef0cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  username: name123
   chatField: {fileID: 832526730}
   chatDisplay: {fileID: 759429614}
 --- !u!1001 &911805649
@@ -9423,7 +9403,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1136296061}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 876854814}
+        m_TargetAssemblyTypeName: CodingStrategy.Photon.Chat.ChatManager, Assembly-CSharp
+        m_MethodName: SubmitPublicChatOnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1136296061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9499,7 +9491,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 541.9568, y: -310.47888}
+  m_AnchoredPosition: {x: 541.9568, y: -288.47888}
   m_SizeDelta: {x: 682.7225, y: 158.6958}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1153006296
@@ -14342,7 +14334,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1744178512}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 260896457}
+        m_TargetAssemblyTypeName: RoomManager, Assembly-CSharp
+        m_MethodName: LeavePlayer
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1744178512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15055,8 +15059,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 64bf1d3ffe6717641a13aec9cce42ca3, type: 2}
-  m_sharedMaterial: {fileID: 1544233027052241481, guid: 64bf1d3ffe6717641a13aec9cce42ca3, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8e25c692fab635b45a236b409a1a1b1c, type: 2}
+  m_sharedMaterial: {fileID: 206699236531032823, guid: 8e25c692fab635b45a236b409a1a1b1c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -15354,6 +15358,7 @@ GameObject:
   - component: {fileID: 1932154878}
   - component: {fileID: 1932154877}
   - component: {fileID: 1932154876}
+  - component: {fileID: 1932154879}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -15379,7 +15384,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.3584906, g: 0.3584906, b: 0.3584906, a: 0}
+  m_BackGroundColor: {r: 0.3018868, g: 0.3018868, b: 0.3018868, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -15427,6 +15432,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1932154879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932154875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1001 &1941165836
 PrefabInstance:
   m_ObjectHideFlags: 0
