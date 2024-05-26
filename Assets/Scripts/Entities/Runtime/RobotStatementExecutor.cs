@@ -4,6 +4,7 @@
 using System;
 using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Board;
+using CodingStrategy.Entities.Player;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -25,7 +26,8 @@ namespace CodingStrategy.Entities.Runtime
 
         public RuntimeExecutorContext Context { get; set; } = null!;
 
-        public UnityEvent<IStatement> OnStatementExecuteEvents { get; } = new UnityEvent<IStatement>();
+        public UnityEvent<IRobotDelegate, IPlayerDelegate,  IStatement> OnStatementExecuteEvents { get; } =
+            new UnityEvent<IRobotDelegate, IPlayerDelegate, IStatement>();
 
         public void Awake()
         {
@@ -63,7 +65,8 @@ namespace CodingStrategy.Entities.Runtime
                 {
                     statements.Push(statement!);
                     statement!.Execute(Context);
-                    OnStatementExecuteEvents.Invoke(statement);
+                    IPlayerDelegate playerDelegate = Context.PlayerPool[robotDelegate.Id];
+                    OnStatementExecuteEvents.Invoke(robotDelegate, playerDelegate, statement);
                 }
                 catch (ExecutionException)
                 {
@@ -78,6 +81,11 @@ namespace CodingStrategy.Entities.Runtime
                     Context.BoardDelegate.GetBadSectorDelegate(robotDelegate.Position);
 
                 if (ReferenceEquals(badSectorDelegate, null) || badSectorDelegate.Installer == robotDelegate)
+                {
+                    continue;
+                }
+
+                if (executionQueue.IsProtected)
                 {
                     continue;
                 }
