@@ -34,7 +34,7 @@ public class SoundManager : MonoBehaviour
         if (root == null) 
         {
             root = new GameObject { name = "@Sound" };
-            //Object.DontDestroyOnLoad(root); // Bgm을 씬마다 다르게 할거라면 주석처리 해야함.
+            Object.DontDestroyOnLoad(root); // Bgm을 씬마다 다르게 할거라면 주석처리 해야함.
 
             string[] soundNames = System.Enum.GetNames(typeof(Sound)); // "Bgm", "Effect"
             for (int i = 0; i < soundNames.Length - 1; i++)
@@ -131,7 +131,7 @@ public class SoundManager : MonoBehaviour
     
     
     // 오디오 클립 로드 또는 딕셔너리에서 검색
-    AudioClip GetorAddAudioClip(string path, Sound type = Sound.Effect)
+    public AudioClip GetorAddAudioClip(string path, Sound type = Sound.Effect)
     {
         if (!path.Contains("Sound/"))
             path = $"Sounds/{path}"; // Sound 폴더 안에 저장될 수 있도록
@@ -157,50 +157,9 @@ public class SoundManager : MonoBehaviour
         return audioClip;
     }
 
-    // BGM 페이드아웃 및 페이드인
-    public void ChangeBGM(string newClipPath, float fadeDuration = 1.0f)
+    public AudioSource GetBgmSource()
     {
-        AudioClip newClip = GetorAddAudioClip(newClipPath, Sound.Bgm);
-        if (newClip != null)
-        {
-            StartCoroutine(FadeOutAndChangeBGM(newClip, fadeDuration));
-        }
-        else
-        {
-            Debug.LogWarning($"AudioClip not found at path: {newClipPath}");
-        }
-    }
-
-    private IEnumerator FadeOutAndChangeBGM(AudioClip newClip, float fadeDuration)
-    {
-        // 현재 BGM 페이드아웃
-        AudioSource audioSource = _audioSources[(int)Sound.Bgm];
-        float startVolume = audioSource.volume;
-
-        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
-        {
-            audioSource.volume = Mathf.Lerp(startVolume, 0, t / fadeDuration);
-            yield return null;
-        }
-
-        audioSource.volume = 0;
-        audioSource.Stop();
-
-        // 씬이 전환될 때까지 기다립니다.
-        yield return new WaitUntil(() => SceneManager.GetActiveScene().isLoaded);
-
-        // 새로운 BGM 설정 및 재생
-        audioSource.clip = newClip;
-        audioSource.Play();
-
-        // 새로운 BGM 페이드인
-        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
-        {
-            audioSource.volume = Mathf.Lerp(0, startVolume, t / fadeDuration);
-            yield return null;
-        }
-
-        audioSource.volume = startVolume;
+        return _audioSources[(int)Sound.Bgm];
     }
 }
 

@@ -23,6 +23,15 @@ public class LoginManager : MonoBehaviourPunCallbacks
         soundManager = FindObjectOfType<SoundManager>();
         soundManager.Init();
 
+        // SceneChanger 초기화
+        sceneChanger = FindObjectOfType<SceneChanger>();
+
+        if (sceneChanger == null)
+        {
+            GameObject sceneChangerObj = new GameObject("SceneChanger");
+            sceneChanger = sceneChangerObj.AddComponent<SceneChanger>();
+        }
+
         // Bgm을 불러오고 재생합니다.
         AudioClip BgmClip = Resources.Load<AudioClip>("Sound/Game_Play_Ost");
         soundManager.Play(BgmClip, Sound.Bgm, 1.0f, 0.1f);
@@ -78,9 +87,6 @@ public class LoginManager : MonoBehaviourPunCallbacks
     //이 함수는 "연결되었을 때" 실행되는 함수를 오버라이드 한것입니다.
     public override void OnConnectedToMaster()
     {
-        //로비 씬으로 이동합니다.
-        SceneManager.LoadScene("GameLobby");
-        //sceneChanger.ChangeScene("GamemLobby", "Sound/GameLobby_Sleepy Sunshine");
         Debug.Log(PhotonNetwork.NickName + "님 환영합니다.");
     }
 
