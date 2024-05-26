@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
@@ -7,9 +7,9 @@ using Unity.VisualScripting;
 
 public class BtnMovement : MonoBehaviour
 {
-    public ScrollRect scrollView; // ½ºÅ©·Ñºä¿¡ ´ëÇÑ ÂüÁ¶¸¦ ÀúÀåÇÕ´Ï´Ù.
-    private Vector3 originalPos; // ¾Ö´Ï¸ŞÀÌ¼Ç ÀüÀÇ ¿ø·¡ À§Ä¡¸¦ ÀúÀåÇÕ´Ï´Ù.
-    private bool isAnimating = false; // ¾Ö´Ï¸ŞÀÌ¼Ç »óÅÂ¸¦ ÃßÀûÇÏ´Â ÇÃ·¡±× º¯¼öÀÔ´Ï´Ù.
+    public ScrollRect scrollView; // ìŠ¤í¬ë¡¤ë·°ì— ëŒ€í•œ ì°¸ì¡°ë¥¼ ì €ì¥í•©ë‹ˆë‹¤.
+    private Vector3 originalPos; // ì• ë‹ˆë©”ì´ì…˜ ì „ì˜ ì›ë˜ ìœ„ì¹˜ë¥¼ ì €ì¥í•©ë‹ˆë‹¤.
+    private bool isAnimating = false; // ì• ë‹ˆë©”ì´ì…˜ ìƒíƒœë¥¼ ì¶”ì í•˜ëŠ” í”Œë˜ê·¸ ë³€ìˆ˜ì…ë‹ˆë‹¤.
 
     public static int activeAnimations = 0;
 
@@ -21,7 +21,7 @@ public class BtnMovement : MonoBehaviour
         soundManager = FindObjectOfType<SoundManager>();
         soundManager.Init();
 
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
+        // íš¨ê³¼ìŒì„ ë¶ˆëŸ¬ì˜¤ê³  ì¬ìƒí•©ë‹ˆë‹¤.
         AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameLobby_UI_ClickSound");
         soundManager.Play(effectClip, Sound.Effect, 1.0f);
         Debug.Log("Sounding!");
@@ -29,17 +29,17 @@ public class BtnMovement : MonoBehaviour
         Vector3 originalPos = this.transform.position;
         Vector3 targetPos = originalPos + new Vector3(50, -40, 0);
         
-        if (isAnimating) // ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ÀÌ¹Ì ½ÇÇà ÁßÀÌ¸é
+        if (isAnimating) // ì• ë‹ˆë©”ì´ì…˜ì´ ì´ë¯¸ ì‹¤í–‰ ì¤‘ì´ë©´
         {
-            Debug.Log("Animation is already in progress."); // ¸Ş½ÃÁö¸¦ Ãâ·ÂÇÏ°í
-            return; // ÇÔ¼ö¸¦ Á¾·áÇÕ´Ï´Ù.
+            Debug.Log("Animation is already in progress."); // ë©”ì‹œì§€ë¥¼ ì¶œë ¥í•˜ê³ 
+            return; // í•¨ìˆ˜ë¥¼ ì¢…ë£Œí•©ë‹ˆë‹¤.
         }
 
         isAnimating = true;
 
         DG.Tweening.Sequence sequence = DOTween.Sequence();
 
-        // ¾Ö´Ï¸ŞÀÌ¼Ç ½ÃÀÛ ½Ã activeAnimations °ªÀ» Áõ°¡
+        // ì• ë‹ˆë©”ì´ì…˜ ì‹œì‘ ì‹œ activeAnimations ê°’ì„ ì¦ê°€
         sequence.AppendCallback(() =>
         {
             activeAnimations++;
@@ -49,7 +49,7 @@ public class BtnMovement : MonoBehaviour
         sequence.Append(this.transform.DOMove(targetPos, 0.5f));
         sequence.Append(this.transform.DOMove(originalPos, 0.25f));
 
-        // ¾Ö´Ï¸ŞÀÌ¼Ç Á¾·á ½Ã activeAnimations °ªÀ» °¨¼Ò
+        // ì• ë‹ˆë©”ì´ì…˜ ì¢…ë£Œ ì‹œ activeAnimations ê°’ì„ ê°ì†Œ
         sequence.AppendCallback(() =>
         {
             activeAnimations--;
