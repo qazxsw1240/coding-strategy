@@ -1,9 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using CodingStrategy.Entities;
 using TMPro;
+using UnityEngine.UI;
+using UnityEngine.Events;
+using Unity.VisualScripting;
 
 
 namespace CodingStrategy.UI.Shop
@@ -24,23 +24,60 @@ namespace CodingStrategy.UI.Shop
         //ReroadBit
         public TMP_Text reroadBit;
 
-        public GameObject plusIcon;
+        public Transform shopCommandList;
+        public Transform myCommandList;
 
-        public void AddPlusIcon()
+        public GameObject[] iconList;
+
+        public UnityEvent<int, int> OnBuyCommandEvent;
+        public UnityEvent<int> OnSellCommandEvent;
+        public UnityEvent<int, int> OnChangeCommandEvent;
+
+        public void DestoryChildren(Transform transform)
         {
-            Transform _parent = gameObject.transform.Find("SelectedCommandList");
-            GameObject _object = Instantiate(plusIcon, _parent);
-            _object.transform.SetSiblingIndex(_parent.childCount - 2);
+			while (transform.childCount > 0)
+			{
+				Destroy(transform.GetChild(0).gameObject);
+			}
         }
 
-        public void SetShopCommandList(ICommand[] list)
+        public void ClearShopCommandList()
         {
-            foreach (ICommand command in list)
+            DestoryChildren(shopCommandList);
+        }
+
+		public void ClearMyCommandList()
+		{
+            DestoryChildren(myCommandList);
+		}
+
+		public void SetShopCommandList(ICommand[] commandList)
+        {
+            ClearShopCommandList();
+            foreach (ICommand command in commandList)
             {
-                // command.Id;
-                // command.Info;
+                GameObject _object = Instantiate(iconList[int.Parse(command.Id)], shopCommandList.parent);
+                Drop drop = _object.GetComponent<Drop>();
+                if (drop != null)
+                {
+                    drop.slotName = "ShopCommand";
+                }
             }
         }
+
+		public void SetMyCommandList(ICommand[] commandList)
+        {
+            ClearMyCommandList();
+			foreach (ICommand command in commandList)
+			{
+				GameObject _object = Instantiate(iconList[int.Parse(command.Id)], shopCommandList.parent);
+				Drop drop = _object.GetComponent<Drop>();
+				if (drop != null)
+				{
+					drop.slotName = "MyCommand";
+				}
+			}
+		}
 
         // PlayerBit
         public void setBit(int bit)
