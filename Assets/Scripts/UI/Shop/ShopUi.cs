@@ -33,15 +33,15 @@ namespace CodingStrategy.UI.Shop
         public UnityEvent<int> OnSellCommandEvent;
         public UnityEvent<int, int> OnChangeCommandEvent;
 
-        public void DestoryChildren(Transform transform)
-        {
-			while (transform.childCount > 0)
+		public void DestoryChildren(Transform transform)
+		{
+			foreach (Transform child in transform)
 			{
-				Destroy(transform.GetChild(0).gameObject);
+				Destroy(child.gameObject);
 			}
-        }
+		}
 
-        public void ClearShopCommandList()
+		public void ClearShopCommandList()
         {
             DestoryChildren(shopCommandList);
         }
@@ -56,7 +56,7 @@ namespace CodingStrategy.UI.Shop
             ClearShopCommandList();
             foreach (ICommand command in commandList)
             {
-                GameObject _object = Instantiate(iconList[int.Parse(command.Id)], shopCommandList.parent);
+                GameObject _object = Instantiate(iconList[int.Parse(command.Id)], shopCommandList);
                 Drop drop = _object.GetComponent<Drop>();
                 if (drop != null)
                 {
@@ -70,7 +70,7 @@ namespace CodingStrategy.UI.Shop
             ClearMyCommandList();
 			foreach (ICommand command in commandList)
 			{
-				GameObject _object = Instantiate(iconList[int.Parse(command.Id)], shopCommandList.parent);
+				GameObject _object = Instantiate(iconList[int.Parse(command.Id)], myCommandList);
 				Drop drop = _object.GetComponent<Drop>();
 				if (drop != null)
 				{
