@@ -34,7 +34,6 @@ public class LoginManager : MonoBehaviourPunCallbacks
 
         // 닉네임 입력 필드의 이벤트에 리스너 추가
         nicknameInputField.onValueChanged.AddListener(OnNicknameChanged);
-
     }
 
     void Update()
@@ -45,10 +44,15 @@ public class LoginManager : MonoBehaviourPunCallbacks
 
     public void OnStartButtonClick()
     {
+        if (PhotonNetwork.NetworkingClient.State != ClientState.PeerCreated)
+        {
+            return;
+        }
+
         // 효과음을 불러오고 재생합니다.
         AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_Experience_Up");
         // soundManager.Play(effectClip, Sound.Effect, 1.0f);
-        
+
         Debug.Log("Start button sound is comming out!");
 
         if (string.IsNullOrEmpty(nicknameInputField.text))
@@ -67,9 +71,10 @@ public class LoginManager : MonoBehaviourPunCallbacks
         //방을 연결합니다.
         PhotonNetwork.ConnectUsingSettings();
 
+
         //start button과 nicknameInputfield를 비활성화합니다.
         //그 다음 Loading text를 띄울겁니다. 이로써 유저들은 버튼이 눌린게 직접적으로 볼 수 있겠군요
-        
+
         startButton.gameObject.SetActive(false);
         nicknameInputField.gameObject.SetActive(false);
 
