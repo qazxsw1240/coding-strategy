@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public enum Sound
 {
@@ -25,6 +25,7 @@ public class SoundManager : MonoBehaviour
         Init();
         DontDestroyOnLoad(this);
     }
+
     // 초기화
     public void Init()
     {
@@ -78,6 +79,7 @@ public class SoundManager : MonoBehaviour
 
             audioSource.pitch = pitch;
             audioSource.clip = audioClip;
+            audioSource.volume = 0.5f; // 볼륨 조절
             audioSource.Play();
         }
 
@@ -89,7 +91,37 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    
+    // 볼륨 조절 가능한 오디오 클립 재생
+    public void Play(AudioClip audioClip, Sound type = Sound.Effect, float pitch = 1.0f, float volumn = 1.0f)
+    {
+        if (audioClip == null)
+        {
+            Debug.LogWarning("AudioClip is null");
+            return;
+        }
+
+        if (type == Sound.Bgm)
+        {
+            AudioSource audioSource = _audioSources[(int)Sound.Bgm];
+            if (audioSource.isPlaying) // BGM 중첩 방지
+                audioSource.Stop();
+
+            audioSource.pitch = pitch;
+            audioSource.clip = audioClip;
+            audioSource.volume = volumn; // 볼륨 조절
+            audioSource.Play();
+        }
+
+        else
+        {
+            AudioSource audioSource = _audioSources[(int)Sound.Effect];
+            audioSource.pitch = pitch;
+            audioSource.volume = volumn; // 볼륨 조절
+            audioSource.PlayOneShot(audioClip);
+        }
+    }
+
+
     // 경로를 통해 오디오 클립 재생
     public void Play(string path, Sound type = Sound.Effect, float pitch = 1.0f)
     {
@@ -124,9 +156,54 @@ public class SoundManager : MonoBehaviour
 
         return audioClip;
     }
-    
 
+    // BGM 페이드아웃 및 페이드인
+    public void ChangeBGM(string newClipPath, float fadeDuration = 1.0f)
+    {
+        AudioClip newClip = GetorAddAudioClip(newClipPath, Sound.Bgm);
+        if (newClip != null)
+        {
+            StartCoroutine(FadeOutAndChangeBGM(newClip, fadeDuration));
+        }
+        else
+        {
+            Debug.LogWarning($"AudioClip not found at path: {newClipPath}");
+        }
+    }
+
+    private IEnumerator FadeOutAndChangeBGM(AudioClip newClip, float fadeDuration)
+    {
+        // 현재 BGM 페이드아웃
+        AudioSource audioSource = _audioSources[(int)Sound.Bgm];
+        float startVolume = audioSource.volume;
+
+        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
+        {
+            audioSource.volume = Mathf.Lerp(startVolume, 0, t / fadeDuration);
+            yield return null;
+        }
+
+        audioSource.volume = 0;
+        audioSource.Stop();
+
+        // 씬이 전환될 때까지 기다립니다.
+        yield return new WaitUntil(() => SceneManager.GetActiveScene().isLoaded);
+
+        // 새로운 BGM 설정 및 재생
+        audioSource.clip = newClip;
+        audioSource.Play();
+
+        // 새로운 BGM 페이드인
+        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
+        {
+            audioSource.volume = Mathf.Lerp(0, startVolume, t / fadeDuration);
+            yield return null;
+        }
+
+        audioSource.volume = startVolume;
+    }
 }
+
 
 // Manager 클래스
 public class Manager : MonoBehaviour

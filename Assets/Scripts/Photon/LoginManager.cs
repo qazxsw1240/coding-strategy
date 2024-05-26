@@ -16,6 +16,7 @@ public class LoginManager : MonoBehaviourPunCallbacks
     public TMP_Text loadingText; // 로딩 메시지를 표시할 TextMeshPro 컴포넌트
 
     private SoundManager soundManager;
+    public SceneChanger sceneChanger;
 
     void Start()
     {
@@ -24,7 +25,7 @@ public class LoginManager : MonoBehaviourPunCallbacks
 
         // Bgm을 불러오고 재생합니다.
         AudioClip BgmClip = Resources.Load<AudioClip>("Sound/Game_Play_Ost");
-        soundManager.Play(BgmClip, Sound.Bgm, 1.0f);
+        soundManager.Play(BgmClip, Sound.Bgm, 1.0f, 0.1f);
         Debug.Log("Bgm is comming out!");
 
         // startbutton이 클릭되면 이벤트 실행하게 설정해줍니다.
@@ -79,6 +80,7 @@ public class LoginManager : MonoBehaviourPunCallbacks
     {
         //로비 씬으로 이동합니다.
         SceneManager.LoadScene("GameLobby");
+        //sceneChanger.ChangeScene("GamemLobby", "Sound/GameLobby_Sleepy Sunshine");
         Debug.Log(PhotonNetwork.NickName + "님 환영합니다.");
     }
 
@@ -87,6 +89,6 @@ public class LoginManager : MonoBehaviourPunCallbacks
     {
         // 닉네임이 변경될 때마다 효과음 재생
         AudioClip typingSoundClip = Resources.Load<AudioClip>("Sound/Keyboard_Click_Sound");
-        soundManager.Play(typingSoundClip, Sound.Effect, 3.0f);
+        soundManager.Play(typingSoundClip, Sound.Effect, 3.0f, 0.6f);
     }
 }
