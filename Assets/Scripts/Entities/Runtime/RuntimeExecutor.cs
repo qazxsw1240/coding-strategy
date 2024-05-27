@@ -97,7 +97,7 @@ namespace CodingStrategy.Entities.Runtime
                     continue;
                 }
 
-                ICommand command = algorithm[_currentCountdown % algorithm.Count];
+                ICommand command = algorithm[(_currentCountdown - 1) % algorithm.Count];
                 ICommandContext commandContext = BuildCommandContext(robotDelegate);
 
                 // TODO : use
