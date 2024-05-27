@@ -5,6 +5,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
 {
     using System;
     using Robot;
+
     [Obsolete]
     public class MoveLeftDiagnolStatement : IStatement
     {
@@ -27,12 +28,12 @@ namespace CodingStrategy.Entities.Runtime.Statement
         public void Execute(RuntimeExecutorContext context)
         {
             int range = Enum.GetValues(typeof(RobotDirection)).Length;
-            RobotDirection robotDirection=_robotDelegate.Direction;
-            Coordinate[] vectors=_robotDelegate.Vectors;
-            Coordinate forwardVector=vectors[(int)robotDirection];
-            Coordinate leftVector =vectors[((int)robotDirection - 1 + range) % range];
+            RobotDirection robotDirection = _robotDelegate.Direction;
+            Coordinate[] vectors = _robotDelegate.Vectors;
+            Coordinate forwardVector = vectors[(int) robotDirection];
+            Coordinate leftVector = vectors[((int) robotDirection - 1 + range) % range];
             Coordinate robotPosition = _robotDelegate.Position;
-            Coordinate destination = robotPosition + forwardVector*_direction + leftVector*_direction;
+            Coordinate destination = robotPosition + forwardVector * _direction + leftVector * _direction;
             _isEdge = !_robotDelegate.Move(destination);
             if (_isEdge)
             {
@@ -40,10 +41,9 @@ namespace CodingStrategy.Entities.Runtime.Statement
             }
         }
 
-        public IStatement Reverse
-        {
-            get { return _isEdge ? this : new MoveLeftDiagnolStatement(_robotDelegate, -_direction, _isEdge); }
-        }
+        public IStatement Reverse => _isEdge
+            ? new MoveStatement(_robotDelegate, 0, _isEdge)
+            : new MoveLeftDiagnolStatement(_robotDelegate, -_direction, _isEdge);
 
         public StatementPhase Phase => StatementPhase.Move;
     }

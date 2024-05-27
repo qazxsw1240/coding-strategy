@@ -40,10 +40,9 @@ namespace CodingStrategy.Entities.Runtime.Statement
             }
         }
 
-        public IStatement Reverse
-        {
-            get { return _isEdge ? this : new MoveRightDiagnolStatement(_robotDelegate, -_direction, _isEdge); }
-        }
+        public IStatement Reverse => _isEdge ?
+            new MoveStatement(_robotDelegate, 0, _isEdge) :
+            new MoveRightDiagnolStatement(_robotDelegate, -_direction, _isEdge);
 
         public StatementPhase Phase => StatementPhase.Move;
     }
