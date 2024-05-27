@@ -86,8 +86,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("Successfully joined room");
         
-        Loading.SetActive(true);
-        
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
@@ -102,6 +100,11 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         });
 
         SceneManager.LoadScene("GameRoom");
+    }
+
+    public void ActivateRotationUI()
+    {
+        Loading.SetActive(true);
     }
 
 
