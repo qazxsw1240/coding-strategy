@@ -26,8 +26,6 @@ namespace CodingStrategy.UI.Shop
         void Start()
         {
             _image = GetComponent<Image>();
-            _oldParent = transform.parent;
-            _oldIndex = transform.GetSiblingIndex();
             alwaysOntop = GameObject.Find("AlwaysOnTop").transform;
 		}
 
@@ -42,7 +40,9 @@ namespace CodingStrategy.UI.Shop
         public void OnBeginDrag(PointerEventData eventData)
         {
             _image.raycastTarget = false;
-            SetTmp();
+			_oldParent = transform.parent;
+			_oldIndex = transform.GetSiblingIndex();
+			SetTmp();
             transform.SetParent(alwaysOntop);
         }
 
