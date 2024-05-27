@@ -23,6 +23,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public ChatManager ChatManager;
 
+    public readonly Color ReadyGreen = new Vector4(51, 164, 49, 255) / 255;
+
     private void Start()
     {
         StartCoroutine(AwaitJoiningRoom());
@@ -59,11 +61,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
                 if (isReady == 1)
                 {
                     playerReady[i].text = "준비 완료!";
-                    playerReady[i].color = Color.white;
+                    playerReady[i].color = ReadyGreen;
                 }
                 else
                 {
                     playerReady[i].text = "준비 안함";
+                    playerReady[i].color = Color.white;
                 }
 
                 //만약에 해당 플레이어가 마스터 클라이언트(방장)이라면 레디고 뭐고 방장인걸 표시해야겠죠?
@@ -81,6 +84,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
             {
                 playerNicknames[i].text = "(없음)";
                 playerReady[i].text = "--";
+                playerReady[i].color = Color.white;
             }
         }
     }
@@ -92,7 +96,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             playerNicknames[i].text = "(없음)";
             playerReady[i].text = "--";
-            playerReady[i].color = Color.black;
+            playerReady[i].color = Color.white;
             Master[i].gameObject.SetActive(false);
         }
     }
