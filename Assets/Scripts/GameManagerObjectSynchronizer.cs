@@ -187,11 +187,11 @@ namespace CodingStrategy
 
         private GameObject FindRobotPrefab(IRobotDelegate robotDelegate)
         {
-            foreach ((int key, Player photonPlayer) in PhotonNetwork.CurrentRoom.Players)
+            foreach (Player photonPlayer in PhotonNetwork.PlayerList)
             {
                 if (photonPlayer.UserId == robotDelegate.Id)
                 {
-                    return GameManager.robotPrefabs[key];
+                    return GameManager.robotPrefabs[GameManager.PlayerIndexMap[photonPlayer]];
                 }
             }
 
