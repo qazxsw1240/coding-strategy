@@ -12,10 +12,9 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public AttackStatement(
             IRobotDelegate robotDelegate,
-            int energy,
             IRobotAttackStrategy strategy,
             Coordinate[] coordinates)
-            : base(robotDelegate, energy)
+            : base(robotDelegate)
         {
             _strategy = strategy;
             _coordinates = coordinates;
@@ -23,6 +22,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public override void Execute(RuntimeExecutorContext context)
         {
+            base.Execute(context);
             bool result = _robotDelegate.Attack(_strategy, _coordinates);
             if (!result)
             {
@@ -33,7 +33,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
         public override StatementPhase Phase => StatementPhase.Attack;
 
         public override IStatement Reverse =>
-            new AttackStatement(_robotDelegate, _energy, new RobotAttackReverseStrategy(_strategy), _coordinates);
+            new AttackStatement(_robotDelegate, new RobotAttackReverseStrategy(_strategy), _coordinates);
 
         private class RobotAttackReverseStrategy : IRobotAttackStrategy
         {

@@ -11,8 +11,8 @@ namespace CodingStrategy.Entities.Runtime.Statement
         private readonly IAbnormality _abnormality;
         private readonly int _value;
 
-        public AddAbnormalitySpecificRobotStatement(IRobotDelegate robotDelegate, int energy, IAbnormality abnormality, int value)
-        :base(robotDelegate, energy)
+        public AddAbnormalitySpecificRobotStatement(IRobotDelegate robotDelegate, IAbnormality abnormality, int value)
+        :base(robotDelegate)
         {
             _abnormality = abnormality;
             _value = value;
@@ -33,6 +33,6 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public override StatementPhase Phase => StatementPhase.Static;
 
-        public override IStatement Reverse => new AddAbnormalitySpecificRobotStatement(_robotDelegate, _energy, _abnormality, -_value);
+        public override IStatement Reverse => new AddAbnormalitySpecificRobotStatement(_robotDelegate, _abnormality, -_value);
     }
 }
