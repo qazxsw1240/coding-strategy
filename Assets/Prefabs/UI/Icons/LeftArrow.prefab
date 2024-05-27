@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 4597118810484706318}
   - component: {fileID: 649290474536764082}
   - component: {fileID: 7872548621816767910}
+  - component: {fileID: -6194903812938267727}
+  - component: {fileID: 3967569029006323890}
   m_Layer: 5
   m_Name: LeftArrow
   m_TagString: Untagged
@@ -106,7 +108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24fd5ca3e37995c4a9c4984d8b9c00e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotName: 
 --- !u!114 &649290474536764082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,6 +164,31 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-6194903812938267727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5107586394960085623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6e472ed236e88d439e3eedf41db6990, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detailPrefab: {fileID: 3214677206599787381, guid: 2746d467cc02af74da2ce5f8aae1877d, type: 3}
+--- !u!114 &3967569029006323890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5107586394960085623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7aadfe96cba85b46aa7116afc6e23b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6048034332907681455
 GameObject:
   m_ObjectHideFlags: 0
