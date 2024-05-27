@@ -27,6 +27,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _isEdge = !_robotDelegate.Move(destination);
             if (_isEdge)
             {
+                Debug.LogFormat("Cannot move because the robot is on edge.");
                 throw new ExecutionException();
             }
         }
@@ -34,7 +35,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
         public StatementPhase Phase => StatementPhase.Move;
 
         public IStatement Reverse => _isEdge ?
-            new MoveCoordinateStatement(_robotDelegate, _coordinate) :
+            new MoveCoordinateStatement(_robotDelegate, Coordinate.Unit, _isEdge) :
             new MoveCoordinateStatement(_robotDelegate, -1*_coordinate, _isEdge);
     }
 }
