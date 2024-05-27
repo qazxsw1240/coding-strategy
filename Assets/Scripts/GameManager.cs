@@ -3,15 +3,16 @@
 
 using System.Linq;
 using System.Text;
-using CodingStrategy.Entities.BadSector;
+using CodingStrategy.Entities.CodingTime;
 using CodingStrategy.Entities.Placeable;
 using CodingStrategy.Entities.Runtime.Statement;
 using CodingStrategy.Factory;
 using CodingStrategy.Network;
 using CodingStrategy.UI.InGame;
+using CodingStrategy.Utility;
+using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
-using UnityEngine.SceneManagement;
 
 namespace CodingStrategy
 {
@@ -27,14 +28,14 @@ namespace CodingStrategy
     using Unity.VisualScripting;
     using UnityEngine;
 
-    public class GameManager : MonoBehaviourPunCallbacks
+    public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         private static readonly (RobotDirection, Coordinate, Color)[] StartPositions =
         {
-            (RobotDirection.North, new Coordinate(4, 0), PlayerStatusUI.Blue),
+            (RobotDirection.North, new Coordinate(4, 0), PlayerStatusUI.Red),
             (RobotDirection.East, new Coordinate(0, 4), PlayerStatusUI.Yellow),
             (RobotDirection.South, new Coordinate(4, 8), PlayerStatusUI.Green),
-            (RobotDirection.West, new Coordinate(8, 4), PlayerStatusUI.Red)
+            (RobotDirection.West, new Coordinate(8, 4), PlayerStatusUI.Blue)
         };
 
         private static readonly IDictionary<string, IAbnormality> AbnormalityDictionary =
@@ -62,6 +63,7 @@ namespace CodingStrategy
         private const string RuntimeStatus = "runtime";
 
 
+        public int round = 15;
         public int boardWidth = 9;
         public int boardHeight = 9;
         public InGameUI inGameUI = null!;
@@ -81,6 +83,8 @@ namespace CodingStrategy
 
         private GameManagerObjectSynchronizer _objectSynchronizer = null!;
         private GameManagerPlayerStatusSynchronizer _playerStatusSynchronizer = null!;
+
+        public readonly IDictionary<Player, int> PlayerIndexMap = new Dictionary<Player, int>();
 
         public static IPlayerDelegate BuildPlayerDelegate(string id)
         {
@@ -130,11 +134,6 @@ namespace CodingStrategy
 #endif
         }
 
-        public void OnDestroy()
-        {
-            // TODO
-        }
-
         public override void OnConnectedToMaster()
         {
             TypedLobby lobby = new TypedLobby("coding-strategy", LobbyType.SqlLobby);
@@ -149,7 +148,7 @@ namespace CodingStrategy
             PhotonNetwork.JoinRandomOrCreateRoom(roomOptions: new RoomOptions
             {
                 MaxPlayers = 4,
-                IsVisible = true,
+                IsVisible = false,
                 PublishUserId = true,
                 CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
                 {
@@ -178,6 +177,7 @@ namespace CodingStrategy
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
             string id = otherPlayer.UserId;
+            DetachPlayerUI(otherPlayer);
             PlayerPool.Remove(id);
         }
 
@@ -215,12 +215,16 @@ namespace CodingStrategy
             return playerStatusSynchronizer;
         }
 
-        private IEnumerator AwaitAllPlayersStatus(string status)
+        public static IEnumerator AwaitAllPlayersStatus(string status, bool includingMasterClient = true)
         {
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
+            if (includingMasterClient || PhotonNetwork.IsMasterClient)
             {
-                { "status", status }
-            });
+                PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
+                {
+                    { "status", status }
+                });
+            }
+
 
             yield return new WaitUntil(() =>
             {
@@ -249,53 +253,75 @@ namespace CodingStrategy
             _networkDelegate = new PhotonPlayerCommandNetworkDelegate();
             _commandCache = new PhotonPlayerCommandCache(_networkDelegate);
 
-            foreach (int playersKey in PhotonNetwork.CurrentRoom.Players.Keys)
+            foreach ((int index, Player photonPlayer) in PhotonNetwork.PlayerList.ToIndexed())
             {
-                Debug.LogFormat("Player Key: {0}", playersKey);
+                PlayerIndexMap[photonPlayer] = index;
+                (RobotDirection direction, Coordinate position, Color color) = StartPositions[index];
+                IPlayerDelegate playerDelegate = PlayerPool[photonPlayer.UserId];
+                IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
+                PreparePlayerUI(photonPlayer, inGameUI.playerStatusUI[index], color);
+                BoardDelegate.Add(robotDelegate, position, direction);
             }
-
-            yield return StartCoroutine(AwaitAllPlayersStatus(ReadyStatus));
 
             InitializeCells();
 
-
-            foreach ((int index, Player photonPlayer) in PhotonNetwork.CurrentRoom.Players)
-            {
-                // player index start from 1
-                int realIndex = index - 1;
-                (RobotDirection direction, Coordinate position, Color color) = StartPositions[realIndex];
-                IPlayerDelegate playerDelegate = PlayerPool[photonPlayer.UserId];
-                IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
-                PreparePlayerUI(photonPlayer, inGameUI.playerStatusUI[realIndex], color);
-                BoardDelegate.Add(robotDelegate, position, direction);
-            }
+            yield return StartCoroutine(AwaitAllPlayersStatus(ReadyStatus));
 
             _playerStatusSynchronizer = SetUpPlayerStatusSynchronizer();
 
             #region ITERATION
 
-            _networkDelegate.RequestRefresh();
-
-            foreach (IPlayerDelegate playerDelegate in PlayerPool)
+            for (int i = 0; i < round; i++)
             {
-                playerDelegate.Algorithm.Add(new TestCommand());
+                #region INITIALIZATION
+
+                inGameUI.gameturn.SetTurn(20);
+
+                _networkDelegate.RequestRefresh();
+
+                inGameUI.SetCameraPosition(PlayerIndexMap[PhotonNetwork.LocalPlayer]);
+
+                foreach (IPlayerDelegate playerDelegate in PlayerPool)
+                {
+                    playerDelegate.Algorithm.Add(new TestCommand());
+                }
+
+                // _bitDispenser.Dispense();
+
+                NotifyDispatchBits();
+
+                yield return StartCoroutine(AwaitAllPlayerPlaceablePlaceEventSynchronization());
+
+                #endregion
+
+                #region CODING_TIME
+
+                yield return StartCoroutine(AwaitAllPlayersStatus(CodingTimeStatus));
+
+                yield return new WaitForSeconds(2.0f);
+
+                CodingTimeExecutor codingTimeExecutor = gameObject.GetOrAddComponent<CodingTimeExecutor>();
+
+                PrepareCodingTimeExecutor(codingTimeExecutor);
+
+                yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
+
+                #endregion
+
+                #region RUNTIME
+
+                RuntimeExecutor runtimeExecutor = gameObject.GetOrAddComponent<RuntimeExecutor>();
+
+                PrepareRuntimeExecutor(runtimeExecutor);
+
+                yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(runtimeExecutor);
+
+                _bitDispenser.Clear();
+
+                yield return StartCoroutine(AwaitAllPlayersStatus(RuntimeStatus));
+
+                #endregion
             }
-
-            _bitDispenser.Dispense();
-
-            yield return new WaitForSeconds(2.0f);
-
-            // CodingTimeExecutor codingTimeExecutor = gameObject.GetOrAddComponent<CodingTimeExecutor>();
-            //
-            // yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
-
-            RuntimeExecutor runtimeExecutor = gameObject.GetOrAddComponent<RuntimeExecutor>();
-
-            PrepareRuntimeExecutor(runtimeExecutor);
-
-            yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(runtimeExecutor);
-
-            _bitDispenser.Clear();
 
             #endregion
         }
@@ -320,6 +346,14 @@ namespace CodingStrategy
         private void DetachPlayerUI(Player photonPlayer)
         {
             IPlayerDelegate playerDelegate = PlayerPool[photonPlayer.UserId];
+        }
+
+        private void PrepareCodingTimeExecutor(CodingTimeExecutor codingTimeExecutor)
+        {
+            codingTimeExecutor.InGameUI = inGameUI;
+            codingTimeExecutor.PlayerPool = PlayerPool;
+            codingTimeExecutor.NetworkDelegate = _networkDelegate;
+            codingTimeExecutor.CommandCache = _commandCache;
         }
 
         private void PrepareRuntimeExecutor(RuntimeExecutor runtimeExecutor)
@@ -382,6 +416,83 @@ namespace CodingStrategy
 
                 playerStatusUI.SetRank(rank);
             }
+        }
+
+        private const byte BitPlaceRequestCode = 128;
+        private const byte BitPlaceResponseCode = 129;
+
+        private readonly HashSet<Player> _responsePlayers = new HashSet<Player>();
+
+        public void OnEvent(EventData photonEvent)
+        {
+            byte eventCode = photonEvent.Code;
+
+            if (eventCode == BitPlaceResponseCode)
+            {
+                Debug.Assert(PhotonNetwork.IsMasterClient);
+                Player photonPlayer = PhotonNetwork.CurrentRoom.Players[photonEvent.Sender];
+                _responsePlayers.Add(photonPlayer);
+
+                if (_responsePlayers.Count != PhotonNetwork.CurrentRoom.PlayerCount - 1)
+                {
+                    return;
+                }
+
+                _responsePlayers.Clear();
+                PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
+                {
+                    { "status", PlaceablePlaceStatus }
+                });
+                return;
+            }
+
+            if (eventCode != BitPlaceRequestCode)
+            {
+                return;
+            }
+
+            object[][] data = (object[][]) photonEvent.CustomData;
+            foreach (object[] position in data)
+            {
+                int x = (int) position[0];
+                int y = (int) position[1];
+                Coordinate coordinate = new Coordinate(x, y);
+                _bitDispenser.Dispense(coordinate);
+            }
+
+            PhotonNetwork.RaiseEvent(BitPlaceResponseCode,
+                true,
+                new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient },
+                SendOptions.SendReliable);
+        }
+
+        public void NotifyDispatchBits()
+        {
+            if (!PhotonNetwork.IsMasterClient)
+            {
+                return;
+            }
+
+            IList<Coordinate> positions = _bitDispenser.GetBitPositions(PhotonNetwork.CurrentRoom.PlayerCount * 2);
+            object[][] serializedPositions = new object[positions.Count][];
+
+            foreach ((int i, Coordinate position) in positions.ToIndexed())
+            {
+                serializedPositions[i] = new object[] { position.X, position.Y };
+            }
+
+            PhotonNetwork.RaiseEvent(BitPlaceRequestCode,
+                serializedPositions,
+                new RaiseEventOptions
+                {
+                    Receivers = ReceiverGroup.All
+                },
+                SendOptions.SendReliable);
+        }
+
+        public IEnumerator AwaitAllPlayerPlaceablePlaceEventSynchronization()
+        {
+            yield return StartCoroutine(AwaitAllPlayersStatus(PlaceablePlaceStatus, false));
         }
 
         private static Vector3 ConvertToVector(Coordinate coordinate, float heightOffset)
