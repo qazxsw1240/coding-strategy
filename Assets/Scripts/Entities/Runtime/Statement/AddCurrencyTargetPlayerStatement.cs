@@ -23,7 +23,6 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public override void Execute(RuntimeExecutorContext context)
         {
-            base.Execute(context);
             foreach(IPlayerDelegate playerDelegate in _target)
             {
                 IAbnormality? abnormality=GameManager.GetAbnormalityValue(playerDelegate.Id+"-"+_abnormalityName);

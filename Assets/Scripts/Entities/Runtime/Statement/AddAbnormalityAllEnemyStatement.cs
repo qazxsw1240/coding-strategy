@@ -20,7 +20,6 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public override void Execute(RuntimeExecutorContext context)
         {
-            base.Execute(context);
             foreach(IRobotDelegate robotDelegate in context.RobotDelegatePool)
             {
                 if(robotDelegate == _robotDelegate) continue;

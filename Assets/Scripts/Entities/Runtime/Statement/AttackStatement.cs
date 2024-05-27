@@ -22,7 +22,6 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public override void Execute(RuntimeExecutorContext context)
         {
-            base.Execute(context);
             bool result = _robotDelegate.Attack(_strategy, _coordinates);
             if (!result)
             {

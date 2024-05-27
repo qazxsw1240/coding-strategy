@@ -20,7 +20,6 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public override void Execute(RuntimeExecutorContext context)
         {
-            base.Execute(context);
             IAbnormality? abnormality=GameManager.GetAbnormalityValue(_robotDelegate.Id+"-"+_abnormality.Name);
             if(abnormality==null)
             {

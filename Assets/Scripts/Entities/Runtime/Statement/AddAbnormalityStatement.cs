@@ -22,7 +22,6 @@ namespace CodingStrategy.Entities.Runtime.Statement
         {
             foreach(IRobotDelegate robotDelegate in context.RobotDelegatePool)
             {
-                base.Execute(context);
                 IAbnormality? abnormality=GameManager.GetAbnormalityValue(robotDelegate.Id+"-"+_abnormality.Name);
                 if(abnormality==null)
                 {
