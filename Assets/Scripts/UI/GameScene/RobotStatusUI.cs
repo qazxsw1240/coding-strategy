@@ -19,7 +19,7 @@ namespace CodingStrategy.UI.InGame
 		public TMP_Text State;
 		public TMP_Text Description;
 
-		public void DestoryChildren(Transform transform)
+		public void DestroyChildren(Transform transform)
 		{
 			foreach (Transform child in transform)
 			{
@@ -47,7 +47,7 @@ namespace CodingStrategy.UI.InGame
 			scrollRect.horizontalNormalizedPosition = 0.0f;
 			foreach (ICommand command in commandList)
 			{
-				DestoryChildren(CommandList);
+				DestroyChildren(CommandList);
 				GameObject _object = Instantiate(shopUi.iconList[int.Parse(command.Id)], CommandList);
 				Destroy(_object.GetComponent<Drag>());
 				Destroy(_object.GetComponent<Drop>());

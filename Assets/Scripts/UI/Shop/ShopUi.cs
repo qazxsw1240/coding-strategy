@@ -37,7 +37,7 @@ namespace CodingStrategy.UI.Shop
         public UnityEvent OnShopLevelUpEvent;
         public UnityEvent OnShopRerollEvent;
 
-		public void DestoryChildren(Transform transform)
+		public void DestroyChildren(Transform transform)
 		{
 			foreach (Transform child in transform)
 			{
@@ -47,12 +47,12 @@ namespace CodingStrategy.UI.Shop
 
 		public void ClearShopCommandList()
         {
-            DestoryChildren(shopCommandList);
+            DestroyChildren(shopCommandList);
         }
 
 		public void ClearMyCommandList()
 		{
-            DestoryChildren(myCommandList);
+            DestroyChildren(myCommandList);
 		}
 
 		public void SetShopCommandList(ICommand[] commandList)
