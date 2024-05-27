@@ -61,11 +61,6 @@ namespace CodingStrategy.UI.Shop
             foreach (ICommand command in commandList)
             {
                 GameObject _object = Instantiate(iconList[int.Parse(command.Id)], shopCommandList);
-                Drop drop = _object.GetComponent<Drop>();
-                if (drop != null)
-                {
-                    drop.slotName = "ShopCommand";
-                }
             }
         }
 
@@ -75,11 +70,6 @@ namespace CodingStrategy.UI.Shop
 			foreach (ICommand command in commandList)
 			{
 				GameObject _object = Instantiate(iconList[int.Parse(command.Id)], myCommandList);
-				Drop drop = _object.GetComponent<Drop>();
-				if (drop != null)
-				{
-					drop.slotName = "MyCommand";
-				}
 			}
 		}
 

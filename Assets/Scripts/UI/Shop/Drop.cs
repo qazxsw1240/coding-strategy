@@ -11,56 +11,46 @@ namespace CodingStrategy.UI.Shop
 {
     public class Drop : MonoBehaviour, IDropHandler
     {
-        public string slotName;
-        private UnityEvent<int, int> OnBuyCommandEvent;
+		private int _oldIndex;
+
+		private UnityEvent<int, int> OnBuyCommandEvent;
         private UnityEvent<int> OnSellCommandEvent;
         private UnityEvent<int, int> OnChangeCommandEvent;
 
-        public void OnDrop(PointerEventData eventData)
+		public int GetIndex()
+		{
+			return _oldIndex;
+		}
+
+		public void OnDrop(PointerEventData eventData)
         {
-            if (gameObject == eventData.pointerDrag) return;
-            if (eventData.pointerDrag.name != slotName) return;
+            GameObject dragObject = eventData.pointerDrag;
+            Drag drag = dragObject.GetComponent<Drag>();
+            if (drag == null) return;
 
-            Drag draggable = eventData.pointerDrag.GetComponent<Drag>();
-            if (draggable == null) return;
-
-            if (slotName == "ShopCommand")
+            //Debug.Log("OnDrop: " + drag.getParent() + " " + transform.parent.name);
+            if (drag.getParent() == "ShopCommandList" && transform.parent.name == "MyCommandList")
             {
-                Drag drag = SetDrag();
-                name = slotName = "MyCommand";
-                OnBuyCommandEvent.Invoke(draggable.GetIndex(), drag.GetIndex());
-                //transform.GetChild(0).GetComponent<Image>().sprite = draggable.transform.GetChild(0).GetComponent<Image>().sprite;
-                //draggable.SetVisible(false);
+                OnBuyCommandEvent.Invoke(drag.GetIndex(), GetIndex());
+                //Debug.Log("OnBuyCommandEvent " + drag.GetIndex() + " " + GetIndex());
             }
-            else if (slotName == "MyCommand")
+            else if (drag.getParent() == "MyCommandList" && transform.parent.name == "MyCommandList")
             {
-                if (name == "MyCommand")
-                {
-                    Drag drag = SetDrag();
-                    OnChangeCommandEvent.Invoke(draggable.GetIndex(), drag.GetIndex());
-                }
-                else if (name == "ItemSelectInfo")
-                {
-                    OnSellCommandEvent.Invoke(draggable.GetIndex());
-                }
+				OnChangeCommandEvent.Invoke(drag.GetIndex(), GetIndex());
+				//Debug.Log("OnChangeCommandEvent " + drag.GetIndex() + " " + GetIndex());
             }
-        }
-
-        private Drag SetDrag()
-        {
-            Drag drag = transform.GetComponent<Drag>();
-            if (drag == null)
+            else if (drag.getParent() == "MyCommandList" && name == "ItemSelectInfo")
             {
-                drag = transform.AddComponent<Drag>();
+                OnSellCommandEvent.Invoke(drag.GetIndex());
+                //Debug.Log("OnSellCommandEvent " + drag.GetIndex());
             }
-            drag.SetIndex(transform.GetSiblingIndex());
-            return drag;
         }
 
         // Start is called before the first frame update
         void Start()
         {
-            ShopUi shopUi = GameObject.Find("ShopUI").GetComponent<ShopUi>();
+			_oldIndex = transform.GetSiblingIndex();
+			ShopUi shopUi = GameObject.Find("ShopUI").GetComponent<ShopUi>();
             OnBuyCommandEvent = shopUi.OnBuyCommandEvent;
             OnSellCommandEvent = shopUi.OnSellCommandEvent;
             OnChangeCommandEvent = shopUi.OnChangeCommandEvent;

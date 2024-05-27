@@ -1367,7 +1367,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5373214251390048907, guid: 8c1217e93fb8f6042a50f063d1d52415, type: 3}
       propertyPath: m_Name
-      value: LockIcon
+      value: Lock
       objectReference: {fileID: 0}
     - target: {fileID: 8848483059550505677, guid: 8c1217e93fb8f6042a50f063d1d52415, type: 3}
       propertyPath: m_Pivot.x
@@ -18215,7 +18215,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2644432175534134307}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.99800336
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -18445,7 +18445,7 @@ GameObject:
   - component: {fileID: 2644432175777339531}
   - component: {fileID: 2644432175777339530}
   m_Layer: 0
-  m_Name: ShopItemList
+  m_Name: ShopCommandList
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18486,7 +18486,7 @@ GameObject:
   - component: {fileID: 2644432175795471807}
   - component: {fileID: 2644432175795471808}
   m_Layer: 5
-  m_Name: ShopItem
+  m_Name: ShopCommand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18988,7 +18988,7 @@ GameObject:
   - component: {fileID: 2644432176198109717}
   - component: {fileID: 2644432176198109720}
   m_Layer: 5
-  m_Name: ShopItem
+  m_Name: ShopCommand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20204,7 +20204,7 @@ GameObject:
   - component: {fileID: 2644432176943260420}
   - component: {fileID: 1626417784708136545}
   m_Layer: 5
-  m_Name: ShopItem
+  m_Name: ShopCommand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20327,7 +20327,7 @@ GameObject:
   - component: {fileID: 2644432177206749858}
   - component: {fileID: 2644432177206749861}
   m_Layer: 5
-  m_Name: ShopItem
+  m_Name: ShopCommand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20896,7 +20896,7 @@ GameObject:
   - component: {fileID: 2644432177465939314}
   - component: {fileID: 2644432177465939317}
   m_Layer: 5
-  m_Name: ShopItem
+  m_Name: ShopCommand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21325,7 +21325,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -870.0181, y: 0}
+  m_AnchoredPosition: {x: -870.0226, y: 0}
   m_SizeDelta: {x: 1740.045, y: 250}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!1 &3808750195988157148
@@ -22117,7 +22117,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5107586394960085623, guid: ccc7183a7a30cab4488e15f5c81cbd09, type: 3}
       propertyPath: m_Name
-      value: PlusIcon
+      value: Add
       objectReference: {fileID: 0}
     - target: {fileID: 8555879767898624561, guid: ccc7183a7a30cab4488e15f5c81cbd09, type: 3}
       propertyPath: m_Pivot.x
@@ -22262,7 +22262,7 @@ GameObject:
   - component: {fileID: 3702923633326560453}
   - component: {fileID: 4236863704022558135}
   m_Layer: 5
-  m_Name: SelectedCommandList
+  m_Name: MyCommandList
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
