@@ -12,24 +12,22 @@ namespace CodingStrategy.UI.Shop
         private Transform alwaysOntop;
         private Transform _tmpObject;
 
-        public void SetIndex(int index)
-        {
-            _oldIndex = index;
-        }
-
         public int GetIndex()
         {
             return _oldIndex;
+        }
+
+        public string getParent()
+        {
+            return _oldParent.name;
         }
 
         // Start is called before the first frame update
         void Start()
         {
             _image = GetComponent<Image>();
-            _oldParent = transform.parent;
-            _oldIndex = transform.GetSiblingIndex();
             alwaysOntop = GameObject.Find("AlwaysOnTop").transform;
-        }
+		}
 
         // Update is called once per frame
         void Update() { }
@@ -42,7 +40,9 @@ namespace CodingStrategy.UI.Shop
         public void OnBeginDrag(PointerEventData eventData)
         {
             _image.raycastTarget = false;
-            SetTmp();
+			_oldParent = transform.parent;
+			_oldIndex = transform.GetSiblingIndex();
+			SetTmp();
             transform.SetParent(alwaysOntop);
         }
 

@@ -11,9 +11,9 @@ namespace CodingStrategy.UI.InGame
     public class PlayerStatusUI : MonoBehaviour
     {
         [SerializeField]
-        public static readonly Color Red = new Vector4(230, 190, 166, 255) / 255;
+        public static readonly Color Red = new Vector4(224, 0, 4, 204) / 255;
         [SerializeField]
-        public static readonly Color Green = new Vector4(173, 220, 156, 255) / 255;
+        public static readonly Color Green = new Vector4(83, 219, 57, 255) / 255;
         [SerializeField]
         public static readonly Color Blue = new Vector4(78, 149, 217, 255) / 255;
         [SerializeField]
@@ -26,10 +26,11 @@ namespace CodingStrategy.UI.InGame
         [SerializeField] private GameObject robotLife;
         [SerializeField] private GameObject playerLife;
         [SerializeField] private string userID;
-        public Button button, bigButton;
-        public GameObject status;
+		[SerializeField] public Button button, bigButton;
+		[SerializeField] public GameObject status;
+		[SerializeField] public UnityEvent OnPlayerUIClickEvent;
 
-        public string GetUserID()
+		public string GetUserID()
         {
             return userID;
         }
@@ -103,12 +104,22 @@ namespace CodingStrategy.UI.InGame
             }
         }
 
+        public void SetVisible(bool visibility)
+        {
+            status.SetActive(visibility);
+        }
+
         // Start is called before the first frame update
         void Start()
         {
             button = transform.GetChild(transform.childCount - 1).GetComponent<Button>();
-            button.onClick.AddListener(() => { status.SetActive(true); bigButton.gameObject.SetActive(true); });
-            bigButton.onClick.AddListener(() => { status.SetActive(false); bigButton.gameObject.SetActive(false); });
+            button.onClick.AddListener(() => { 
+                status.SetActive(true); 
+                bigButton.gameObject.SetActive(true);
+                OnPlayerUIClickEvent.Invoke(); });
+            bigButton.onClick.AddListener(() => {
+                status.SetActive(false);
+                bigButton.gameObject.SetActive(false); });
 	}
 
         // Update is called once per frame

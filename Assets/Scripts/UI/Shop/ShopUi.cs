@@ -20,9 +20,11 @@ namespace CodingStrategy.UI.Shop
 
         //LevelupBit
         public TMP_Text levelupBit;
+        public Button levelUpButton;
 
         //ReroadBit
         public TMP_Text reroadBit;
+        public Button rerollButton;
 
         public Transform shopCommandList;
         public Transform myCommandList;
@@ -32,23 +34,25 @@ namespace CodingStrategy.UI.Shop
         public UnityEvent<int, int> OnBuyCommandEvent;
         public UnityEvent<int> OnSellCommandEvent;
         public UnityEvent<int, int> OnChangeCommandEvent;
+        public UnityEvent OnShopLevelUpEvent;
+        public UnityEvent OnShopRerollEvent;
 
-        public void DestoryChildren(Transform transform)
-        {
-			while (transform.childCount > 0)
+		public void DestroyChildren(Transform transform)
+		{
+			foreach (Transform child in transform)
 			{
-				Destroy(transform.GetChild(0).gameObject);
+				Destroy(child.gameObject);
 			}
-        }
+		}
 
-        public void ClearShopCommandList()
+		public void ClearShopCommandList()
         {
-            DestoryChildren(shopCommandList);
+            DestroyChildren(shopCommandList);
         }
 
 		public void ClearMyCommandList()
 		{
-            DestoryChildren(myCommandList);
+            DestroyChildren(myCommandList);
 		}
 
 		public void SetShopCommandList(ICommand[] commandList)
@@ -56,12 +60,7 @@ namespace CodingStrategy.UI.Shop
             ClearShopCommandList();
             foreach (ICommand command in commandList)
             {
-                GameObject _object = Instantiate(iconList[int.Parse(command.Id)], shopCommandList.parent);
-                Drop drop = _object.GetComponent<Drop>();
-                if (drop != null)
-                {
-                    drop.slotName = "ShopCommand";
-                }
+                GameObject _object = Instantiate(iconList[int.Parse(command.Id)], shopCommandList);
             }
         }
 
@@ -70,12 +69,7 @@ namespace CodingStrategy.UI.Shop
             ClearMyCommandList();
 			foreach (ICommand command in commandList)
 			{
-				GameObject _object = Instantiate(iconList[int.Parse(command.Id)], shopCommandList.parent);
-				Drop drop = _object.GetComponent<Drop>();
-				if (drop != null)
-				{
-					drop.slotName = "MyCommand";
-				}
+				GameObject _object = Instantiate(iconList[int.Parse(command.Id)], myCommandList);
 			}
 		}
 
@@ -116,7 +110,15 @@ namespace CodingStrategy.UI.Shop
         }
 
         // Start is called before the first frame update
-        void Start() {}
+        void Start()
+        {
+            levelUpButton.onClick.AddListener(() => { OnShopLevelUpEvent.Invoke(); });
+            rerollButton.onClick.AddListener(() => { OnShopRerollEvent.Invoke(); });
+            setLevel(9);
+            setLevelupBit(8);
+            setReroadBit(7);
+            setBit(6);
+        }
 
         // Update is called once per frame
         void Update() {}

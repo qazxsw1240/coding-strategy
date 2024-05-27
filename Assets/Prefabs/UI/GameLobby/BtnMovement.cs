@@ -13,17 +13,17 @@ public class BtnMovement : MonoBehaviour
 
     public static int activeAnimations = 0;
 
-    private SoundManager soundManager;
+    // private SoundManager soundManager;
 
 
     public void AnimateButton()
     {
-        soundManager = FindObjectOfType<SoundManager>();
-        soundManager.Init();
+        // soundManager = FindObjectOfType<SoundManager>();
+        // soundManager.Init();
 
         // 효과음을 불러오고 재생합니다.
         AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameLobby_UI_ClickSound");
-        soundManager.Play(effectClip, Sound.Effect, 1.0f);
+        // soundManager.Play(effectClip, Sound.Effect, 1.0f);
         Debug.Log("Sounding!");
 
         Vector3 originalPos = this.transform.position;
