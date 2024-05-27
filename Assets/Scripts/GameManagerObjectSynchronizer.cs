@@ -118,20 +118,28 @@ namespace CodingStrategy
 
         public void AddBadSectorObject(IBadSectorDelegate badSectorDelegate)
         {
+            IRobotDelegate robotDelegate = badSectorDelegate.Installer;
+            int index = GameManager.PlayerIndexMap[robotDelegate.Id];
+            (_, _, Color color) =  GameManager.StartPositions[index];
+            color = new Color(color.r, color.g, color.b, color.a * 0.75f);
             Coordinate position = badSectorDelegate.Position;
-            Vector3 vectorPosition = ConvertToVector(position, 0.5f);
-            GameObject robotObject =
+            Vector3 vectorPosition = ConvertToVector(position, 0.1f);
+            GameObject badSectorObject =
                 Instantiate(GameManager.badSectorPrefab, vectorPosition, Quaternion.identity, transform);
-            robotObject.name = badSectorDelegate.Id;
-            robotObject.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
-            _badSectorDelegateObjects[badSectorDelegate] = robotObject;
+            BadSectorAnimation badSectorAnimation = badSectorObject.GetComponent<BadSectorAnimation>();
+            badSectorAnimation.camera = Camera.main;
+            badSectorObject.name = badSectorDelegate.Id;
+            badSectorAnimation.ChangeBadSectorColor(color);
+            _badSectorDelegateObjects[badSectorDelegate] = badSectorObject;
+            GameManager.AnimationCoroutineManager.AddAnimation(badSectorObject, badSectorAnimation.AnimateItem());
         }
 
         public void RemoveBadSectorObject(IBadSectorDelegate badSectorDelegate)
         {
-            GameObject? robotGameObject = FindBadSectorDelegateObject(badSectorDelegate);
+            GameObject badSectorObject = FindBadSectorDelegateObject(badSectorDelegate)!;
             RemoveBadSectorDelegateObject(badSectorDelegate);
-            Destroy(robotGameObject);
+            BadSectorAnimation badSectorAnimation = badSectorObject.GetComponent<BadSectorAnimation>();
+            GameManager.AnimationCoroutineManager.AddAnimation(badSectorDelegate, badSectorAnimation.AnimateItemReverse());
         }
 
         private GameObject? FindBadSectorDelegateObject(IBadSectorDelegate badSectorDelegate)
@@ -191,7 +199,7 @@ namespace CodingStrategy
             {
                 if (photonPlayer.UserId == robotDelegate.Id)
                 {
-                    return GameManager.robotPrefabs[GameManager.PlayerIndexMap[photonPlayer]];
+                    return GameManager.robotPrefabs[GameManager.PlayerIndexMap[photonPlayer.UserId]];
                 }
             }
 
