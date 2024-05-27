@@ -3,17 +3,20 @@
 
 namespace CodingStrategy.Entities.Runtime.CommandImpl
 {
-    using System;
-    using System.Collections.Generic;
     using CodingStrategy.Entities.Robot;
     using Statement;
 
     public class BotnetsCommand : AbstractCommand
     {
-        private readonly CommandBuilder _commandBuilder=new();
+        private static readonly Coordinate[] relativePosition={
+            new(1, 0), new(-1, 0),
+            new(0, 1), new(0, -1),
+            new(1, 1), new(1, -1),
+            new(-1, 1), new(-1, -1)
+        };
 
         public BotnetsCommand(string id="12", string name="봇네츠", int enhancedLevel=1, int grade=5)
-        : base(id, name, enhancedLevel, grade)
+        : base(id, name, enhancedLevel, grade, 0)
         {
         }
 
@@ -26,19 +29,6 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
             return new BotnetsCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
 
-        public override IList<IStatement> GetCommandStatements(IRobotDelegate robot)
-        {
-            _commandBuilder.Clear();
-            Coordinate[] relativePosition={
-                new Coordinate(1, 0), new Coordinate(-1, 0),
-                new Coordinate(0, 1),new Coordinate(0, -1),
-                new Coordinate(1, 1),new Coordinate(1, -1),
-                new Coordinate(-1, 1),new Coordinate(-1, -1)
-            };
-            _commandBuilder.Append(new AttackStatement(new BotnetsAttackStrategy(Info.EnhancedLevel), robot, relativePosition));
-            return _commandBuilder.Build();
-        }
-
         public override bool Invoke(params object[] args)
         {
             throw new System.NotImplementedException();
@@ -48,16 +38,34 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
         {
             throw new System.NotImplementedException();
         }
-        private class BotnetsAttackStrategy : IRobotAttackStrategy
+
+        protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)
         {
-            private readonly int damage;
-            public BotnetsAttackStrategy(int enhancedLevel)
+            _commandBuilder.Append(new AttackStatement(robotDelegate, new AttackStrategy(Info.EnhancedLevel), relativePosition));
+        }
+
+        protected override void AddStatementOnLevel2(IRobotDelegate robotDelegate)
+        {
+            return;
+        }
+
+        protected override void AddStatementOnLevel3(IRobotDelegate robotDelegate)
+        {
+            return;
+        }
+
+        private class AttackStrategy : IRobotAttackStrategy
+        {
+            private static readonly int[] _damageArray= { 0, 1, 2, 4};
+            private readonly int _damage;
+            public AttackStrategy(int enhancedLevel)
             {
-                damage=(int)Math.Pow(2, enhancedLevel-1);
+
+                _damage=_damageArray[enhancedLevel];
             } 
             public int CalculateAttackPoint(IRobotDelegate attacker, IRobotDelegate target)
             {
-                return damage;
+                return _damage;
             }
         }
     }
