@@ -16,7 +16,7 @@ namespace CodingStrategy.Entities.Animations
         public int shakeVibrato = 1;
         public Camera camera;
 
-        public Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+        public Shader shader;
         public Material newMaterial;
 
         private Renderer _itemRenderer;
