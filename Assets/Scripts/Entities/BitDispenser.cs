@@ -37,14 +37,19 @@ namespace CodingStrategy.Entities
             Dispense(GetBitPositions(_playerPool.Count() * 2));
         }
 
+        public void Dispense(Coordinate position)
+        {
+            Debug.LogFormat("Bit placed on {0}", position);
+            IBitDelegate bitDelegate = new BitDelegateImpl(_playerPool, _boardDelegate, 4);
+            _boardDelegate.Add(bitDelegate, position);
+            _bits.Add(bitDelegate);
+        }
+
         public void Dispense(IList<Coordinate> positions)
         {
             foreach (Coordinate position in positions)
             {
-                Debug.LogFormat("Bit placed on {0}", position);
-                IBitDelegate bitDelegate = new BitDelegateImpl(_playerPool, _boardDelegate, 4);
-                _boardDelegate.Add(bitDelegate, position);
-                _bits.Add(bitDelegate);
+                Dispense(positions);
             }
         }
 
