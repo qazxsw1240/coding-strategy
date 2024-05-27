@@ -57,8 +57,10 @@ namespace CodingStrategy.Entities
                 return _commandBuilder.Build();
             }
             AddStatementOnLevel1(robotDelegate);
-            AddStatementOnLevel2(robotDelegate);
-            AddStatementOnLevel3(robotDelegate);
+            if(Info.EnhancedLevel>=2)
+                AddStatementOnLevel2(robotDelegate);
+            if(Info.EnhancedLevel>=3)
+                AddStatementOnLevel3(robotDelegate);
             return _commandBuilder.Build();
         }
         protected abstract void AddStatementOnLevel1(IRobotDelegate robotDelegate);

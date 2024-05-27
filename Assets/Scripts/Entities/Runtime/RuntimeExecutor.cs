@@ -154,6 +154,7 @@ namespace CodingStrategy.Entities.Runtime
                     RobotDelegatePool,
                     _executionQueuePool,
                     AnimationCoroutineManager);
+                robotStatementExecutor.OnStatementExecuteEvents.AddListener(AddCurrencyOnMove());
                 yield return AwaitLifeCycleCoroutine(robotStatementExecutor);
                 Destroy(robotStatementExecutor);
 
@@ -186,6 +187,14 @@ namespace CodingStrategy.Entities.Runtime
                 PlayerPool,
                 robotDelegate,
                 playerDelegate);
+        }
+        private UnityAction<IRobotDelegate, IPlayerDelegate, IStatement> AddCurrencyOnMove()
+        {
+            return (_, playerDelegate, statement)=>
+            {
+                if(statement.Phase == StatementPhase.Move)
+                    playerDelegate.Currency+=1;
+            };
         }
     }
 }
