@@ -26,6 +26,7 @@ namespace CodingStrategy
     using Entities.Runtime;
     using Unity.VisualScripting;
     using UnityEngine;
+    using CodingStrategy.Entities.Runtime.CommandImpl;
 
     public class GameManager : MonoBehaviourPunCallbacks
     {
@@ -391,7 +392,7 @@ namespace CodingStrategy
 
         private class TestCommand : AbstractCommand, ICommand
         {
-            public TestCommand() : base("0", "TestCommand", 0, 0) {}
+            public TestCommand() : base("0", "TestCommand", 0, 0, 0) {}
 
             public override bool Invoke(params object[] args)
             {
@@ -403,16 +404,23 @@ namespace CodingStrategy
                 throw new NotImplementedException();
             }
 
-            public override IList<IStatement> GetCommandStatements(IRobotDelegate robotDelegate)
+            public override ICommand Copy(bool keepStatus = true)
             {
-                return new List<IStatement>
-                {
-                    new MoveStatement(robotDelegate, 1),
-                    new RotateStatement(robotDelegate, 1)
-                };
+                throw new NotImplementedException();
             }
 
-            public override ICommand Copy(bool keepStatus = true)
+            protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)
+            {
+                _commandBuilder.Append(new MoveStatement(robotDelegate, 1));
+                _commandBuilder.Append(new RotateStatement(robotDelegate, 1));
+            }
+
+            protected override void AddStatementOnLevel2(IRobotDelegate robotDelegate)
+            {
+                throw new NotImplementedException();
+            }
+
+            protected override void AddStatementOnLevel3(IRobotDelegate robotDelegate)
             {
                 throw new NotImplementedException();
             }
