@@ -1,4 +1,6 @@
 using DG.Tweening;
+using JetBrains.Annotations;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -13,6 +15,7 @@ namespace CodingStrategy.Entities.Animations
         public float shakeStrength = 0.2f;
         public int shakeVibrato = 1;
         public Camera camera;
+        public Material newMaterial;
 
         private Renderer _itemRenderer;
         public SpriteRenderer[] childSprites; // 자식 스프라이트
@@ -20,19 +23,7 @@ namespace CodingStrategy.Entities.Animations
         private void Start()
         {
             _itemRenderer = GetComponent<Renderer>();
-            StartCoroutine(AnimateItem());
-        }
-
-        public void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.K))
-            {
-                StartCoroutine(AnimateItemReverse());
-            }
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                StartCoroutine(ActivateBadsector());
-            }
+            //StartCoroutine(AnimateItem());
         }
 
         public IEnumerator AnimateItem()
@@ -96,6 +87,33 @@ namespace CodingStrategy.Entities.Animations
 
             yield return sequence.WaitForCompletion();
             Destroy(gameObject);
+        }
+
+        public void ChangeBadSectorColor(Color color)
+        {
+            gameObject.GetComponent<Renderer>().material = newMaterial;
+            //Color Red = new Vector4(224, 0, 4, 204) / 255;
+            //Color Green = new Vector4(83, 219, 57, 255) / 255;
+            //Color Blue = new Vector4(78, 149, 217, 255) / 255;
+            //Color Yellow = new Vector4(245, 184, 0, 255) / 255;
+            //
+            //if (ColorString == "R") 
+            //{
+            //    newMaterial.color = Red;
+            //}
+            //else if (ColorString == "Y")
+            //{
+            //    newMaterial.color = Yellow;
+            //}
+            //else if (ColorString == "G")
+            //{
+            //    newMaterial.color = Green;
+            //}
+            //else if (ColorString == "B")
+            //{
+            //    newMaterial.color = Blue;
+            //}
+            newMaterial.color = color;
         }
     }
 }
