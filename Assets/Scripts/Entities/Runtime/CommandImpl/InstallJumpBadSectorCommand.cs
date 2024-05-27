@@ -56,7 +56,6 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
         protected override void AddStatementOnLevel3(IRobotDelegate robotDelegate)
         {
             _commandBuilder.Clear();
-            _coordinates.Add(new Coordinate(0,1));
             _coordinates.Add(new Coordinate(-1,1));
             _coordinates.Add(new Coordinate(1,1));
             _commandBuilder.Append(new PointerStatement(robotDelegate, InstallJumpBadSector, _coordinates));
