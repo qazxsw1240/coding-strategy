@@ -27,6 +27,7 @@ namespace CodingStrategy.Entities.Animations
         {
             // shader = Shader.Find("Universal Render Pipeline/Lit");
             // newMaterial = new Material(shader);
+            newMaterial = gameObject.GetComponent<Renderer>().material;
             newMaterial.SetFloat(Surface, 1f);
             _itemRenderer = gameObject.GetComponent<Renderer>();
             _itemRenderer.material = newMaterial;
