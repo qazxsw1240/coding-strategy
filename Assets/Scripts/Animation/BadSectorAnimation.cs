@@ -1,4 +1,6 @@
 using DG.Tweening;
+using JetBrains.Annotations;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -14,25 +16,28 @@ namespace CodingStrategy.Entities.Animations
         public int shakeVibrato = 1;
         public Camera camera;
 
+        public Shader shader;
+        public Material newMaterial;
+
         private Renderer _itemRenderer;
         public SpriteRenderer[] childSprites; // 자식 스프라이트
+        private static readonly int Surface = Shader.PropertyToID("_Surface");
+
+        private void Awake()
+        {
+            // shader = Shader.Find("Universal Render Pipeline/Lit");
+            // newMaterial = new Material(shader);
+            newMaterial.SetFloat(Surface, 1f);
+            _itemRenderer = gameObject.GetComponent<Renderer>();
+            _itemRenderer.material = newMaterial;
+        }
+
 
         private void Start()
         {
-            _itemRenderer = GetComponent<Renderer>();
-            StartCoroutine(AnimateItem());
-        }
-
-        public void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.K))
-            {
-                StartCoroutine(AnimateItemReverse());
-            }
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                StartCoroutine(ActivateBadsector());
-            }
+            // _itemRenderer = gameObject.GetComponent<Renderer>();
+            // _itemRenderer.material = newMaterial;
+            //StartCoroutine(AnimateItem());
         }
 
         public IEnumerator AnimateItem()
@@ -53,7 +58,10 @@ namespace CodingStrategy.Entities.Animations
             yield return sequence.WaitForCompletion();
 
             // 카메라 흔들기 애니메이션
-            camera.DOShakePosition(shakeDuration, shakeStrength, shakeVibrato);
+
+            yield return camera.DOShakePosition(shakeDuration, shakeStrength, shakeVibrato).WaitForCompletion();
+
+            Debug.Log("Bad sector install animation ended.");
         }
 
 
@@ -96,6 +104,33 @@ namespace CodingStrategy.Entities.Animations
 
             yield return sequence.WaitForCompletion();
             Destroy(gameObject);
+        }
+
+        public void ChangeBadSectorColor(Color color)
+        {
+            gameObject.GetComponent<Renderer>().material = newMaterial;
+            //Color Red = new Vector4(224, 0, 4, 204) / 255;
+            //Color Green = new Vector4(83, 219, 57, 255) / 255;
+            //Color Blue = new Vector4(78, 149, 217, 255) / 255;
+            //Color Yellow = new Vector4(245, 184, 0, 255) / 255;
+            //
+            //if (ColorString == "R") 
+            //{
+            //    newMaterial.color = Red;
+            //}
+            //else if (ColorString == "Y")
+            //{
+            //    newMaterial.color = Yellow;
+            //}
+            //else if (ColorString == "G")
+            //{
+            //    newMaterial.color = Green;
+            //}
+            //else if (ColorString == "B")
+            //{
+            //    newMaterial.color = Blue;
+            //}
+            newMaterial.color = color;
         }
     }
 }
