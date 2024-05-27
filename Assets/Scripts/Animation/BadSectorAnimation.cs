@@ -21,17 +21,22 @@ namespace CodingStrategy.Entities.Animations
 
         private Renderer _itemRenderer;
         public SpriteRenderer[] childSprites; // 자식 스프라이트
+        private static readonly int Surface = Shader.PropertyToID("_Surface");
 
         private void Awake()
         {
-            shader = Shader.Find("Universal Render Pipeline/Lit");
-            newMaterial = new Material(shader);
+            // shader = Shader.Find("Universal Render Pipeline/Lit");
+            // newMaterial = new Material(shader);
+            newMaterial.SetFloat(Surface, 1f);
+            _itemRenderer = gameObject.GetComponent<Renderer>();
+            _itemRenderer.material = newMaterial;
         }
 
 
         private void Start()
         {
-            _itemRenderer = GetComponent<Renderer>();
+            // _itemRenderer = gameObject.GetComponent<Renderer>();
+            // _itemRenderer.material = newMaterial;
             //StartCoroutine(AnimateItem());
         }
 
@@ -53,7 +58,10 @@ namespace CodingStrategy.Entities.Animations
             yield return sequence.WaitForCompletion();
 
             // 카메라 흔들기 애니메이션
-            camera.DOShakePosition(shakeDuration, shakeStrength, shakeVibrato);
+
+            yield return camera.DOShakePosition(shakeDuration, shakeStrength, shakeVibrato).WaitForCompletion();
+
+            Debug.Log("Bad sector install animation ended.");
         }
 
 
