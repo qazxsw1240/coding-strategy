@@ -18,7 +18,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public string RoomID;
 
     public GameObject roomPrefab;
-    public Transform contentRoomlist;
+    public Transform contentRoomlist; 
+    public GameObject Loading;
 
     // 갱신된 방 리스트를 저장해 둘 변수
     public static List<RoomInfo> cachedRoomList = new List<RoomInfo>();
@@ -26,6 +27,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     private void Awake()
     {
         LobbyNickname.text = PhotonNetwork.LocalPlayer.NickName;
+        Loading.SetActive(false);
     }
 
     public void OnRandomRoomButtonClick()
@@ -83,6 +85,9 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Successfully joined room");
+        
+        Loading.SetActive(true);
+        
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
