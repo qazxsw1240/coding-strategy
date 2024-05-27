@@ -3,28 +3,25 @@
 
 namespace CodingStrategy.Entities.Runtime.Statement
 {
-    using CodingStrategy.Entities.Player;
-    using CodingStrategy.Entities.Runtime.Abnormality;
     using Robot;
 
-    public class SuperStatement : IStatement
+    public class SuperStatement : AbstractStatement
     {
-        private readonly IRobotDelegate _robotDelegate;
         private readonly bool _isSuper;
 
         public SuperStatement(IRobotDelegate robotDelegate, bool isSuper=true)
+        : base(robotDelegate)
         {
-            _robotDelegate = robotDelegate;
             _isSuper = isSuper;
         }
 
-        public void Execute(RuntimeExecutorContext context)
+        public override void Execute(RuntimeExecutorContext context)
         {
             context.ExecutionQueuePool[_robotDelegate].IsProtected = true;
         }
 
-        public StatementPhase Phase => StatementPhase.Static;
+        public override StatementPhase Phase => StatementPhase.Move;
 
-        public IStatement Reverse => new SuperStatement(_robotDelegate, !_isSuper);
+        public override IStatement Reverse => new SuperStatement(_robotDelegate, !_isSuper);
     }
 }
