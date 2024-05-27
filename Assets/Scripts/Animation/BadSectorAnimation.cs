@@ -15,10 +15,19 @@ namespace CodingStrategy.Entities.Animations
         public float shakeStrength = 0.2f;
         public int shakeVibrato = 1;
         public Camera camera;
+
+        public Shader shader = Shader.Find("Universal Render Pipeline/Lit");
         public Material newMaterial;
 
         private Renderer _itemRenderer;
         public SpriteRenderer[] childSprites; // 자식 스프라이트
+
+        private void Awake()
+        {
+            shader = Shader.Find("Universal Render Pipeline/Lit");
+            newMaterial = new Material(shader);
+        }
+
 
         private void Start()
         {
