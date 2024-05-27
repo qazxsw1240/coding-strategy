@@ -7,19 +7,11 @@ namespace CodingStrategy.Entities.Runtime.Statement
     public abstract class AbstractStatement : IStatement
     {
         protected readonly IRobotDelegate _robotDelegate;
-        protected readonly int _energy;
-        protected AbstractStatement(IRobotDelegate robotDelegate, int energy)
+        protected AbstractStatement(IRobotDelegate robotDelegate)
         {
             _robotDelegate = robotDelegate;
-            _energy = energy;
         }
-        public virtual void Execute(RuntimeExecutorContext context)
-        {
-            if(_robotDelegate.EnergyPoint<_energy)
-            {
-                throw new ExecutionException();
-            }
-        }
+        public abstract void Execute(RuntimeExecutorContext context);
         public abstract StatementPhase Phase { get; }
         public abstract IStatement Reverse { get; }
     }
