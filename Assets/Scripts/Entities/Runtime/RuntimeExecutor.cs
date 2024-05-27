@@ -100,7 +100,7 @@ namespace CodingStrategy.Entities.Runtime
                 ICommand command = algorithm[_currentCountdown % algorithm.Count];
                 ICommandContext commandContext = BuildCommandContext(robotDelegate);
 
-                // TODO : use
+                command.Context = commandContext;
 
                 foreach (IStatement statement in command.GetCommandStatements(robotDelegate))
                 {
