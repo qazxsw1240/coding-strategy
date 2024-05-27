@@ -12,10 +12,10 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     public class InstallJumpBadSectorCommand : AbstractCommand
     {
         public static int installNum=0;
-        private readonly CommandBuilder _commandBuilder=new();
+        private readonly List<Coordinate> _coordinates=new();
 
         public InstallJumpBadSectorCommand(string id="14", string name="점프대 설치", int enhancedLevel=1, int grade=1)
-        : base(id, name, enhancedLevel, grade)
+        : base(id, name, enhancedLevel, grade, 1)
         {
         }
 
@@ -23,18 +23,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
         {
             if(!keepStatus)
             {
-                return new CoinMiningCommand();
+                return new InstallJumpBadSectorCommand();
             }
-            return new CoinMiningCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
-        }
-
-        public override IList<IStatement> GetCommandStatements(IRobotDelegate robot)
-        {
-            _commandBuilder.Clear();
-            List<Coordinate> coordinates=new List<Coordinate>();
-            coordinates.Add(new Coordinate(0,2));
-            _commandBuilder.Append(new PointerStatement(robot, InstallJumpBadSector, coordinates));
-            return _commandBuilder.Build();
+            return new InstallJumpBadSectorCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
         public IBadSectorDelegate InstallJumpBadSector(IBoardDelegate boardDelegate, IRobotDelegate robotDelegate)
         {
@@ -49,6 +40,26 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
         public override bool Revoke(params object[] args)
         {
             throw new System.NotImplementedException();
+        }
+
+        protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)
+        {
+            _coordinates.Add(new Coordinate(0,1));
+            _commandBuilder.Append(new PointerStatement(robotDelegate, InstallJumpBadSector, _coordinates));
+        }
+
+        protected override void AddStatementOnLevel2(IRobotDelegate robotDelegate)
+        {
+            return;
+        }
+
+        protected override void AddStatementOnLevel3(IRobotDelegate robotDelegate)
+        {
+            _commandBuilder.Clear();
+            _coordinates.Add(new Coordinate(0,1));
+            _coordinates.Add(new Coordinate(-1,1));
+            _coordinates.Add(new Coordinate(1,1));
+            _commandBuilder.Append(new PointerStatement(robotDelegate, InstallJumpBadSector, _coordinates));
         }
     }
 }
