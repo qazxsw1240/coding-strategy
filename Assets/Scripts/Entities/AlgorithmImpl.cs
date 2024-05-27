@@ -39,11 +39,15 @@ namespace CodingStrategy.Entities
 
             set
             {
-                if (index < 0 || index >= _count)
+                if (index < 0 || index > _count)
                 {
                     throw new IndexOutOfRangeException();
                 }
                 _elements[index] = value;
+                if (index == _count)
+                {
+                    _count++;
+                }
             }
         }
 
