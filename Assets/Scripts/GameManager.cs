@@ -4,8 +4,7 @@
 using System.Linq;
 using System.Text;
 using CodingStrategy.Entities.CodingTime;
-using CodingStrategy.Entities.Placeable;
-using CodingStrategy.Entities.Runtime.Statement;
+using CodingStrategy.Entities.Runtime.CommandImpl;
 using CodingStrategy.Factory;
 using CodingStrategy.Network;
 using CodingStrategy.UI.InGame;
@@ -30,7 +29,7 @@ namespace CodingStrategy
 
     public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
     {
-        private static readonly (RobotDirection, Coordinate, Color)[] StartPositions =
+        public static readonly (RobotDirection, Coordinate, Color)[] StartPositions =
         {
             (RobotDirection.North, new Coordinate(4, 0), PlayerStatusUI.Red),
             (RobotDirection.East, new Coordinate(0, 4), PlayerStatusUI.Yellow),
@@ -71,6 +70,7 @@ namespace CodingStrategy
         public GameObject bitPrefab = null!;
         public GameObject badSectorPrefab = null!;
         public List<GameObject> robotPrefabs = new List<GameObject>();
+        public GameManagerUtil util = null!;
 
         public IBoardDelegate BoardDelegate { get; private set; } = null!;
         public IRobotDelegatePool RobotDelegatePool { get; private set; } = null!;
@@ -84,7 +84,7 @@ namespace CodingStrategy
         private GameManagerObjectSynchronizer _objectSynchronizer = null!;
         private GameManagerPlayerStatusSynchronizer _playerStatusSynchronizer = null!;
 
-        public readonly IDictionary<Player, int> PlayerIndexMap = new Dictionary<Player, int>();
+        public readonly IDictionary<string, int> PlayerIndexMap = new Dictionary<string, int>();
 
         public static IPlayerDelegate BuildPlayerDelegate(string id)
         {
@@ -109,8 +109,10 @@ namespace CodingStrategy
             RobotDelegatePool = new RobotDelegatePoolImpl();
             PlayerPool = new PlayerPoolImpl();
             _bitDispenser = new BitDispenser(BoardDelegate, PlayerPool);
-            AnimationCoroutineManager = gameObject.GetOrAddComponent<AnimationCoroutineManager>();
             _objectSynchronizer = SetUpObjectSynchronizer();
+            AnimationCoroutineManager = gameObject.GetOrAddComponent<AnimationCoroutineManager>();
+
+            util = gameObject.GetOrAddComponent<GameManagerUtil>();
             // _playerStatusSynchronizer = SetUpPlayerStatusSynchronizer();
         }
 
@@ -253,14 +255,13 @@ namespace CodingStrategy
             _networkDelegate = new PhotonPlayerCommandNetworkDelegate();
             _commandCache = new PhotonPlayerCommandCache(_networkDelegate);
 
+            util.InitializePlayersByPhoton();
+
             foreach ((int index, Player photonPlayer) in PhotonNetwork.PlayerList.ToIndexed())
             {
-                PlayerIndexMap[photonPlayer] = index;
-                (RobotDirection direction, Coordinate position, Color color) = StartPositions[index];
-                IPlayerDelegate playerDelegate = PlayerPool[photonPlayer.UserId];
-                IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
+                PlayerIndexMap[photonPlayer.UserId] = index;
+                (RobotDirection _, Coordinate _, Color color) = StartPositions[index];
                 PreparePlayerUI(photonPlayer, inGameUI.playerStatusUI[index], color);
-                BoardDelegate.Add(robotDelegate, position, direction);
             }
 
             InitializeCells();
@@ -279,14 +280,17 @@ namespace CodingStrategy
 
                 _networkDelegate.RequestRefresh();
 
-                inGameUI.SetCameraPosition(PlayerIndexMap[PhotonNetwork.LocalPlayer]);
-
-                foreach (IPlayerDelegate playerDelegate in PlayerPool)
-                {
-                    playerDelegate.Algorithm.Add(new TestCommand());
-                }
+                inGameUI.SetCameraPosition(PlayerIndexMap[PhotonNetwork.LocalPlayer.UserId]);
 
                 // _bitDispenser.Dispense();
+
+                foreach (IPlayerDelegate playerDelegate in util.PlayerDelegatePool)
+                {
+                    int index = PlayerIndexMap[playerDelegate.Id];
+                    (RobotDirection direction, Coordinate position, Color _) = StartPositions[index];
+                    IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
+                    BoardDelegate.Add(robotDelegate, position, direction);
+                }
 
                 NotifyDispatchBits();
 
@@ -296,19 +300,25 @@ namespace CodingStrategy
 
                 #region CODING_TIME
 
-                yield return StartCoroutine(AwaitAllPlayersStatus(CodingTimeStatus));
-
+                // yield return StartCoroutine(AwaitAllPlayersStatus(CodingTimeStatus));
+                //
                 yield return new WaitForSeconds(2.0f);
-
-                CodingTimeExecutor codingTimeExecutor = gameObject.GetOrAddComponent<CodingTimeExecutor>();
-
-                PrepareCodingTimeExecutor(codingTimeExecutor);
-
-                yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
+                //
+                // CodingTimeExecutor codingTimeExecutor = gameObject.GetOrAddComponent<CodingTimeExecutor>();
+                //
+                // PrepareCodingTimeExecutor(codingTimeExecutor);
+                //
+                // yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
 
                 #endregion
 
                 #region RUNTIME
+
+                foreach (IPlayerDelegate playerDelegate in PlayerPool)
+                {
+                    playerDelegate.Algorithm[0] = new MoveForwardCommand();
+                    playerDelegate.Algorithm[1] = new InstallMalwareCommand();
+                }
 
                 RuntimeExecutor runtimeExecutor = gameObject.GetOrAddComponent<RuntimeExecutor>();
 
@@ -324,6 +334,8 @@ namespace CodingStrategy
             }
 
             #endregion
+
+            Debug.Log("Runtime terminated");
         }
 
         private void PreparePlayerUI(Player photonPlayer, PlayerStatusUI playerStatusUI, Color color)
@@ -498,35 +510,6 @@ namespace CodingStrategy
         private static Vector3 ConvertToVector(Coordinate coordinate, float heightOffset)
         {
             return new Vector3(coordinate.X, heightOffset, coordinate.Y);
-        }
-
-        private class TestCommand : AbstractCommand, ICommand
-        {
-            public TestCommand() : base("0", "TestCommand", 0, 0) {}
-
-            public override bool Invoke(params object[] args)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override bool Revoke(params object[] args)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override IList<IStatement> GetCommandStatements(IRobotDelegate robotDelegate)
-            {
-                return new List<IStatement>
-                {
-                    new MoveStatement(robotDelegate, 1),
-                    new RotateStatement(robotDelegate, 1)
-                };
-            }
-
-            public override ICommand Copy(bool keepStatus = true)
-            {
-                throw new NotImplementedException();
-            }
         }
     }
 }
