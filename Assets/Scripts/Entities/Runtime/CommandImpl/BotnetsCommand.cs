@@ -15,8 +15,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
             new(-1, 1), new(-1, -1)
         };
 
-        public BotnetsCommand(string id="12", string name="봇네츠", int enhancedLevel=1, int grade=5)
-        : base(id, name, enhancedLevel, grade, 0)
+        public BotnetsCommand(string id="12", string name="봇네츠", int enhancedLevel=1, int grade=5,
+        string explanation="사용시 공격 범위에 해당하는 로봇의 체력을 1칸 깎습니다.")
+        : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
 

@@ -8,8 +8,8 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     public class EmptyCommand : AbstractCommand
     {
 
-        public EmptyCommand(string id="0", string name="빈 커맨드", int enhancedLevel=1, int grade=1)
-        : base(id, name, enhancedLevel, grade, 0)
+        public EmptyCommand(string id="0", string name="빈 커맨드", int enhancedLevel=0, int grade=0, string explanation="")
+        : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
 

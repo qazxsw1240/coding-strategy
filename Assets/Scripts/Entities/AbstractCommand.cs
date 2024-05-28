@@ -27,10 +27,10 @@ namespace CodingStrategy.Entities
         /// <param name="name">명령어의 이름입니다.</param>
         /// <param name="enhancedLevel">명령어의 강화 단계입니다.</param>
         /// <param name="energyPoint">명령어 실행에 필요한 에너지입니다.</param>
-        protected AbstractCommand(string id, string name, int enhancedLevel, int grade, int energyPoint)
+        protected AbstractCommand(string id, string name, int enhancedLevel, int grade, int energyPoint, string explanation)
         {
             _id = id;
-            _info = new CommandInfoImpl(name, enhancedLevel, grade);
+            _info = new CommandInfoImpl(name, enhancedLevel, grade, explanation);
             _energyPoint = energyPoint;
             _commandBuilder = new();
         }

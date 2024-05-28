@@ -11,8 +11,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     {
         private readonly IList<Coordinate> _coordinates=new List<Coordinate>();
 
-        public ReinforceCommand(string id="21", string name="보강", int enhancedLevel=1, int grade=2)
-        : base(id, name, enhancedLevel, grade, 0)
+        public ReinforceCommand(string id="20", string name="보강", int enhancedLevel=1, int grade=2,
+        string explanation="현재 로봇의 방어력을 1만큼 이번 런타임동안 증가합니다.")
+        : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
 

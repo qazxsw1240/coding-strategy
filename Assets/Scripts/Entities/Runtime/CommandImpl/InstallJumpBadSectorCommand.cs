@@ -14,8 +14,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
         public static int installNum=0;
         private readonly List<Coordinate> _coordinates=new();
 
-        public InstallJumpBadSectorCommand(string id="14", string name="점프대 설치", int enhancedLevel=1, int grade=1)
-        : base(id, name, enhancedLevel, grade, 1)
+        public InstallJumpBadSectorCommand(string id="13", string name="점프대 설치", int enhancedLevel=1, int grade=1,
+        string explanation="사용시 공격 범위에 해당하는 칸에 로봇이 바라보는 방향으로 로봇이 이동하게 만드는 배드섹터를 설치합니다.에너지를 1 소모합니다.")
+        : base(id, name, enhancedLevel, grade, 1, explanation)
         {
         }
 

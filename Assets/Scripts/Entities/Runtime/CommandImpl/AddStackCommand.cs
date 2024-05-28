@@ -10,8 +10,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     public class AddStackCommand : AbstractCommand
     {
 
-        public AddStackCommand(string id="8", string name="스택 추가", int enhancedLevel=1, int grade=2)
-        : base(id, name, enhancedLevel, grade, 0)
+        public AddStackCommand(string id="8", string name="스택 추가", int enhancedLevel=1, int grade=2,
+        string explanation="자신의 캐릭터에게 스택 2만큼 부여합니다.")
+        : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
 

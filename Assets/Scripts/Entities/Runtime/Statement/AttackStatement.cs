@@ -1,10 +1,10 @@
 ﻿#nullable enable
 
 
-using CodingStrategy.Entities.Robot;
-
 namespace CodingStrategy.Entities.Runtime.Statement
 {
+    using Robot;
+    using UnityEngine;
     public class AttackStatement : AbstractStatement
     {
         private readonly IRobotAttackStrategy _strategy;
@@ -25,7 +25,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
             bool result = _robotDelegate.Attack(_strategy, _coordinates);
             if (!result)
             {
-                throw new ExecutionException("Cannot robot attack");
+                Debug.Log("Cannot robot attack");
             }
         }
 

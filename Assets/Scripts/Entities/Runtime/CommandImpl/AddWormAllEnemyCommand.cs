@@ -10,8 +10,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     public class AddWormAllEnemyCommand : AbstractCommand
     {
 
-        public AddWormAllEnemyCommand(string id="9", string name="전역 웜 추가", int enhancedLevel=1, int grade=2)
-        : base(id, name, enhancedLevel, grade, 0)
+        public AddWormAllEnemyCommand(string id="9", string name="전역 웜 추가", int enhancedLevel=1, int grade=2,
+        string explanation="모든 캐릭터에게 웜 1만큼 부여합니다.")
+        : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
 

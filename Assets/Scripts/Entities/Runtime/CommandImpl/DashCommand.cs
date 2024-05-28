@@ -11,8 +11,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     {
         private readonly IList<Coordinate> _coordinates=new List<Coordinate>();
 
-        public DashCommand(string id="19", string name="돌진", int enhancedLevel=1, int grade=2)
-        : base(id, name, enhancedLevel, grade, 1)
+        public DashCommand(string id="18", string name="돌진", int enhancedLevel=1, int grade=2,
+        string explanation="바라보는 기준에서 앞으로 3칸 이동합니다. 에너지를 1 소모합니다.")
+        : base(id, name, enhancedLevel, grade, 1, explanation)
         {
         }
 

@@ -10,8 +10,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     {
         private static readonly Coordinate _coordinate=new(1,0);
 
-        public MoveRightCommand(string id="3", string name="오른쪽으로 이동", int enhancedLevel=1, int grade=1)
-        : base(id, name, enhancedLevel, grade, 0)
+        public MoveRightCommand(string id="3", string name="오른쪽으로 이동", int enhancedLevel=1, int grade=1,
+        string explanation="바라보는 기준에서 오른쪽으로 1칸 이동합니다.")
+        : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
 

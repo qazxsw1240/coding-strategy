@@ -12,8 +12,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     {
         private readonly IList<Coordinate> _coordinates=new List<Coordinate>();
 
-        public AttackForwardCommand(string id="16", string name="앞 공격", int enhancedLevel=1, int grade=1)
-        : base(id, name, enhancedLevel, grade, 1)
+        public AttackForwardCommand(string id="15", string name="앞 공격", int enhancedLevel=1, int grade=1,
+        string explanation="사용시 공격 범위에 해당하는  칸에 있는 로봇을 본인 공격력 수치만큼 공격합니다. 에너지를 1 소모합니다.")
+        : base(id, name, enhancedLevel, grade, 1, explanation)
         {
         }
 

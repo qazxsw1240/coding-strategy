@@ -12,8 +12,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     {
         private readonly IList<Coordinate> _coordinates=new List<Coordinate>();
 
-        public ChargeEnergyCommand(string id="18", string name="에너지 충전", int enhancedLevel=1, int grade=1)
-        : base(id, name, enhancedLevel, grade, 1)
+        public ChargeEnergyCommand(string id="17", string name="에너지 충전", int enhancedLevel=1, int grade=1,
+        string explanation="사용시 현재 에너지를 1 충전합니다.")
+        : base(id, name, enhancedLevel, grade, 1, explanation)
         {
         }
 

@@ -8,10 +8,11 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
 
     public class MoveForwardCommand : AbstractCommand
     {
-        private static readonly Coordinate _coordinate=new Coordinate(0,1);
+        private static readonly Coordinate _coordinate=new(0,1);
 
-        public MoveForwardCommand(string id="1", string name="앞으로 이동", int enhancedLevel=1, int grade=1)
-        : base(id, name, enhancedLevel, grade, 0)
+        public MoveForwardCommand(string id="1", string name="앞으로 이동", int enhancedLevel=1, int grade=1,
+        string explanation="바라보는 기준에서 앞으로 1칸 이동합니다.")
+        : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
 

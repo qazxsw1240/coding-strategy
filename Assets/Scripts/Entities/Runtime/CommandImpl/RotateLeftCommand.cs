@@ -9,8 +9,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     public class RotateLeftCommand : AbstractCommand
     {
 
-        public RotateLeftCommand(string id="4", string name="좌회전", int enhancedLevel=1, int grade=1)
-        : base(id, name, enhancedLevel, grade, 0)
+        public RotateLeftCommand(string id="4", string name="좌회전", int enhancedLevel=1, int grade=1,
+        string explanation="바라보는 기준에서 왼쪽으로 90도 회전합니다.")
+        : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
 

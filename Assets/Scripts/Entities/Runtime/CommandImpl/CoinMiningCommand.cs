@@ -13,8 +13,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     {
         private readonly int _coefficient;
         private readonly IPlayerDelegate[] _target=new IPlayerDelegate[1];
-        public CoinMiningCommand(string id="11", string name="코인 채굴", int enhancedLevel=1, int grade=4)
-        : base(id, name, enhancedLevel, grade, 0)
+        public CoinMiningCommand(string id="11", string name="코인 채굴", int enhancedLevel=1, int grade=4,
+        string explanation="사용시 자신의 스택 계수만큼 비트를 획득합니다.")
+        : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
 
