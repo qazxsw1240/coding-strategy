@@ -9,8 +9,10 @@ using CodingStrategy.Entities.Animations;
 using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Placeable;
 using CodingStrategy.Entities.Robot;
+using CodingStrategy.UI.InGame;
 using Photon.Pun;
 using Photon.Realtime;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace CodingStrategy
@@ -27,6 +29,8 @@ namespace CodingStrategy
 
         private readonly IDictionary<IPlaceable, GameObject> _placeableObjects =
             new Dictionary<IPlaceable, GameObject>();
+
+        private readonly IDictionary<Coordinate, GameObject> _cellObjects = new Dictionary<Coordinate, GameObject>();
 
         private static Vector3 ConvertToVector(Coordinate coordinate, float heightOffset)
         {
@@ -54,6 +58,20 @@ namespace CodingStrategy
             _placeableObjects.Clear();
         }
 
+        public void InitializeCells()
+        {
+            for (int i = 0; i < GameManager.BoardDelegate.Width; i++)
+            {
+                for (int j = 0; j < GameManager.BoardDelegate.Height; j++)
+                {
+                    Coordinate coordinate = new Coordinate(i, j);
+                    Vector3 position = ConvertToVector(coordinate, 0);
+                    _cellObjects[coordinate] = Instantiate(GameManager.boardCellPrefab, position, Quaternion.identity,
+                        transform);
+                }
+            }
+        }
+
         public void AddRobotObject(IRobotDelegate robotDelegate)
         {
             Coordinate position = robotDelegate.Position;
@@ -66,7 +84,44 @@ namespace CodingStrategy
             robotObject.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
             LilbotAnimation lilbotAnimation = robotObject.AddComponent<LilbotAnimation>();
             lilbotAnimation.animator = robotObject.GetComponent<Animator>();
+            if (robotDelegate.Id == PhotonNetwork.LocalPlayer.UserId)
+            {
+                lilbotAnimation.playerCamera = Camera.main;
+            }
             _robotDelegateObjects[robotDelegate] = robotObject;
+            AddRobotAttackListener(robotDelegate, robotObject);
+        }
+
+        public void AddRobotAttackListener(IRobotDelegate robotDelegate, GameObject robotObject)
+        {
+            robotDelegate.OnRobotAttack.AddListener((_, positions) =>
+            {
+                LilbotAnimation lilbotAnimation = robotObject.GetOrAddComponent<LilbotAnimation>();
+                GameManager.AnimationCoroutineManager.AddAnimation(
+                    robotObject,
+                    lilbotAnimation.AttackLeftAnimationCoroutine());
+                foreach (Coordinate position in positions)
+                {
+                    GameObject cellObject = _cellObjects[position];
+
+                    if (GameManager.AnimationCoroutineManager.HasAnimationQueue(cellObject))
+                    {
+                        return;
+                    }
+
+                    TileAttackAnimation tileAttackAnimation = cellObject.GetComponent<TileAttackAnimation>();
+                    GameManager.AnimationCoroutineManager.AddAnimation(cellObject,
+                        tileAttackAnimation.AttackArea(PlayerStatusUI.Red));
+                }
+            });
+            robotDelegate.OnHealthPointChange.AddListener((_, previous, next) =>
+            {
+                int different = next - previous;
+                if (different < 0)
+                {
+
+                }
+            });
         }
 
         public void MoveRobotObject(IRobotDelegate robotDelegate, Coordinate previous, Coordinate next)
@@ -120,7 +175,7 @@ namespace CodingStrategy
         {
             IRobotDelegate robotDelegate = badSectorDelegate.Installer;
             int index = GameManager.PlayerIndexMap[robotDelegate.Id];
-            (_, _, Color color) =  GameManager.StartPositions[index];
+            (_, _, Color color) = GameManager.StartPositions[index];
             color = new Color(color.r, color.g, color.b, color.a * 0.75f);
             Coordinate position = badSectorDelegate.Position;
             Vector3 vectorPosition = ConvertToVector(position, 0.1f);
@@ -139,7 +194,8 @@ namespace CodingStrategy
             GameObject badSectorObject = FindBadSectorDelegateObject(badSectorDelegate)!;
             RemoveBadSectorDelegateObject(badSectorDelegate);
             BadSectorAnimation badSectorAnimation = badSectorObject.GetComponent<BadSectorAnimation>();
-            GameManager.AnimationCoroutineManager.AddAnimation(badSectorDelegate, badSectorAnimation.AnimateItemReverse());
+            GameManager.AnimationCoroutineManager.AddAnimation(badSectorDelegate,
+                badSectorAnimation.AnimateItemReverse());
         }
 
         private GameObject? FindBadSectorDelegateObject(IBadSectorDelegate badSectorDelegate)
