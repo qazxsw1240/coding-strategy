@@ -22,6 +22,6 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public override StatementPhase Phase => StatementPhase.Static;
 
-        public override IStatement Reverse => new AddEnergyStatement(_robotDelegate, _energyPoint);
+        public override IStatement Reverse => new AddEnergyStatement(_robotDelegate, -_energyPoint);
     }
 }
