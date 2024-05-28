@@ -25,6 +25,15 @@ namespace CodingStrategy.Entities.Animations
         public float duration = 1f;
         public Camera playerCamera;
 
+
+        public void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                StartCoroutine(SpawnAnimationCoroutine());
+            }
+        }
+
         public IEnumerator Walk(float speed, int x, int z)
         {
             //speed의 값이 1에 가까우면 가까울수록 달리는 애니메이션이 틀어질거에요.
@@ -48,11 +57,29 @@ namespace CodingStrategy.Entities.Animations
             animator.SetFloat(Speed, 0);
         }
 
-        public IEnumerator JumpAnimationCoroutine()
+        public IEnumerator SpawnAnimationCoroutine()
         {
-            animator.SetTrigger(Jump);
-            yield return new WaitForSeconds(1); // 1초 대기
-            animator.ResetTrigger(Jump);
+            Vector3 returnPosition = gameObject.transform.position;
+            
+            Vector3 endPosition = new Vector3(transform.position.x, transform.position.y + 1.3f, transform.position.z);
+
+            gameObject.transform.position = new Vector3(transform.position.x, transform.position.y + 10.0f, transform.position.z);
+
+            
+
+            Sequence sequence = DOTween.Sequence();
+
+            sequence.AppendCallback(() => animator.SetTrigger(Jump));
+
+            sequence.Insert(0, transform.DOMove(endPosition, 0.8f).SetEase(Ease.OutCubic));
+
+            sequence.AppendCallback(() => animator.ResetTrigger(Jump));
+
+            sequence.Append(transform.DOMove(returnPosition, 0.2f));
+
+            yield return sequence.WaitForCompletion();
+            // 1초 대기
+
         }
 
 
