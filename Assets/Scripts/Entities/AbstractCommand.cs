@@ -56,6 +56,7 @@ namespace CodingStrategy.Entities
             {
                 return _commandBuilder.Build();
             }
+            robotDelegate.EnergyPoint-=_energyPoint;
             AddStatementOnLevel1(robotDelegate);
             if(Info.EnhancedLevel>=2)
                 AddStatementOnLevel2(robotDelegate);

@@ -317,7 +317,7 @@ namespace CodingStrategy
                 foreach (IPlayerDelegate playerDelegate in PlayerPool)
                 {
                     playerDelegate.Algorithm[0] = new MoveForwardCommand();
-                    playerDelegate.Algorithm[1] = new EmptyCommand();
+                    playerDelegate.Algorithm[1] = new InstallJumpBadSectorCommand();
                     playerDelegate.Algorithm[2] = new MoveLeftForwardCommand();
                 }
 
