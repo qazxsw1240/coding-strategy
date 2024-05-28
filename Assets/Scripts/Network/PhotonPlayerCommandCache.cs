@@ -65,6 +65,10 @@ namespace CodingStrategy.Network
         public bool Sell(ICommand command)
         {
             string id = command.Id;
+            if (!_networkDelegate.GetCachedCommandCount().ContainsKey(id))
+            {
+                return false;
+            }
             int enhancedLevel = command.Info.EnhancedLevel;
             int currentCount = _networkDelegate.GetCachedCommandCount()[id];
             int sellAmount = SellAmounts[enhancedLevel - 1];
