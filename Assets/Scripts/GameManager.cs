@@ -4,7 +4,6 @@
 using System.Linq;
 using System.Text;
 using CodingStrategy.Entities.CodingTime;
-using CodingStrategy.Entities.Runtime.CommandImpl;
 using CodingStrategy.Factory;
 using CodingStrategy.Network;
 using CodingStrategy.UI.InGame;
@@ -264,7 +263,7 @@ namespace CodingStrategy
                 PreparePlayerUI(photonPlayer, inGameUI.playerStatusUI[index], color);
             }
 
-            InitializeCells();
+            _objectSynchronizer.InitializeCells();
 
             yield return StartCoroutine(AwaitAllPlayersStatus(ReadyStatus));
 
@@ -281,8 +280,6 @@ namespace CodingStrategy
                 _networkDelegate.RequestRefresh();
 
                 inGameUI.SetCameraPosition(PlayerIndexMap[PhotonNetwork.LocalPlayer.UserId]);
-
-                // _bitDispenser.Dispense();
 
                 foreach (IPlayerDelegate playerDelegate in util.PlayerDelegatePool)
                 {
@@ -370,18 +367,6 @@ namespace CodingStrategy
             runtimeExecutor.BitDispenser = _bitDispenser;
             runtimeExecutor.AnimationCoroutineManager = AnimationCoroutineManager;
             runtimeExecutor.OnRoundNumberChange.AddListener((_, round) => inGameUI.gameturn.SetTurn(round));
-        }
-
-        private void InitializeCells()
-        {
-            for (int i = 0; i < BoardDelegate.Width; i++)
-            {
-                for (int j = 0; j < BoardDelegate.Height; j++)
-                {
-                    Vector3 position = ConvertToVector(new Coordinate(i, j), 0);
-                    Instantiate(boardCellPrefab, position, Quaternion.identity, transform);
-                }
-            }
         }
 
         public PlayerStatusUI? FindPlayerStatusUI(IPlayerDelegate playerDelegate)
@@ -499,11 +484,6 @@ namespace CodingStrategy
         public IEnumerator AwaitAllPlayerPlaceablePlaceEventSynchronization()
         {
             yield return StartCoroutine(AwaitAllPlayersStatus(PlaceablePlaceStatus, false));
-        }
-
-        private static Vector3 ConvertToVector(Coordinate coordinate, float heightOffset)
-        {
-            return new Vector3(coordinate.X, heightOffset, coordinate.Y);
         }
     }
 }
