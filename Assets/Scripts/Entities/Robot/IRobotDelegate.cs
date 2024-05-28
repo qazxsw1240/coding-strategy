@@ -1,6 +1,7 @@
 #nullable enable
 
 
+using System.Collections.Generic;
 using CodingStrategy.Entities.Runtime;
 
 namespace CodingStrategy.Entities.Robot
@@ -103,6 +104,11 @@ namespace CodingStrategy.Entities.Robot
         /// 로봇의 방향이 변할 때 발생하는 이벤트입니다.
         /// </summary>
         public abstract UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> OnRobotChangeDirection { get; }
+
+        /// <summary>
+        /// 로봇이 공격을 수행할 때 발생하는 이벤트입니다.
+        /// </summary>
+        public abstract UnityEvent<IRobotDelegate, IList<Coordinate>> OnRobotAttack { get; }
 
         /// <summary>
         /// 로봇의 체력이 변할 때 발생하는 이벤트입니다.

@@ -10,13 +10,14 @@ namespace CodingStrategy.Entities.Animations
     {
         
         private Color originalColor;
+        public GameObject tileSurface;
         public Material newMaterial;
 
 
         private void Awake()
         {
-            newMaterial = gameObject.GetComponent<Renderer>().material;
-            originalColor = newMaterial.color; // ¿ø·¡ »ö»ó ÀúÀå
+            newMaterial = tileSurface.GetComponent<Renderer>().material;
+            originalColor = newMaterial.color; // ì›ë˜ ìƒ‰ìƒ ì €ì¥
 
         }
 
@@ -32,21 +33,21 @@ namespace CodingStrategy.Entities.Animations
         public IEnumerator AttackArea(Color color)
         {
             
-            // µ¿½Ã¿¡ ½ÃÀÛÇÒ ¾Ö´Ï¸ŞÀÌ¼ÇµéÀ» ´ãÀº Sequence¸¦ »ı¼ºÇÕ´Ï´Ù.
+            // ë™ì‹œì— ì‹œì‘í•  ì• ë‹ˆë©”ì´ì…˜ë“¤ì„ ë‹´ì€ Sequenceë¥¼ ìƒì„±í•©ë‹ˆë‹¤.
 
             Sequence sequence = DOTween.Sequence();
             
-            // ¾Æ·¡·Î ³»·Á°¡´Â ¾Ö´Ï¸ŞÀÌ¼Ç°ú »ö»ó º¯°æ ¾Ö´Ï¸ŞÀÌ¼Ç
+            // ì•„ë˜ë¡œ ë‚´ë ¤ê°€ëŠ” ì• ë‹ˆë©”ì´ì…˜ê³¼ ìƒ‰ìƒ ë³€ê²½ ì• ë‹ˆë©”ì´ì…˜
             Vector3 downPosition = new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z);
             
-            sequence.Append(transform.DOMove(downPosition, 0.75f).SetEase(Ease.InOutSine)); // 0.75ÃÊ µ¿¾È ¾Æ·¡·Î ÀÌµ¿
-            sequence.Join(newMaterial.DOColor(color, 0.75f)); // 0.75ÃÊ µ¿¾È »ö»óÀ» ÀÔ·Â°ªÀ¸·Î º¯°æ
+            sequence.Append(transform.DOMove(downPosition, 0.75f).SetEase(Ease.InOutSine)); // 0.75ì´ˆ ë™ì•ˆ ì•„ë˜ë¡œ ì´ë™
+            sequence.Join(newMaterial.DOColor(color, 0.75f)); // 0.75ì´ˆ ë™ì•ˆ ìƒ‰ìƒì„ ì…ë ¥ê°’ìœ¼ë¡œ ë³€ê²½
             
-            // ¿ø·¡ À§Ä¡·Î µ¹¾Æ°¡´Â ¾Ö´Ï¸ŞÀÌ¼Ç°ú ¿ø·¡ »ö»óÀ¸·Î µÇµ¹¸®´Â ¾Ö´Ï¸ŞÀÌ¼Ç
-            sequence.Append(transform.DOMove(transform.position, 0.25f).SetEase(Ease.InOutSine)); // 0.25ÃÊ µ¿¾È ¿ø·¡ À§Ä¡·Î ÀÌµ¿
-            sequence.Join(newMaterial.DOColor(originalColor, 0.25f)); // 0.25ÃÊ µ¿¾È »ö»óÀ» ¿ø·¡ »ö»óÀ¸·Î µÇµ¹¸²
+            // ì›ë˜ ìœ„ì¹˜ë¡œ ëŒì•„ê°€ëŠ” ì• ë‹ˆë©”ì´ì…˜ê³¼ ì›ë˜ ìƒ‰ìƒìœ¼ë¡œ ë˜ëŒë¦¬ëŠ” ì• ë‹ˆë©”ì´ì…˜
+            sequence.Append(transform.DOMove(transform.position, 0.25f).SetEase(Ease.InOutSine)); // 0.25ì´ˆ ë™ì•ˆ ì›ë˜ ìœ„ì¹˜ë¡œ ì´ë™
+            sequence.Join(newMaterial.DOColor(originalColor, 0.25f)); // 0.25ì´ˆ ë™ì•ˆ ìƒ‰ìƒì„ ì›ë˜ ìƒ‰ìƒìœ¼ë¡œ ë˜ëŒë¦¼
             
-            // Sequence¸¦ ½ÃÀÛÇÕ´Ï´Ù.
+            // Sequenceë¥¼ ì‹œì‘í•©ë‹ˆë‹¤.
             yield return sequence.WaitForCompletion();
 
         }
