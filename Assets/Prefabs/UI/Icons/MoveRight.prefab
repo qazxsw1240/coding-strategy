@@ -11,13 +11,13 @@ GameObject:
   - component: {fileID: 8555879767898624561}
   - component: {fileID: 4597118810484706316}
   - component: {fileID: 4597118810484706319}
-  - component: {fileID: 354490849904194458}
+  - component: {fileID: -5452152705179345059}
   - component: {fileID: 4597118810484706318}
-  - component: {fileID: -2345699701475439135}
-  - component: {fileID: 7517077276764016429}
-  - component: {fileID: -5365036486151500571}
+  - component: {fileID: -5568387938695190444}
+  - component: {fileID: 6624385786293031628}
+  - component: {fileID: -8764882424208815553}
   m_Layer: 5
-  m_Name: RightRotation
+  m_Name: MoveRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,7 +82,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &354490849904194458
+--- !u!114 &-5452152705179345059
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,7 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24fd5ca3e37995c4a9c4984d8b9c00e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-2345699701475439135
+--- !u!114 &-5568387938695190444
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b4b113bdc7e1a8448039f5e1688ad0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7517077276764016429
+--- !u!114 &6624385786293031628
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -163,7 +163,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &-5365036486151500571
+--- !u!114 &-8764882424208815553
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -203,7 +203,7 @@ RectTransform:
   m_GameObject: {fileID: 6048034332907681455}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8555879767898624561}
@@ -242,7 +242,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9b62ec826def8344682abb90815ab449, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1e9fde7850716b849983062ac55eba82, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
