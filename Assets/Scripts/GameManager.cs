@@ -300,26 +300,19 @@ namespace CodingStrategy
 
                 #region CODING_TIME
 
-                // yield return StartCoroutine(AwaitAllPlayersStatus(CodingTimeStatus));
-                //
+                yield return StartCoroutine(AwaitAllPlayersStatus(CodingTimeStatus));
+
                 yield return new WaitForSeconds(2.0f);
-                //
-                // CodingTimeExecutor codingTimeExecutor = gameObject.GetOrAddComponent<CodingTimeExecutor>();
-                //
-                // PrepareCodingTimeExecutor(codingTimeExecutor);
-                //
-                // yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
+
+                CodingTimeExecutor codingTimeExecutor = gameObject.GetOrAddComponent<CodingTimeExecutor>();
+
+                PrepareCodingTimeExecutor(codingTimeExecutor);
+
+                yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
 
                 #endregion
 
                 #region RUNTIME
-
-                foreach (IPlayerDelegate playerDelegate in PlayerPool)
-                {
-                    playerDelegate.Algorithm[0] = new MoveForwardCommand();
-                    playerDelegate.Algorithm[1] = new InstallJumpBadSectorCommand();
-                    playerDelegate.Algorithm[2] = new MoveLeftForwardCommand();
-                }
 
                 RuntimeExecutor runtimeExecutor = gameObject.GetOrAddComponent<RuntimeExecutor>();
 
