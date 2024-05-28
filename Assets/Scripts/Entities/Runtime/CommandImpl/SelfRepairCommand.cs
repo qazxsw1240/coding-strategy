@@ -37,7 +37,7 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)
         {
-            _commandBuilder.Append(new AddHealthPointStatement(robotDelegate, Info.EnhancedLevel));
+            _commandBuilder.Append(new AddHealthPointStatement(robotDelegate, Info.EnhancedLevel, 2));
         }
 
         protected override void AddStatementOnLevel2(IRobotDelegate robotDelegate)
