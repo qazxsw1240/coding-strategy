@@ -106,6 +106,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5444778381558871005}
+  - component: {fileID: -7140236437090926807}
   m_Layer: 0
   m_Name: Cell
   m_TagString: Untagged
@@ -130,6 +131,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-7140236437090926807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8347752750681366887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7da5963d8c5821a43897711a125c2ddc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileSurface: {fileID: 272645262531766668}
+  newMaterial: {fileID: 0}
 --- !u!1001 &8485495598761449165
 PrefabInstance:
   m_ObjectHideFlags: 0
