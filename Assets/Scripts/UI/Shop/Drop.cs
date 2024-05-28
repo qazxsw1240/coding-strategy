@@ -47,6 +47,10 @@ namespace CodingStrategy.UI.Shop
         // Start is called before the first frame update
         void Start()
         {
+            if (name != "ItemSelectInfo" && transform.parent.name != "MyCommandList")
+            {
+                Destroy(gameObject.GetComponent<Drop>());
+            }
 			ShopUi shopUi = GameObject.Find("ShopUI").GetComponent<ShopUi>();
             OnBuyCommandEvent = shopUi.OnBuyCommandEvent;
             OnSellCommandEvent = shopUi.OnSellCommandEvent;
