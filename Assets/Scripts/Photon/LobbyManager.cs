@@ -18,7 +18,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public string RoomID;
 
     public GameObject roomPrefab;
-    public Transform contentRoomlist; 
+    public Transform contentRoomlist;
     public GameObject Loading;
 
     // 갱신된 방 리스트를 저장해 둘 변수
@@ -64,9 +64,10 @@ public class LobbyManager : MonoBehaviourPunCallbacks
                 CustomRoomProperties = new Hashtable
                 {
                     { "C0", "coding-strategy" },
-                    { "C1", 0 }
+                    { "C1", 0 },
+                    { "C2", 0 }
                 },
-                CustomRoomPropertiesForLobby = new string[] { "C0", "C1" },
+                CustomRoomPropertiesForLobby = new string[] { "C0", "C1", "C2" },
                 BroadcastPropsChangeToAll = true
             });
         }
@@ -85,7 +86,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Successfully joined room");
-        
+
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
@@ -131,7 +132,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         }
 
         Debug.Log("Request to update room list");
-        PhotonNetwork.GetCustomRoomList(PhotonNetwork.CurrentLobby, "C0='coding-strategy' AND C1 < 4");
+        PhotonNetwork.GetCustomRoomList(PhotonNetwork.CurrentLobby, "C0='coding-strategy' AND C1 < 4 AND C2=0");
     }
 
     public void UpdateRoomListUI()
