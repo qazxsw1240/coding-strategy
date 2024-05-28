@@ -289,6 +289,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LilRobot
       objectReference: {fileID: 0}
+    - target: {fileID: 100030, guid: d314a97dbb26b834a882d42db92820bd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400032, guid: d314a97dbb26b834a882d42db92820bd, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -353,7 +357,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1012325811
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -625,7 +629,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1353295418
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -822,14 +826,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6c22d505464cb94d840d5d2f77d98b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
-  Jump: 0
-  attack1: 0
-  attack2: 0
-  Hit: 0
-  Death: 0
-  duration: 1
-  playercamera: {fileID: 1723860546}
 --- !u!1 &1723860544
 GameObject:
   m_ObjectHideFlags: 0
@@ -987,6 +983,10 @@ PrefabInstance:
     - target: {fileID: 3212966907446845900, guid: bda24f90b38ae7649ace7314f0574711, type: 3}
       propertyPath: m_Name
       value: statement
+      objectReference: {fileID: 0}
+    - target: {fileID: 3212966907446845900, guid: bda24f90b38ae7649ace7314f0574711, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3212966907446845943, guid: bda24f90b38ae7649ace7314f0574711, type: 3}
       propertyPath: m_RootOrder
