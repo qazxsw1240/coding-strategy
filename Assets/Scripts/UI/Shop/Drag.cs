@@ -75,16 +75,5 @@ namespace CodingStrategy.UI.Shop
                 _tmpObject.SetSiblingIndex(_oldIndex);
             }
         }
-
-        public bool GetVisible()
-        {
-            return _image.enabled;
-        }
-
-        public void SetVisible(bool visiblility)
-        {
-            _image.enabled = visiblility;
-            transform.GetChild(0).GetComponent<Image>().enabled = visiblility;
-        }
     }
 }
