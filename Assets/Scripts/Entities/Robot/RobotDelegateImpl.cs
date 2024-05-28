@@ -147,6 +147,12 @@ namespace CodingStrategy.Entities.Robot
 
         public bool Rotate(RobotDirection direction) => _boardDelegate.Rotate(this, direction);
 
+        private bool IsValidCoordinate(Coordinate coordinate)
+        {
+            return coordinate.X >= 0 && coordinate.X < _boardDelegate.Width &&
+                   coordinate.Y >= 0 && coordinate.Y < _boardDelegate.Height;
+        }
+
         public bool Attack(IRobotAttackStrategy strategy, params Coordinate[] relativePositions)
         {
             Coordinate currentPosition = Position;
@@ -156,11 +162,16 @@ namespace CodingStrategy.Entities.Robot
             foreach (Coordinate relativePosition in relativePositions)
             {
                 Coordinate targetPosition = currentPosition + relativePosition;
+                if (!IsValidCoordinate(targetPosition))
+                {
+                    continue;
+                }
+
+                targetPositions.Add(targetPosition);
                 ICellDelegate cellDelegate = _boardDelegate[targetPosition];
                 foreach (IRobotDelegate robotDelegate in cellDelegate.Placeables.Where(p => p is IRobotDelegate)
                              .Cast<IRobotDelegate>())
                 {
-                    targetPositions.Add(targetPosition);
                     robotDelegates.Add(robotDelegate);
                     checksum++;
                 }
@@ -169,7 +180,7 @@ namespace CodingStrategy.Entities.Robot
             if (targetPositions.Count != 0)
             {
                 _robotAttackEvents.Invoke(this, targetPositions);
-                for (int i = 0; i < targetPositions.Count; i++)
+                for (int i = 0; i < robotDelegates.Count; i++)
                 {
                     IRobotDelegate robotDelegate = robotDelegates[i];
                     robotDelegate.HealthPoint -= strategy.CalculateAttackPoint(this, robotDelegate);

@@ -4,7 +4,6 @@
 using System.Linq;
 using System.Text;
 using CodingStrategy.Entities.CodingTime;
-using CodingStrategy.Entities.Runtime.CommandImpl;
 using CodingStrategy.Factory;
 using CodingStrategy.Network;
 using CodingStrategy.UI.InGame;
@@ -107,12 +106,12 @@ namespace CodingStrategy
 
             BoardDelegate = new BoardDelegateImpl(boardWidth, boardHeight);
             RobotDelegatePool = new RobotDelegatePoolImpl();
-            PlayerPool = new PlayerPoolImpl();
-            _bitDispenser = new BitDispenser(BoardDelegate, PlayerPool);
             _objectSynchronizer = SetUpObjectSynchronizer();
             AnimationCoroutineManager = gameObject.GetOrAddComponent<AnimationCoroutineManager>();
 
             util = gameObject.GetOrAddComponent<GameManagerUtil>();
+            _bitDispenser = new BitDispenser(BoardDelegate, util.PlayerDelegatePool);
+            PlayerPool = util.PlayerDelegatePool;
             // _playerStatusSynchronizer = SetUpPlayerStatusSynchronizer();
         }
 
@@ -120,7 +119,6 @@ namespace CodingStrategy
         {
             Debug.Log("GameManager instance started.");
 
-#if UNITY_EDITOR
             if (!PhotonNetwork.IsConnected)
             {
                 PhotonNetwork.AutomaticallySyncScene = true;
@@ -130,10 +128,7 @@ namespace CodingStrategy
                 PhotonNetwork.ConnectUsingSettings();
             }
 
-#else
             StartCoroutine(StartGameManagerCoroutine());
-
-#endif
         }
 
         public override void OnConnectedToMaster()
@@ -169,7 +164,7 @@ namespace CodingStrategy
                 string id = player.UserId;
                 IPlayerDelegate playerDelegate = BuildPlayerDelegate(id);
                 IRobotDelegate robotDelegate = BuildRobotDelegate(BoardDelegate, playerDelegate);
-                PlayerPool[id] = playerDelegate;
+                util.PlayerDelegatePool[id] = playerDelegate;
                 RobotDelegatePool[id] = robotDelegate;
             }
 
@@ -178,9 +173,8 @@ namespace CodingStrategy
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
-            string id = otherPlayer.UserId;
             DetachPlayerUI(otherPlayer);
-            PlayerPool.Remove(id);
+            util.RemovePlayerDelegate(otherPlayer);
         }
 
         public override void OnPlayerPropertiesUpdate(
@@ -259,12 +253,17 @@ namespace CodingStrategy
 
             foreach ((int index, Player photonPlayer) in PhotonNetwork.PlayerList.ToIndexed())
             {
+                Debug.LogFormat("{0}: {1}", index, photonPlayer.NickName);
                 PlayerIndexMap[photonPlayer.UserId] = index;
+                IPlayerDelegate playerDelegate = util.GetPlayerDelegate(photonPlayer);
+                IRobotDelegate robotDelegate = BuildRobotDelegate(BoardDelegate, playerDelegate);
+                playerDelegate.Robot = robotDelegate;
+                RobotDelegatePool[playerDelegate.Id] = robotDelegate;
                 (RobotDirection _, Coordinate _, Color color) = StartPositions[index];
                 PreparePlayerUI(photonPlayer, inGameUI.playerStatusUI[index], color);
             }
 
-            InitializeCells();
+            _objectSynchronizer.InitializeCells();
 
             yield return StartCoroutine(AwaitAllPlayersStatus(ReadyStatus));
 
@@ -282,17 +281,14 @@ namespace CodingStrategy
 
                 inGameUI.SetCameraPosition(PlayerIndexMap[PhotonNetwork.LocalPlayer.UserId]);
 
-                // _bitDispenser.Dispense();
+                NotifyDispatchBits();
 
                 foreach (IPlayerDelegate playerDelegate in util.PlayerDelegatePool)
                 {
                     int index = PlayerIndexMap[playerDelegate.Id];
                     (RobotDirection direction, Coordinate position, Color _) = StartPositions[index];
                     IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
-                    BoardDelegate.Add(robotDelegate, position, direction);
                 }
-
-                NotifyDispatchBits();
 
                 yield return StartCoroutine(AwaitAllPlayerPlaceablePlaceEventSynchronization());
 
@@ -334,7 +330,7 @@ namespace CodingStrategy
 
         private void PreparePlayerUI(Player photonPlayer, PlayerStatusUI playerStatusUI, Color color)
         {
-            IPlayerDelegate playerDelegate = PlayerPool[photonPlayer.UserId];
+            IPlayerDelegate playerDelegate = util.GetPlayerDelegate(photonPlayer);
             IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
             playerStatusUI.SetUserID(playerDelegate.Id);
             playerStatusUI.SetColor(color);
@@ -351,13 +347,15 @@ namespace CodingStrategy
 
         private void DetachPlayerUI(Player photonPlayer)
         {
-            IPlayerDelegate playerDelegate = PlayerPool[photonPlayer.UserId];
+            IPlayerDelegate playerDelegate = util.GetPlayerDelegate(photonPlayer);
+            PlayerStatusUI playerStatusUI = FindPlayerStatusUI(playerDelegate)!;
+            playerStatusUI.SetName("연결 끊김");
         }
 
         private void PrepareCodingTimeExecutor(CodingTimeExecutor codingTimeExecutor)
         {
             codingTimeExecutor.InGameUI = inGameUI;
-            codingTimeExecutor.PlayerPool = PlayerPool;
+            codingTimeExecutor.PlayerPool = util.PlayerDelegatePool;
             codingTimeExecutor.NetworkDelegate = _networkDelegate;
             codingTimeExecutor.CommandCache = _commandCache;
         }
@@ -366,22 +364,10 @@ namespace CodingStrategy
         {
             runtimeExecutor.BoardDelegate = BoardDelegate;
             runtimeExecutor.RobotDelegatePool = RobotDelegatePool;
-            runtimeExecutor.PlayerPool = PlayerPool;
+            runtimeExecutor.PlayerPool = util.PlayerDelegatePool;
             runtimeExecutor.BitDispenser = _bitDispenser;
             runtimeExecutor.AnimationCoroutineManager = AnimationCoroutineManager;
             runtimeExecutor.OnRoundNumberChange.AddListener((_, round) => inGameUI.gameturn.SetTurn(round));
-        }
-
-        private void InitializeCells()
-        {
-            for (int i = 0; i < BoardDelegate.Width; i++)
-            {
-                for (int j = 0; j < BoardDelegate.Height; j++)
-                {
-                    Vector3 position = ConvertToVector(new Coordinate(i, j), 0);
-                    Instantiate(boardCellPrefab, position, Quaternion.identity, transform);
-                }
-            }
         }
 
         public PlayerStatusUI? FindPlayerStatusUI(IPlayerDelegate playerDelegate)
@@ -399,7 +385,7 @@ namespace CodingStrategy
 
         public void UpdatePlayerRanks()
         {
-            IPlayerDelegate[] playerDelegates = PlayerPool.ToArray();
+            IPlayerDelegate[] playerDelegates = util.PlayerDelegatePool.ToArray();
             Array.Sort(playerDelegates, (x, y) => y.Currency - x.Currency);
             int rank = 1;
             for (int i = 0; i < playerDelegates.Length; i++)
@@ -499,11 +485,6 @@ namespace CodingStrategy
         public IEnumerator AwaitAllPlayerPlaceablePlaceEventSynchronization()
         {
             yield return StartCoroutine(AwaitAllPlayersStatus(PlaceablePlaceStatus, false));
-        }
-
-        private static Vector3 ConvertToVector(Coordinate coordinate, float heightOffset)
-        {
-            return new Vector3(coordinate.X, heightOffset, coordinate.Y);
         }
     }
 }
