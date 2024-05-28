@@ -10,20 +10,13 @@ namespace CodingStrategy.UI.Shop
 {
     public class ShopUi : MonoBehaviour
     {
-        // PlayerBit
+        public TMP_Text ShopLevel;
         public TMP_Text Bit;
-        public TMP_Text BitEngtxt;
+        public TMP_Text LevelUpCost, RerollCost;
+        public TMP_Text Exp;
+        public Image ExpImage;
 
-        // ShopLevel
-        public TMP_Text Level1;
-        public TMP_Text Level2;
-
-        //LevelupBit
-        public TMP_Text levelupBit;
         public Button levelUpButton;
-
-        //ReroadBit
-        public TMP_Text reroadBit;
         public Button rerollButton;
 
         public Transform shopCommandList;
@@ -73,40 +66,41 @@ namespace CodingStrategy.UI.Shop
 			}
 		}
 
-        // PlayerBit
-        public void setBit(int bit)
+        public void SetShopLevel(int level)
+        {
+            ShopLevel.text = level.ToString() + "레벨 상점";
+        }
+
+        public void SetBit(int bit)
         {
             if (bit < 0)
             {
                 Bit.color = Color.red;
-                BitEngtxt.color = Color.red;
             }
             else
             {
-                Bit.color = Color.black;
-                BitEngtxt.color = Color.black;
+                Bit.color = Color.white;
             }
 
-            Bit.SetText(bit.ToString());
+            Bit.SetText(bit.ToString() + " B");
         }
 
-        // ShopLevel
-        public void setLevel(int level)
+        public void SetExp(int currentExp, int fullExp)
         {
-            Level1.SetText(level.ToString());
-            Level2.SetText(level.ToString());
+            Exp.text = currentExp.ToString() + "/" + fullExp.ToString();
+            SetLevelUpCost(fullExp - currentExp);
+            ExpImage.fillAmount = (float)currentExp / (float)fullExp;
+		}
+
+        // Implicitly set in SetExp().
+        private void SetLevelUpCost(int levelUpCost)
+        {
+            LevelUpCost.text = levelUpCost.ToString() + " Bit";
         }
 
-        //LevelupBit
-        public void setLevelupBit(int bit)
+        public void SetRerollCost(int rerollCost)
         {
-            levelupBit.SetText(bit.ToString());
-        }
-
-        //ReroadBit
-        public void setReroadBit(int bit)
-        {
-            reroadBit.SetText(bit.ToString());
+            RerollCost.text = rerollCost.ToString() + " Bit";
         }
 
         // Start is called before the first frame update
@@ -114,10 +108,10 @@ namespace CodingStrategy.UI.Shop
         {
             levelUpButton.onClick.AddListener(() => { OnShopLevelUpEvent.Invoke(); });
             rerollButton.onClick.AddListener(() => { OnShopRerollEvent.Invoke(); });
-            setLevel(9);
-            setLevelupBit(8);
-            setReroadBit(7);
-            setBit(6);
+            SetShopLevel(5);
+            SetBit(1);
+            SetExp(10, 20);
+            SetRerollCost(7);
         }
 
         // Update is called once per frame
