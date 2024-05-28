@@ -6,20 +6,19 @@ namespace CodingStrategy.Entities.Runtime.Statement
     using Robot;
     using UnityEngine;
 
-    public class MoveCoordinateStatement : IStatement
+    public class MoveCoordinateStatement : AbstractStatement
     {
-        private readonly IRobotDelegate _robotDelegate;
         private readonly Coordinate _coordinate;
         private bool _isEdge;
 
         public MoveCoordinateStatement(IRobotDelegate robotDelegate, Coordinate coordinate, bool isEdge = false)
+        :base(robotDelegate)
         {
-            _robotDelegate = robotDelegate;
             _coordinate = coordinate;
             _isEdge = isEdge;
         }
 
-        public void Execute(RuntimeExecutorContext context)
+        public override void Execute(RuntimeExecutorContext context)
         {
             Debug.LogFormat("Robot {1} Tries to move to {0}", _coordinate.X+","+_coordinate.Y, _robotDelegate.Id);
 
@@ -32,9 +31,9 @@ namespace CodingStrategy.Entities.Runtime.Statement
             }
         }
 
-        public StatementPhase Phase => StatementPhase.Move;
+        public override StatementPhase Phase => StatementPhase.Move;
 
-        public IStatement Reverse => _isEdge ?
+        public override IStatement Reverse => _isEdge ?
             new MoveCoordinateStatement(_robotDelegate, Coordinate.Unit, _isEdge) :
             new MoveCoordinateStatement(_robotDelegate, -1*_coordinate, _isEdge);
     }

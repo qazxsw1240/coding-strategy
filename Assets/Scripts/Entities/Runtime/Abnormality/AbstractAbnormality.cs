@@ -15,7 +15,7 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
             _robotDelegate = robotDelegate;
             _value = 0;
         }
-        public string Name => _name;
+        public virtual string Name => _name;
 
         public IRobotDelegate RobotDelegate => _robotDelegate;
 

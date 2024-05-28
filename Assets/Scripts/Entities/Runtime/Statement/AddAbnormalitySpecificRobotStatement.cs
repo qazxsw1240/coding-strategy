@@ -6,20 +6,19 @@ namespace CodingStrategy.Entities.Runtime.Statement
     using Abnormality;
     using Robot;
 
-    public class AddAbnormalitySpecificRobotStatement : IStatement
+    public class AddAbnormalitySpecificRobotStatement : AbstractStatement
     {
-        private readonly IRobotDelegate _robotDelegate;
         private readonly IAbnormality _abnormality;
         private readonly int _value;
 
         public AddAbnormalitySpecificRobotStatement(IRobotDelegate robotDelegate, IAbnormality abnormality, int value)
+        :base(robotDelegate)
         {
-            _robotDelegate = robotDelegate;
             _abnormality = abnormality;
             _value = value;
         }
 
-        public void Execute(RuntimeExecutorContext context)
+        public override void Execute(RuntimeExecutorContext context)
         {
             IAbnormality? abnormality=GameManager.GetAbnormalityValue(_robotDelegate.Id+"-"+_abnormality.Name);
             if(abnormality==null)
@@ -31,8 +30,8 @@ namespace CodingStrategy.Entities.Runtime.Statement
             abnormality.Value+=_value;
         }
 
-        public StatementPhase Phase => StatementPhase.Static;
+        public override StatementPhase Phase => StatementPhase.Static;
 
-        public IStatement Reverse => new AddAbnormalitySpecificRobotStatement(_robotDelegate, _abnormality, -_value);
+        public override IStatement Reverse => new AddAbnormalitySpecificRobotStatement(_robotDelegate, _abnormality, -_value);
     }
 }

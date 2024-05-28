@@ -7,12 +7,13 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
     using CodingStrategy.Entities.Robot;
     using Statement;
 
-    public class MoveLeftForwardCommand : AbstractCommand
+    public class DashCommand : AbstractCommand
     {
-        private static readonly Coordinate _coordinate=new(-1,1);
-        public MoveLeftForwardCommand(string id="6", string name="좌측 대각선 이동", int enhancedLevel=1, int grade=2,
-        string explanation="바라보는 기준에서 왼쪽 앞 대각선 방향으로 1칸 이동합니다.")
-        : base(id, name, enhancedLevel, grade, 0, explanation)
+        private readonly IList<Coordinate> _coordinates=new List<Coordinate>();
+
+        public DashCommand(string id="18", string name="돌진", int enhancedLevel=1, int grade=2,
+        string explanation="바라보는 기준에서 앞으로 3칸 이동합니다. 에너지를 1 소모합니다.")
+        : base(id, name, enhancedLevel, grade, 1, explanation)
         {
         }
 
@@ -20,9 +21,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
         {
             if(!keepStatus)
             {
-                return new MoveLeftForwardCommand();
+                return new DashCommand();
             }
-            return new MoveLeftForwardCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return new DashCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
 
         public override bool Invoke(params object[] args)
@@ -37,17 +38,20 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)
         {
-            _commandBuilder.Append(new MoveCoordinateStatement(robotDelegate, _coordinate));
+            _commandBuilder
+            .Append(new MoveStatement(robotDelegate, 1))
+            .Append(new MoveStatement(robotDelegate, 1))
+            .Append(new MoveStatement(robotDelegate, 1));
         }
 
         protected override void AddStatementOnLevel2(IRobotDelegate robotDelegate)
         {
-            _commandBuilder.Append(new MoveCoordinateStatement(robotDelegate, _coordinate));
+            _commandBuilder.Append(new MoveStatement(robotDelegate, 1));
         }
 
         protected override void AddStatementOnLevel3(IRobotDelegate robotDelegate)
         {
-            _commandBuilder.AppendFirst(new SuperStatement(robotDelegate));
+            _commandBuilder.Append(new MoveStatement(robotDelegate, 1));
         }
     }
 }

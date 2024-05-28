@@ -1,39 +1,38 @@
 ﻿#nullable enable
 
 
-using CodingStrategy.Entities.Robot;
-
 namespace CodingStrategy.Entities.Runtime.Statement
 {
-    public class AttackStatement : IStatement
+    using Robot;
+    using UnityEngine;
+    public class AttackStatement : AbstractStatement
     {
         private readonly IRobotAttackStrategy _strategy;
-        private readonly IRobotDelegate _robotDelegate;
         private readonly Coordinate[] _coordinates;
 
         public AttackStatement(
-            IRobotAttackStrategy strategy,
             IRobotDelegate robotDelegate,
+            IRobotAttackStrategy strategy,
             Coordinate[] coordinates)
+            : base(robotDelegate)
         {
             _strategy = strategy;
-            _robotDelegate = robotDelegate;
             _coordinates = coordinates;
         }
 
-        public void Execute(RuntimeExecutorContext context)
+        public override void Execute(RuntimeExecutorContext context)
         {
             bool result = _robotDelegate.Attack(_strategy, _coordinates);
             if (!result)
             {
-                throw new ExecutionException("Cannot robot attack");
+                Debug.Log("Cannot robot attack");
             }
         }
 
-        public StatementPhase Phase => StatementPhase.Attack;
+        public override StatementPhase Phase => StatementPhase.Attack;
 
-        public IStatement Reverse =>
-            new AttackStatement(new RobotAttackReverseStrategy(_strategy), _robotDelegate, _coordinates);
+        public override IStatement Reverse =>
+            new AttackStatement(_robotDelegate, new RobotAttackReverseStrategy(_strategy), _coordinates);
 
         private class RobotAttackReverseStrategy : IRobotAttackStrategy
         {
