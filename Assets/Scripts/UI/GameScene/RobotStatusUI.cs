@@ -49,8 +49,6 @@ namespace CodingStrategy.UI.InGame
 			{
 				DestroyChildren(CommandList);
 				GameObject _object = Instantiate(shopUi.iconList[int.Parse(command.Id)], CommandList);
-				Destroy(_object.GetComponent<Drag>());
-				Destroy(_object.GetComponent<Drop>());
 			}
 		}
 

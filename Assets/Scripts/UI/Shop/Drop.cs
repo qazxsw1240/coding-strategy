@@ -11,15 +11,13 @@ namespace CodingStrategy.UI.Shop
 {
     public class Drop : MonoBehaviour, IDropHandler
     {
-		private int _oldIndex;
-
 		private UnityEvent<int, int> OnBuyCommandEvent;
         private UnityEvent<int> OnSellCommandEvent;
         private UnityEvent<int, int> OnChangeCommandEvent;
 
 		public int GetIndex()
 		{
-			return _oldIndex;
+			return transform.GetSiblingIndex();
 		}
 
 		public void OnDrop(PointerEventData eventData)
@@ -49,7 +47,10 @@ namespace CodingStrategy.UI.Shop
         // Start is called before the first frame update
         void Start()
         {
-			_oldIndex = transform.GetSiblingIndex();
+            if (name != "ItemSelectInfo" && transform.parent.name != "MyCommandList")
+            {
+                Destroy(gameObject.GetComponent<Drop>());
+            }
 			ShopUi shopUi = GameObject.Find("ShopUI").GetComponent<ShopUi>();
             OnBuyCommandEvent = shopUi.OnBuyCommandEvent;
             OnSellCommandEvent = shopUi.OnSellCommandEvent;

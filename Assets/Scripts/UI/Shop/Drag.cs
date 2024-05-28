@@ -25,6 +25,10 @@ namespace CodingStrategy.UI.Shop
         // Start is called before the first frame update
         void Start()
         {
+            if (transform.parent.name != "MyCommandList" && transform.parent.name != "ShopCommandList")
+            {
+                Destroy(gameObject.GetComponent<Drag>());
+            }
             _image = GetComponent<Image>();
             alwaysOntop = GameObject.Find("AlwaysOnTop").transform;
 		}
