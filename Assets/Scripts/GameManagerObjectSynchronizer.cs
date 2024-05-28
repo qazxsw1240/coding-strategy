@@ -90,6 +90,7 @@ namespace CodingStrategy
             }
             _robotDelegateObjects[robotDelegate] = robotObject;
             AddRobotAttackListener(robotDelegate, robotObject);
+            StartCoroutine(lilbotAnimation.SpawnAnimationCoroutine());
         }
 
         public void AddRobotAttackListener(IRobotDelegate robotDelegate, GameObject robotObject)
