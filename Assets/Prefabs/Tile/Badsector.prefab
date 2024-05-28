@@ -278,11 +278,9 @@ MonoBehaviour:
   shakeDuration: 0.1
   shakeStrength: 1
   shakeVibrato: 1
-  cameras:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  camera: {fileID: 0}
+  shader: {fileID: 0}
+  newMaterial: {fileID: 2100000, guid: aad46d74abdc4e8419e1df4660555ce3, type: 2}
   childSprites:
   - {fileID: 5906129502624952301}
   - {fileID: 3067181472571788113}
