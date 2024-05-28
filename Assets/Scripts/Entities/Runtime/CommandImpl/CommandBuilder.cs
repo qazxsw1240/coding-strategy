@@ -21,6 +21,19 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
             }
             return this;
         }
+        public CommandBuilder AppendFirst(IStatement statement)
+        {
+            _statements.Insert(0, statement);
+            return this;
+        }
+        public CommandBuilder AppendFirst(IStatement statement, int num)
+        {
+            for(int i=0;i<num; i++)
+            {
+                _statements.Insert(0, statement);
+            }
+            return this;
+        }
         public CommandBuilder Remove(IStatement statement)
         {
             int index=_statements.IndexOf(statement);

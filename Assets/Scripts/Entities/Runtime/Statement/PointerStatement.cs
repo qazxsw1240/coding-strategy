@@ -11,10 +11,9 @@ namespace CodingStrategy.Entities.Runtime.Statement
     using Board;
     using Robot;
 
-    public class PointerStatement : IStatement
+    public class PointerStatement : AbstractStatement
     {
         private IBoardDelegate? _boardDelegate;
-        private readonly IRobotDelegate _robotDelegate;
         private readonly Func<IBoardDelegate, IRobotDelegate, IBadSectorDelegate> _generator;
 
         private readonly IList<IBadSectorDelegate> _badSectorDelegates=new List<IBadSectorDelegate>();
@@ -24,13 +23,13 @@ namespace CodingStrategy.Entities.Runtime.Statement
             IRobotDelegate robotDelegate,
             Func<IBoardDelegate, IRobotDelegate, IBadSectorDelegate> generator,
             IList<Coordinate> coordinates)
+        :base(robotDelegate)
         {
-            _robotDelegate=robotDelegate;
             _generator = generator;
             _coordinates = coordinates;
         }
 
-        public void Execute(RuntimeExecutorContext context)
+        public override void Execute(RuntimeExecutorContext context)
         {
             _boardDelegate=context.BoardDelegate;
             foreach(Coordinate coordinate in _coordinates)
@@ -45,9 +44,9 @@ namespace CodingStrategy.Entities.Runtime.Statement
             }
         }
 
-        public StatementPhase Phase => StatementPhase.Pointer;
+        public override StatementPhase Phase => StatementPhase.Pointer;
 
-        public IStatement Reverse => new PointerRollbackStatement(this);
+        public override IStatement Reverse => new PointerRollbackStatement(this);
 
         private class PointerRollbackStatement : IStatement
         {

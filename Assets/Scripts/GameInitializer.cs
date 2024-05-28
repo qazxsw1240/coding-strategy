@@ -35,7 +35,7 @@ namespace CodingStrategy
             AddCommand(new MoveRightForwardCommand(), DefaultGrade2CommandStockCount);
             AddCommand(new AddStackCommand(), DefaultGrade2CommandStockCount);
             AddCommand(new AddWormAllEnemyCommand(), DefaultGrade2CommandStockCount);
-            AddCommand(new InstallMalwareCommand(), DefaultGrade3CommandStockCount);
+            AddCommand(new InstallMalwareBadSectorCommand(), DefaultGrade3CommandStockCount);
             AddCommand(new CoinMiningCommand(), DefaultGrade4CommandStockCount);
             AddCommand(new BotnetsCommand(), DefaultGrade5CommandStockCount);
         }

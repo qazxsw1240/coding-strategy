@@ -22,5 +22,10 @@ namespace CodingStrategy.Entities
         /// 명령어의 등급입니다.
         /// </summary>
         public abstract int Grade { get; }
+
+        /// <summary>
+        /// 명령어의 설명입니다.
+        /// </summary>
+        public abstract string Explanation { get; }
     }
 }

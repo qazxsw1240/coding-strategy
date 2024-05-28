@@ -3,16 +3,13 @@
 
 namespace CodingStrategy.Entities.Runtime.CommandImpl
 {
-    using System.Collections.Generic;
     using CodingStrategy.Entities.Robot;
-    using Statement;
 
     public class EmptyCommand : AbstractCommand
     {
-        private readonly CommandBuilder _commandBuilder=new();
 
-        public EmptyCommand(string id="0", string name="빈 커맨드", int enhancedLevel=1, int grade=1)
-        : base(id, name, enhancedLevel, grade)
+        public EmptyCommand(string id="0", string name="빈 커맨드", int enhancedLevel=0, int grade=0, string explanation="")
+        : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
 
@@ -25,12 +22,6 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
             return new EmptyCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
 
-        public override IList<IStatement> GetCommandStatements(IRobotDelegate robot)
-        {
-            _commandBuilder.Clear();
-            return _commandBuilder.Build();
-        }
-
         public override bool Invoke(params object[] args)
         {
             throw new System.NotImplementedException();
@@ -39,6 +30,21 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
         public override bool Revoke(params object[] args)
         {
             throw new System.NotImplementedException();
+        }
+
+        protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)
+        {
+            return;
+        }
+
+        protected override void AddStatementOnLevel2(IRobotDelegate robotDelegate)
+        {
+            return;
+        }
+
+        protected override void AddStatementOnLevel3(IRobotDelegate robotDelegate)
+        {
+            return;
         }
     }
 }
