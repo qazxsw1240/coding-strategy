@@ -1,6 +1,8 @@
 #nullable enable
 
 
+using CodingStrategy.Entities.Runtime.CommandImpl;
+
 namespace CodingStrategy.Entities
 {
     using System;
@@ -10,6 +12,8 @@ namespace CodingStrategy.Entities
     public class AlgorithmImpl : IAlgorithm
     {
         private const int MaxCapacity = 10;
+
+        private static readonly ICommand DefaultCommand = new EmptyCommand();
 
         private readonly ICommand?[] _elements;
         private int _capacity;
@@ -22,8 +26,12 @@ namespace CodingStrategy.Entities
                 throw new ArgumentOutOfRangeException();
             }
             _capacity = capacity;
-            _count = 0;
+            _count = _capacity;
             _elements = new ICommand?[MaxCapacity];
+            for (int i = 0; i < MaxCapacity; i++)
+            {
+                _elements[i] = DefaultCommand;
+            }
         }
 
         public ICommand this[int index]
@@ -133,7 +141,7 @@ namespace CodingStrategy.Entities
             {
                 _elements[i] = _elements[i + 1];
             }
-            _count--;
+            _elements[--_count] = DefaultCommand;
         }
 
         public bool CopyTo(IAlgorithm algorithm)
