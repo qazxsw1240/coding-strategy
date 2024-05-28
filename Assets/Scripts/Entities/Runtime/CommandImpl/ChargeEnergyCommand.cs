@@ -14,7 +14,7 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
 
         public ChargeEnergyCommand(string id="17", string name="에너지 충전", int enhancedLevel=1, int grade=1,
         string explanation="사용시 현재 에너지를 1 충전합니다.")
-        : base(id, name, enhancedLevel, grade, 1, explanation)
+        : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
 
