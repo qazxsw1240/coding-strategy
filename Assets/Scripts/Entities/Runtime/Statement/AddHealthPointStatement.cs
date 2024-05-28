@@ -8,11 +8,13 @@ namespace CodingStrategy.Entities.Runtime.Statement
     public class AddHealthPointStatement : AbstractStatement
     {
         private readonly int _value;
+        private readonly int _healthPointThreshold;
         private readonly bool _isReverse;
-        public AddHealthPointStatement(IRobotDelegate robotDelegate, int value, bool isReverse=false)
+        public AddHealthPointStatement(IRobotDelegate robotDelegate, int value, int healthPointThreshold, bool isReverse=false)
         :base(robotDelegate)
         {
             _value = value;
+            _healthPointThreshold = healthPointThreshold;
             _isReverse = isReverse;
         }
 
@@ -23,7 +25,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
                 _robotDelegate.HealthPoint += _value;
                 return;
             }
-            if(_robotDelegate.HealthPoint>2)
+            if(_robotDelegate.HealthPoint>_healthPointThreshold)
             {
                 return;
             }
@@ -32,6 +34,6 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public override StatementPhase Phase => StatementPhase.Static;
 
-        public override IStatement Reverse => new AddHealthPointStatement(_robotDelegate, -_value, true);
+        public override IStatement Reverse => new AddHealthPointStatement(_robotDelegate, -_value, _healthPointThreshold, true);
     }
 }
