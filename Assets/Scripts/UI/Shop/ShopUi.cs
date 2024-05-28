@@ -108,10 +108,10 @@ namespace CodingStrategy.UI.Shop
         {
             levelUpButton.onClick.AddListener(() => { OnShopLevelUpEvent.Invoke(); });
             rerollButton.onClick.AddListener(() => { OnShopRerollEvent.Invoke(); });
-            SetShopLevel(5);
-            SetBit(1);
-            SetExp(10, 20);
-            SetRerollCost(7);
+            //SetShopLevel(5);
+            //SetBit(1);
+            //SetExp(10, 20);
+            //SetRerollCost(7);
         }
 
         // Update is called once per frame
