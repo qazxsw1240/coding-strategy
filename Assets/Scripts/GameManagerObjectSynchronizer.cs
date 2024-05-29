@@ -90,6 +90,7 @@ namespace CodingStrategy
             }
             _robotDelegateObjects[robotDelegate] = robotObject;
             AddRobotAttackListener(robotDelegate, robotObject);
+            StartCoroutine(lilbotAnimation.SpawnAnimationCoroutine());
         }
 
         public void AddRobotAttackListener(IRobotDelegate robotDelegate, GameObject robotObject)
@@ -116,10 +117,11 @@ namespace CodingStrategy
             });
             robotDelegate.OnHealthPointChange.AddListener((_, previous, next) =>
             {
+                LilbotAnimation lilbotAnimation = robotObject.GetOrAddComponent<LilbotAnimation>();
                 int different = next - previous;
                 if (different < 0)
                 {
-
+                    GameManager.AnimationCoroutineManager.AddAnimation(robotObject, lilbotAnimation.HitAnimationCoroutine());
                 }
             });
         }

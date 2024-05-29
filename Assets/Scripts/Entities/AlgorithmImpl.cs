@@ -1,6 +1,8 @@
 #nullable enable
 
 
+using CodingStrategy.Entities.Runtime.CommandImpl;
+
 namespace CodingStrategy.Entities
 {
     using System;
@@ -11,9 +13,10 @@ namespace CodingStrategy.Entities
     {
         private const int MaxCapacity = 10;
 
+        private static readonly ICommand DefaultCommand = new EmptyCommand();
+
         private readonly ICommand?[] _elements;
         private int _capacity;
-        private int _count;
 
         public AlgorithmImpl(int capacity)
         {
@@ -21,37 +24,39 @@ namespace CodingStrategy.Entities
             {
                 throw new ArgumentOutOfRangeException();
             }
+
             _capacity = capacity;
-            _count = 0;
             _elements = new ICommand?[MaxCapacity];
+            for (int i = 0; i < MaxCapacity; i++)
+            {
+                _elements[i] = DefaultCommand;
+            }
         }
 
         public ICommand this[int index]
         {
             get
             {
-                if (index < 0 || index >= _count)
+                if (index < 0 || index >= _capacity)
                 {
                     throw new IndexOutOfRangeException();
                 }
+
                 return _elements[index]!;
             }
 
             set
             {
-                if (index < 0 || index > _count)
+                if (index < 0 || index > _capacity)
                 {
                     throw new IndexOutOfRangeException();
                 }
+
                 _elements[index] = value;
-                if (index == _count)
-                {
-                    _count++;
-                }
             }
         }
 
-        public int Count => _count;
+        public int Count => _capacity;
 
         public bool IsReadOnly => false;
 
@@ -64,37 +69,31 @@ namespace CodingStrategy.Entities
                 {
                     throw new ArgumentOutOfRangeException();
                 }
+
+                int previousCapacity = _capacity;
                 _capacity = value;
-                if (_capacity < _count)
+                if (_capacity < previousCapacity)
                 {
-                    for (int i = _capacity; i < _count; i++)
+                    for (int i = _capacity; i < previousCapacity; i++)
                     {
-                        _elements[i] = null;
+                        _elements[i] = DefaultCommand;
                     }
-                    _count = _capacity;
                 }
             }
         }
 
         public void Add(ICommand item)
         {
-            if (_count == _capacity)
-            {
-                throw new Exception();
-            }
-            _elements[_count++] = item;
+            //
         }
 
         public void Insert(int index, ICommand item)
         {
-            if (_count == _capacity)
-            {
-                throw new Exception();
-            }
-            for (int i = ++_count; i > index; i--)
+            for (int i = _capacity; i > index; i--)
             {
                 _elements[i] = _elements[i - 1];
             }
+
             _elements[index] = item;
         }
 
@@ -102,13 +101,14 @@ namespace CodingStrategy.Entities
 
         public int IndexOf(ICommand item)
         {
-            for (int i = 0; i < _count; i++)
+            for (int i = 0; i < _capacity; i++)
             {
                 if (item.Equals(_elements[i]))
                 {
                     return i;
                 }
             }
+
             return -1;
         }
 
@@ -119,21 +119,24 @@ namespace CodingStrategy.Entities
             {
                 return false;
             }
+
             RemoveAt(index);
             return true;
         }
 
         public void RemoveAt(int index)
         {
-            if (index < 0 || index >= _count)
+            if (index < 0 || index >= _capacity)
             {
                 throw new ArgumentOutOfRangeException();
             }
-            for (int i = index; i < _count - 1; i++)
+
+            for (int i = index; i < _capacity - 1; i++)
             {
                 _elements[i] = _elements[i + 1];
             }
-            _count--;
+
+            _elements[_capacity] = DefaultCommand;
         }
 
         public bool CopyTo(IAlgorithm algorithm)
@@ -141,26 +144,40 @@ namespace CodingStrategy.Entities
             if (algorithm is AlgorithmImpl al)
             {
                 _elements.CopyTo(al._elements, 0);
-                al._count = _count;
+                al._capacity = _capacity;
             }
             else
             {
                 algorithm.Clear();
-                for (int i = 0; i < _count; i++)
+                for (int i = 0; i < _capacity; i++)
                 {
                     algorithm.Add(_elements[i]!);
                 }
             }
+
             return true;
+        }
+
+        public ICommand[] AsArray()
+        {
+            ICommand[] commands = new ICommand[_capacity];
+
+            for (int i = 0; i < _capacity; i++)
+            {
+                commands[i] = _elements[i]!;
+            }
+
+            return commands;
         }
 
         public void CopyTo(ICommand[] array, int arrayIndex)
         {
-            if (arrayIndex + _count > array.Length)
+            if (arrayIndex + _capacity > array.Length)
             {
                 throw new IndexOutOfRangeException();
             }
-            for (int i = 0; i < _count; i++)
+
+            for (int i = 0; i < _capacity; i++)
             {
                 array[arrayIndex + i] = _elements[i]!;
             }
@@ -168,19 +185,19 @@ namespace CodingStrategy.Entities
 
         public void Clear()
         {
-            for (int i = 0; i < _count; i++)
+            for (int i = 0; i < _capacity; i++)
             {
                 _elements[i] = null;
             }
-            _count = 0;
         }
 
         public IEnumerator<ICommand> GetEnumerator()
         {
-            for (int i = 0; i < _count; i++)
+            for (int i = 0; i < _capacity; i++)
             {
                 yield return _elements[i]!;
             }
+
             yield break;
         }
 
