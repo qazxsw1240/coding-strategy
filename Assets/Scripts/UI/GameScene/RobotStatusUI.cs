@@ -44,7 +44,6 @@ namespace CodingStrategy.UI.InGame
 
 		public void SetCommandList(ICommand[] commandList)
 		{
-			scrollRect.horizontalNormalizedPosition = 0.0f;
 			DestroyChildren(CommandList);
 			foreach (ICommand command in commandList)
 			{
