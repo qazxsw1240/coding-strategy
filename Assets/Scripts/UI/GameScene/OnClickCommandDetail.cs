@@ -26,6 +26,7 @@ namespace CodingStrategy.UI.InGame
 				GameObject detail = Instantiate(detailPrefab, alwaysOnTop.transform);
 				detail.transform.position = Input.mousePosition;
 				detail.GetComponent<SetCommandDetail>().Id = Id;
+				alwaysOnTop.GetComponent<CommandDetailEvent>().setCommandDetail = detail.GetComponent<SetCommandDetail>();
 				alwaysOnTop.GetComponent<CommandDetailEvent>().OnCommandClickEvent.Invoke(Id);
 			});
 		}

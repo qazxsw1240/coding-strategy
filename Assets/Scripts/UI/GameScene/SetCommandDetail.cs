@@ -28,7 +28,10 @@ namespace CodingStrategy.UI.InGame
             switch (int.Parse(Id))
             {
                 case 1:
-                    break;
+                    //_attackRange.sprite = enhancedLevel == 1 ? sprite
+                    //    : enhancedLevel == 2 ? sprite
+                    //    : enhancedLevel == 3 ? sprite;
+					break;
                 case 2:
                     break;
                 case 3:
@@ -81,7 +84,6 @@ namespace CodingStrategy.UI.InGame
                     Debug.Log("Wrong Command Detail Id: " + Id);
                     break;
             }
-            //_attackRange.sprite = sprite;
         }
 
         // Start is called before the first frame update
