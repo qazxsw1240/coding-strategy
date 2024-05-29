@@ -262,6 +262,7 @@ namespace CodingStrategy
                 RobotDelegatePool[playerDelegate.Id] = robotDelegate;
                 (RobotDirection _, Coordinate _, Color color) = StartPositions[index];
                 PreparePlayerUI(photonPlayer, inGameUI.playerStatusUI[index], color);
+                Debug.LogWarningFormat("Initialize PlayerDelegate {0}", photonPlayer.UserId);
             }
 
             _objectSynchronizer.InitializeCells();
@@ -298,6 +299,7 @@ namespace CodingStrategy
 
                 foreach (IPlayerDelegate disconnectedPlayer in disconnectedPlayers)
                 {
+                    Debug.LogFormat("Player {0} has disconnected", disconnectedPlayer.Id);
                     util.PlayerDelegatePool.Remove(disconnectedPlayer.Id);
                 }
 
