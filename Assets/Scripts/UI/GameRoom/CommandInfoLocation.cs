@@ -27,7 +27,7 @@ namespace CodingStrategy.UI.GameRoom
             // Effect sound를 불러오고 재생합니다.
             AudioClip effectClip = Resources.Load<AudioClip>("Sound/InfoCreateSound");
             soundManager.Play(effectClip, Sound.Effect, 1.0f);
-            Debug.Log("Sounding!");
+            Debug.Log("Command Click Sound is comming out!");
 
             Vector3 commandPos = command.position;
             commandInfo.SetActive(true);
