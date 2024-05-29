@@ -33,6 +33,8 @@ namespace CodingStrategy.Entities.Runtime
 
         private ICommandContext _commandContext = null!;
 
+        public GameManager GameManager { private get; set; } = null!;
+
         public IBoardDelegate BoardDelegate { private get; set; } = null!;
 
         public IRobotDelegatePool RobotDelegatePool { private get; set; } = null!;
@@ -119,6 +121,8 @@ namespace CodingStrategy.Entities.Runtime
             }
 
             _executionQueuePool.Clear();
+
+            GameManager.util.LocalPhotonPlayerDelegate.Exp += 2;
         }
 
         protected override IEnumerator OnAfterInitialization()
