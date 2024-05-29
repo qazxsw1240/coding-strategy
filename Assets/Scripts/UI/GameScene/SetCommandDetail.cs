@@ -11,20 +11,77 @@ namespace CodingStrategy.UI.InGame
         public TMP_Text _commandName;
         public TMP_Text _commandDescription;
         public Image _attackRange;
+        public string Id;
 
-        void SetCommandName(string commandName)
+        void SetCommandName(string name)
         {
-            _commandName.text = commandName;
+            _commandName.text = name;
         }
 
-        void SetCommandDescription(string commandDescription)
+        void SetCommandDescription(string description)
         {
-            _commandDescription.text = commandDescription;
+            _commandDescription.text = description;
         }
 
-        void SetCommandAttackRange(Sprite sprite)
+        void SetCommandAttackRange(int enhancedLevel)
         {
-            _attackRange.sprite = sprite;
+            switch (int.Parse(Id))
+            {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    break;
+                case 8:
+                    break;
+                case 9:
+                    break;
+                case 10:
+                    break;
+                case 11:
+                    break;
+                case 12:
+                    break;
+                case 13:
+                    break;
+                case 14:
+                    break;
+                case 15:
+                    break;
+                case 16:
+                    break;
+                case 17:
+                    break;
+                case 18:
+                    break;
+                case 19:
+                    break;
+                case 20:
+                    break;
+                case 21:
+                    break;
+                case 22:
+                    break;
+                case 23:
+                    break;
+                case 24:
+                    break;
+                case 25:
+                    break;
+                default:
+                    Debug.Log("Wrong Command Detail Id: " + Id);
+                    break;
+            }
+            //_attackRange.sprite = sprite;
         }
 
         // Start is called before the first frame update
