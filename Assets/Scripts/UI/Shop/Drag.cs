@@ -12,7 +12,7 @@ namespace CodingStrategy.UI.Shop
         private Transform alwaysOntop;
         private Transform _tmpObject;
 
-        private SoundManager soundManager; // 사운드
+        private SoundManager soundManager; // soundManager
 
         public int GetIndex()
         {
@@ -46,7 +46,7 @@ namespace CodingStrategy.UI.Shop
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            // 드래그 시작 사운드
+            // Begin drag sound
             soundManager = FindObjectOfType<SoundManager>();
             soundManager.Init();
             AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_CommandClick_Sound");
@@ -63,7 +63,7 @@ namespace CodingStrategy.UI.Shop
         public void OnEndDrag(PointerEventData eventData)
         {
             ResetPosition();
-            // 명령어 배치 사운드
+            // End drag sound
             soundManager = FindObjectOfType<SoundManager>();
             soundManager.Init();
             AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_CommandPutdown_Sound");
