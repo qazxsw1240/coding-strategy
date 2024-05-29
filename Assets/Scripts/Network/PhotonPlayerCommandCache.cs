@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using CodingStrategy.Entities;
+using UnityEngine;
 
 namespace CodingStrategy.Network
 {
@@ -57,6 +58,7 @@ namespace CodingStrategy.Network
                 return null;
             }
 
+            Debug.LogFormat("Buy {0} of Command {1}", count, id);
             _networkDelegate.ModifyCommandCount(id, currentCount - count);
 
             return CommandCache[id];
@@ -72,6 +74,7 @@ namespace CodingStrategy.Network
             int enhancedLevel = command.Info.EnhancedLevel;
             int currentCount = _networkDelegate.GetCachedCommandCount()[id];
             int sellAmount = SellAmounts[enhancedLevel - 1];
+            Debug.LogFormat("Sell {0} of Command {1}", sellAmount, id);
             _networkDelegate.ModifyCommandCount(id, currentCount + sellAmount);
             return true;
         }
