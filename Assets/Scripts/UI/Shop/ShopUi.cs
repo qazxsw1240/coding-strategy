@@ -88,12 +88,11 @@ namespace CodingStrategy.UI.Shop
         public void SetExp(int currentExp, int fullExp)
         {
             Exp.text = currentExp.ToString() + "/" + fullExp.ToString();
-            SetLevelUpCost(fullExp - currentExp);
+            //SetLevelUpCost(fullExp - currentExp);
             ExpImage.fillAmount = (float)currentExp / (float)fullExp;
 		}
 
-        // Implicitly set in SetExp().
-        private void SetLevelUpCost(int levelUpCost)
+        public void SetLevelUpCost(int levelUpCost)
         {
             LevelUpCost.text = levelUpCost.ToString() + " Bit";
         }
