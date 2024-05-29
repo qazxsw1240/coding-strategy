@@ -26,6 +26,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
                 if(abnormality==null)
                 {
                     GameManager.SetAbnormalityValue(robotDelegate.Id+"-"+_abnormality.Name, _abnormality.Copy(robotDelegate));
+                    _abnormality.PlayerDelegate=context.PlayerPool[_robotDelegate.Id];
                     _abnormality.Value=_value;
                     continue;
                 }
