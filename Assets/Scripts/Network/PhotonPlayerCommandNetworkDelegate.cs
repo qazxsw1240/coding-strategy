@@ -164,11 +164,6 @@ namespace CodingStrategy.Network
                     Debug.Log("Command modified");
                     return;
                 }
-                default:
-                {
-                    Debug.LogFormat("command refresh: {0}", photonEvent.CustomData);
-                    break;
-                }
             }
         }
     }
