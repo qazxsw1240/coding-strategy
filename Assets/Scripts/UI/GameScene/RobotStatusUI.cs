@@ -49,6 +49,20 @@ namespace CodingStrategy.UI.InGame
 			{
 				DestroyChildren(CommandList);
 				GameObject _object = Instantiate(shopUi.iconList[int.Parse(command.Id)], CommandList);
+				Image image;
+				switch (command.Info.EnhancedLevel)
+				{
+					case 2:
+						image = _object.transform.GetChild(0).GetComponent<Image>();
+						image.sprite = Resources.Load<Sprite>("Image/Frame");
+						image.color = new Vector4(0, 0, 0, 200) / 255;
+						break;
+					case 3:
+						image = _object.transform.GetChild(0).GetComponent<Image>();
+						image.sprite = Resources.Load<Sprite>("Image/Frame2");
+						image.color = new Vector4(144, 36, 33, 200) / 255;
+						break;
+				}
 			}
 		}
 
