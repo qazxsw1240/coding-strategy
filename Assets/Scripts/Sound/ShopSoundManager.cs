@@ -8,7 +8,11 @@ public class ShopSoundManager : MonoBehaviour
     private SoundManager soundManager;
 
     // 상점 삼각형 버튼 클릭 할 때 사운드
-    public IEnumerator ShopDragBtnClicked(float delay)
+    public void ShopDragBtnClicked()
+    {
+        StartCoroutine(ShopDragBtnClickedSound(0));
+    }
+    public IEnumerator ShopDragBtnClickedSound(float delay)
     {
         yield return new WaitForSeconds(delay);
 
@@ -22,7 +26,11 @@ public class ShopSoundManager : MonoBehaviour
     }
 
     // 상점에서 리롤 사운드
-    public IEnumerator RerollBtnClicked(float delay)
+    public void RerollBtnClicked()
+    {
+        StartCoroutine(RerollBtnClickedSound(0));
+    }
+    public IEnumerator RerollBtnClickedSound(float delay)
     {
         yield return new WaitForSeconds(delay);
 
@@ -36,7 +44,11 @@ public class ShopSoundManager : MonoBehaviour
     }
 
     // 상점에서 레벨업 사운드
-    public IEnumerator LevelupBtnClicked(float delay)
+    public void LevelupClicked()
+    {
+        StartCoroutine(LevelupBtnClickedSound(0));
+    }
+    public IEnumerator LevelupBtnClickedSound(float delay)
     {
         yield return new WaitForSeconds(delay);
 
@@ -50,7 +62,11 @@ public class ShopSoundManager : MonoBehaviour
     }
 
     // 상점에서 커멘드 옮기기 위해 클릭할 때 사운드
-    public IEnumerator CommnadClickedSound(float delay)
+    public void CommandClicked()
+    {
+        StartCoroutine(CommandClickedSound(0));
+    }
+    public IEnumerator CommandClickedSound(float delay)
     {
         yield return new WaitForSeconds(delay);
 
