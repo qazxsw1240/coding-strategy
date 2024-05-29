@@ -14,12 +14,13 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
         {
             _name = name;
             _robotDelegate = robotDelegate;
+            PlayerDelegate=null;
             _value = value;
         }
         public virtual string Name => _name;
 
         public IRobotDelegate RobotDelegate => _robotDelegate;
-        public IPlayerDelegate PlayerDelegate
+        public IPlayerDelegate? PlayerDelegate
         {
             get;
             set;
