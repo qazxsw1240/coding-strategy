@@ -184,11 +184,16 @@ namespace CodingStrategy
             GameObject badSectorObject =
                 Instantiate(GameManager.badSectorPrefab, vectorPosition, Quaternion.identity, transform);
             BadSectorAnimation badSectorAnimation = badSectorObject.GetComponent<BadSectorAnimation>();
+            EnableBadSectorPrefab(badSectorObject, badSectorAnimation);
             badSectorAnimation.camera = Camera.main;
             badSectorObject.name = badSectorDelegate.Id;
             badSectorAnimation.ChangeBadSectorColor(color);
             _badSectorDelegateObjects[badSectorDelegate] = badSectorObject;
             GameManager.AnimationCoroutineManager.AddAnimation(badSectorObject, badSectorAnimation.AnimateItem());
+        }
+
+        private void EnableBadSectorPrefab(GameObject badSectorObject, BadSectorAnimation badSectorAnimation)
+        {
         }
 
         public void RemoveBadSectorObject(IBadSectorDelegate badSectorDelegate)

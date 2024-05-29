@@ -38,6 +38,11 @@ namespace CodingStrategy
         private static readonly IDictionary<string, IAbnormality> AbnormalityDictionary =
             new Dictionary<string, IAbnormality>();
 
+        public static IDictionary<string, IAbnormality> GetAbnormalities()
+        {
+            return AbnormalityDictionary;
+        }
+
         public static void SetAbnormalityValue(string key, IAbnormality abnormality)
         {
             AbnormalityDictionary[key] = abnormality;
@@ -362,6 +367,7 @@ namespace CodingStrategy
 
         private void PrepareRuntimeExecutor(RuntimeExecutor runtimeExecutor)
         {
+            runtimeExecutor.GameManager = this;
             runtimeExecutor.BoardDelegate = BoardDelegate;
             runtimeExecutor.RobotDelegatePool = RobotDelegatePool;
             runtimeExecutor.PlayerPool = util.PlayerDelegatePool;
