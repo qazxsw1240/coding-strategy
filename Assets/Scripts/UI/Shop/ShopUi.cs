@@ -96,7 +96,8 @@ namespace CodingStrategy.UI.Shop
 
         public void SetShopLevel(int level)
         {
-            ShopLevel.text = level.ToString() + "레벨 상점";
+			Debug.Log("SetLevel: " + level);
+			ShopLevel.text = level.ToString() + "레벨 상점";
         }
 
         public void SetBit(int bit)
@@ -116,6 +117,7 @@ namespace CodingStrategy.UI.Shop
 
         public void SetExp(int currentExp, int fullExp)
         {
+            Debug.Log("SetExp: " + currentExp + " " + fullExp);
             Exp.text = currentExp.ToString() + "/" + fullExp.ToString();
             //SetLevelUpCost(fullExp - currentExp);
             ExpImage.fillAmount = (float)currentExp / (float)fullExp;
