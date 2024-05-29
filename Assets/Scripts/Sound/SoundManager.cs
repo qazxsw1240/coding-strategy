@@ -14,7 +14,8 @@ public enum Sound
 public class SoundManager : MonoBehaviour
 {
     // 오디오 소스들을 저장할 리스트
-    private AudioSource[] _audioSources = new AudioSource[(int)Sound.MaxCount];
+    [SerializeField]
+    private List<AudioSource> _audioSources = new List<AudioSource>;
 
     // 오디오 클립들을 저장할 딕셔너리
     private Dictionary<string, AudioClip> _audioClips = new Dictionary<string, AudioClip>();
@@ -23,10 +24,16 @@ public class SoundManager : MonoBehaviour
     public InputField nicknameInputField;
     public GameObject RoomEnterBtn;
 
+    public static int initcheck=0;
+
     private void Awake()
     {
-        Init();
-        DontDestroyOnLoad(this);
+        if (initcheck == 0)
+        { 
+            Init();
+            initcheck += 1;
+            DontDestroyOnLoad(this);
+        }
     }
 
     void Start()
@@ -35,47 +42,11 @@ public class SoundManager : MonoBehaviour
         string sceneName = SceneManager.GetActiveScene().name;
         if (sceneName == "GameStartScene")
         {
-            Init();
-
-            // SceneChanger 초기화
-            sceneChanger = FindObjectOfType<SceneChanger>();
-
-            if (sceneChanger == null)
-            {
-                GameObject sceneChangerObj = new GameObject("SceneChanger");
-                sceneChanger = sceneChangerObj.AddComponent<SceneChanger>();
-            }
-
             // Bgm을 불러오고 재생합니다.
             AudioClip BgmClip = Resources.Load<AudioClip>("Sound/Game_Play_Ost");
             Play(BgmClip, Sound.Bgm, 1.0f, 0.1f);
 
             // 닉네임 입력 필드의 이벤트에 리스너 추가
-            nicknameInputField.onValueChanged.AddListener(OnNicknameChanged);
-        }
-        // 씬 이름이 GameLobby라면
-        else if (sceneName == "GameLobby")
-        {
-            StartCoroutine(sceneChanger.SoundsVolumesUp("Sound/GameLobby_Sleepy Sunshine"));
-           
-            RoomEnterBtn = GameObject.Find("EnterRoom");
-            
-            Button EnterBtn = RoomEnterBtn.GetComponent<Button>();
-
-            EnterBtn.onClick.AddListener(OnStartButtonClick);
-        }
-        else if (sceneName == "GameRoom")
-        {
-            RoomEnterBtn = GameObject.Find("GameReadyBtn");
-
-            Button EnterBtn = RoomEnterBtn.GetComponent<Button>();
-
-            EnterBtn.onClick.AddListener(OnStartButtonClick);
-
-            GameObject chatInputField = GameObject.Find("ChatInputField");
-
-            nicknameInputField = chatInputField.GetComponent<InputField>();
-
             nicknameInputField.onValueChanged.AddListener(OnNicknameChanged);
         }
     }
@@ -95,6 +66,15 @@ public class SoundManager : MonoBehaviour
         Play(typingSoundClip, Sound.Effect, 3.0f, 0.6f);
     }
 
+    public void LobbyRoomButtonSound()
+    {
+        // 추가적으로 실행하고자 하는 코드
+        AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameLobby_UI_ClickSound");
+        Debug.Log(Sound.Effect);
+        Debug.Log(effectClip);
+        Play(effectClip, Sound.Effect, 1.0f);
+    }
+
     // 초기화
     public void Init()
     {
@@ -103,10 +83,10 @@ public class SoundManager : MonoBehaviour
         if (root == null)
         {
             root = new GameObject { name = "@Sound" };
-            Object.DontDestroyOnLoad(root); // Bgm을 씬마다 다르게 할거라면 주석처리 해야함.
+            //Object.DontDestroyOnLoad(root); // Bgm을 씬마다 다르게 할거라면 주석처리 해야함.
 
-            string[] soundNames = System.Enum.GetNames(typeof(Sound)); // "Bgm", "Effect"
-            for (int i = 0; i < soundNames.Length - 1; i++)
+            string[] soundNames = System.Enum.GetNames(typeof(Sound)); // "Bgm", "Effect", "maxCount"
+            for (int i = 0; i < soundNames.Length; i++)
             {
                 GameObject go = new GameObject { name = soundNames[i] };
                 _audioSources[i] = go.AddComponent<AudioSource>();
@@ -155,6 +135,7 @@ public class SoundManager : MonoBehaviour
         else
         {
             AudioSource audioSource = _audioSources[(int)Sound.Effect];
+            Debug.Log(audioSource);
             audioSource.pitch = pitch;
             audioSource.PlayOneShot(audioClip);
         }

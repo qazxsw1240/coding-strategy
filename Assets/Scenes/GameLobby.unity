@@ -1593,6 +1593,7 @@ GameObject:
   m_Component:
   - component: {fileID: 870308354}
   - component: {fileID: 870308355}
+  - component: {fileID: 870308356}
   m_Layer: 0
   m_Name: LobbyManager
   m_TagString: Untagged
@@ -1636,6 +1637,19 @@ MonoBehaviour:
   roomPrefab: {fileID: 4817986621349432130, guid: 878959fbb8cae1c4bbf6e72eac5e3efa, type: 3}
   contentRoomlist: {fileID: 585288245}
   Loading: {fileID: 750304883}
+--- !u!114 &870308356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 870308353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53812f7ed44bafa4e9f10d818069e6ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RoomEnterBtn: {fileID: 0}
 --- !u!1 &896849203
 GameObject:
   m_ObjectHideFlags: 0
@@ -3515,10 +3529,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
@@ -3526,7 +3544,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 870308355}
     - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 2264551458215777334, guid: c226bbbb384612e4297a72035147b08c, type: 3}
+    - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
@@ -3534,11 +3560,23 @@ PrefabInstance:
       value: OnRandomRoomButtonClick
       objectReference: {fileID: 0}
     - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
+      value: LobbyRoomButtonSound
+      objectReference: {fileID: 0}
+    - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: LobbyManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
+      value: SoundManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 854619029622219907, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 854619029913630659, guid: e43211cd95f1b4a4196d205067e41387, type: 3}
