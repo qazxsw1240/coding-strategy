@@ -189,6 +189,18 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
     {
         LogRoomProperties();
+
+        if (propertiesThatChanged.TryGetValue("C2", out object value))
+        {
+            int intValue = (int) value;
+            if (intValue == 1)
+            {
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    StartCoroutine(StartCountdownCoroutine());
+                }
+            }
+        }
     }
 
     public void LogRoomProperties()
@@ -220,6 +232,11 @@ public class RoomManager : MonoBehaviourPunCallbacks
         };
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         // UpdatePlayerNicknames();
+    }
+
+    public bool CheckAllPlayersReady()
+    {
+        return true;
     }
 
 
@@ -284,8 +301,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
             {
                 { "C2", 1 }
             });
-
-            StartCoroutine(StartCountdownCoroutine());
         }
     }
 
