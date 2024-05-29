@@ -108,7 +108,6 @@ namespace CodingStrategy.UI.InGame
                     break;
                 case 23:
                     _attackRange.sprite = spriteList[(int)AttackArea.None];
-
                     break;
                 case 24:
                     _attackRange.sprite = spriteList[(int)AttackArea.None];
