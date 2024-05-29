@@ -147,9 +147,9 @@ namespace CodingStrategy
         public override void OnJoinedLobby()
         {
             Debug.LogFormat("Connected to Master {0}", PhotonNetwork.CurrentLobby);
-            PhotonNetwork.GetCustomRoomList(PhotonNetwork.CurrentLobby, "C0='coding-strategy'");
+            // PhotonNetwork.GetCustomRoomList(PhotonNetwork.CurrentLobby, "C0='coding-strategy'");
             PhotonNetwork.NickName = "asdf";
-            PhotonNetwork.CreateRoom("test", roomOptions: new RoomOptions
+            PhotonNetwork.JoinRandomOrCreateRoom(roomOptions: new RoomOptions
             {
                 MaxPlayers = 4,
                 IsVisible = false,
@@ -280,15 +280,41 @@ namespace CodingStrategy
 
                 _networkDelegate.RequestRefresh();
 
-                inGameUI.SetCameraPosition(PlayerIndexMap[PhotonNetwork.LocalPlayer.UserId]);
+                #region CHECK_DISCONNECTED_PLAYERS
 
+                System.Collections.Generic.ISet<IPlayerDelegate> disconnectedPlayers = new HashSet<IPlayerDelegate>();
+
+                foreach (IPlayerDelegate playerDelegate in util.PlayerDelegatePool)
+                {
+                    if (PhotonNetwork.CurrentRoom.Players
+                        .Select(pair => pair.Value)
+                        .Any(player => player.UserId == playerDelegate.Id))
+                    {
+                        continue;
+                    }
+
+                    disconnectedPlayers.Add(playerDelegate);
+                }
+
+                foreach (IPlayerDelegate disconnectedPlayer in disconnectedPlayers)
+                {
+                    util.PlayerDelegatePool.Remove(disconnectedPlayer.Id);
+                }
+
+                #endregion
+
+                inGameUI.SetCameraPosition(PlayerIndexMap[PhotonNetwork.LocalPlayer.UserId]);
 
                 foreach (IPlayerDelegate playerDelegate in util.PlayerDelegatePool)
                 {
                     int index = PlayerIndexMap[playerDelegate.Id];
                     (RobotDirection direction, Coordinate position, Color _) = StartPositions[index];
                     IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
-                    BoardDelegate.Add(robotDelegate, position, direction);
+
+                    if (!BoardDelegate.Robots.Contains(robotDelegate))
+                    {
+                        BoardDelegate.Add(robotDelegate, position, direction);
+                    }
                 }
 
                 NotifyDispatchBits();
@@ -301,7 +327,7 @@ namespace CodingStrategy
 
                 yield return StartCoroutine(AwaitAllPlayersStatus(CodingTimeStatus));
 
-                yield return new WaitForSeconds(2.0f);
+                yield return new WaitForSeconds(1.0f);
 
                 CodingTimeExecutor codingTimeExecutor = gameObject.GetOrAddComponent<CodingTimeExecutor>();
 
@@ -313,6 +339,9 @@ namespace CodingStrategy
 
                 #region RUNTIME
 
+                yield return StartCoroutine(AwaitAllPlayersStatus(RuntimeStatus));
+                yield return new WaitForSeconds(1.0f);
+
                 RuntimeExecutor runtimeExecutor = gameObject.GetOrAddComponent<RuntimeExecutor>();
 
                 PrepareRuntimeExecutor(runtimeExecutor);
@@ -321,9 +350,15 @@ namespace CodingStrategy
 
                 _bitDispenser.Clear();
 
-                yield return StartCoroutine(AwaitAllPlayersStatus(RuntimeStatus));
-
                 #endregion
+
+                if (util.LocalPhotonPlayerDelegate.HealthPoint > 0)
+                {
+                    continue;
+                }
+
+                PhotonNetwork.LeaveRoom();
+                yield break;
             }
 
             #endregion
