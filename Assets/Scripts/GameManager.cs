@@ -78,7 +78,7 @@ namespace CodingStrategy
 
         public IBoardDelegate BoardDelegate { get; private set; } = null!;
         public IRobotDelegatePool RobotDelegatePool { get; private set; } = null!;
-        public IPlayerPool PlayerPool { get; private set; } = null!;
+        // public IPlayerPool PlayerPool { get; private set; } = null!;
         public AnimationCoroutineManager AnimationCoroutineManager { get; private set; } = null!;
 
         private BitDispenser _bitDispenser = null!;
@@ -116,7 +116,6 @@ namespace CodingStrategy
 
             util = gameObject.GetOrAddComponent<GameManagerUtil>();
             _bitDispenser = new BitDispenser(BoardDelegate, util.PlayerDelegatePool);
-            PlayerPool = util.PlayerDelegatePool;
             networkProcessor = gameObject.GetOrAddComponent<GameMangerNetworkProcessor>();
             networkProcessor.GameManagerUtil = util;
         }
@@ -268,6 +267,8 @@ namespace CodingStrategy
             _objectSynchronizer.InitializeCells();
 
             _playerStatusSynchronizer = SetUpPlayerStatusSynchronizer();
+
+            yield return null;
 
             #region ITERATION
 

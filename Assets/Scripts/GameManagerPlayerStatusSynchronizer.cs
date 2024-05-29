@@ -49,7 +49,7 @@ namespace CodingStrategy
             GameManagerUtil = GameManager.util;
             NetworkProcessor = GameManager.networkProcessor;
 
-            foreach (IPlayerDelegate playerDelegate in GameManager.PlayerPool)
+            foreach (IPlayerDelegate playerDelegate in GameManager.util.PlayerDelegatePool)
             {
                 PlayerStatusUI? playerStatusUI = GameManager.FindPlayerStatusUI(playerDelegate);
 
@@ -74,6 +74,9 @@ namespace CodingStrategy
                     robotStatusUI.SetCommandList(playerDelegate.Algorithm.AsArray());
                 });
             }
+
+            IPlayerDelegate localPlayerDelegate = GameManagerUtil.LocalPhotonPlayerDelegate;
+            IRobotDelegate localRobotDelegate = GameManagerUtil.LocalPhotonRobotDelegate;
         }
 
         private void AttachPlayerStatusSynchronizer(IPlayerDelegate playerDelegate, PlayerStatusUI statusUI)
@@ -93,7 +96,7 @@ namespace CodingStrategy
         {
             return (previous, next) =>
             {
-                if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
+                if (playerDelegate.Id != GameManagerUtil.LocalPhotonPlayerDelegate.Id)
                 {
                     return;
                 }
@@ -110,7 +113,7 @@ namespace CodingStrategy
         {
             return (previous, next) =>
             {
-                if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
+                if (playerDelegate.Id != GameManagerUtil.LocalPhotonPlayerDelegate.Id)
                 {
                     return;
                 }
@@ -126,7 +129,7 @@ namespace CodingStrategy
         {
             return (previous, next) =>
             {
-                if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
+                if (playerDelegate.Id != GameManagerUtil.LocalPhotonPlayerDelegate.Id)
                 {
                     return;
                 }
@@ -153,7 +156,7 @@ namespace CodingStrategy
         {
             return (previous, next) =>
             {
-                if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
+                if (playerDelegate.Id != GameManagerUtil.LocalPhotonPlayerDelegate.Id)
                 {
                     return;
                 }
@@ -176,7 +179,7 @@ namespace CodingStrategy
             return (robotDelegate, _, next) =>
             {
                 IPlayerDelegate playerDelegate = GameManagerUtil.GetPlayerDelegateById(robotDelegate.Id);
-                if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
+                if (playerDelegate.Id != GameManagerUtil.LocalPhotonPlayerDelegate.Id)
                 {
                     return;
                 }
