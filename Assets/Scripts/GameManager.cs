@@ -266,14 +266,14 @@ namespace CodingStrategy
 
             _objectSynchronizer.InitializeCells();
 
-            yield return StartCoroutine(AwaitAllPlayersStatus(ReadyStatus));
-
             _playerStatusSynchronizer = SetUpPlayerStatusSynchronizer();
 
             #region ITERATION
 
             for (int i = 0; i < round; i++)
             {
+                yield return StartCoroutine(AwaitAllPlayersStatus(ReadyStatus));
+
                 #region INITIALIZATION
 
                 inGameUI.gameturn.SetTurn(20);
