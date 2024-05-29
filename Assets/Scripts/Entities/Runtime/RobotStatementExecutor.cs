@@ -24,6 +24,7 @@ namespace CodingStrategy.Entities.Runtime
 
         public IExecutionValidator Validator { get; set; } = null!;
 
+        public GameManager GameManager { get; set; } = null!;
         public RuntimeExecutorContext Context { get; set; } = null!;
 
         public UnityEvent<IRobotDelegate, IPlayerDelegate,  IStatement> OnStatementExecuteEvents { get; } =
@@ -115,6 +116,17 @@ namespace CodingStrategy.Entities.Runtime
                 foreach (IStatement s in badSectorStatements.Reverse())
                 {
                     executionQueue.EnqueueFirst(s);
+                }
+
+                if (robotDelegate.HealthPoint <= 0)
+                {
+                    statements.Clear();
+                    executionQueue.Clear();
+
+                    if (robotDelegate.Id == GameManager.util.LocalPhotonPlayerDelegate.Id)
+                    {
+                        GameManager.util.LocalPhotonPlayerDelegate.HealthPoint -= 1;
+                    }
                 }
             }
 
