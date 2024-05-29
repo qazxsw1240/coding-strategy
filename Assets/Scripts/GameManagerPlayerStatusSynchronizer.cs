@@ -64,13 +64,19 @@ namespace CodingStrategy
                     Player photonPlayer = PhotonNetwork.CurrentRoom.Players
                         .Select(pair => pair.Value)
                         .First(player => player.UserId == playerDelegate.Id);
+                    IRobotDelegate robotDelegate = playerDelegate.Robot;
                     RobotStatusUI robotStatusUI = GameManager.inGameUI.statusUI.GetComponent<RobotStatusUI>();
                     robotStatusUI.SetCameraTexture(GameManager.PlayerIndexMap[photonPlayer.UserId]);
                     robotStatusUI.SetName(photonPlayer.NickName);
-                    robotStatusUI.State.text = "상태 이상: " + string.Join(",  ", GameManager.GetAbnormalities()
+                    robotStatusUI.SetDescription(
+                        robotDelegate.HealthPoint,
+                        robotDelegate.AttackPoint,
+                        robotDelegate.ArmorPoint,
+                        robotDelegate.EnergyPoint);
+                    robotStatusUI.SetState(string.Join(",  ", GameManager.GetAbnormalities()
                         .Where(pair => pair.Key.StartsWith(playerDelegate.Id))
                         .Select(pair => pair.Value)
-                        .Select(abnormality => abnormality.Name));
+                        .Select(abnormality => abnormality.Name)));
                     robotStatusUI.SetCommandList(playerDelegate.Algorithm.AsArray());
                 });
             }

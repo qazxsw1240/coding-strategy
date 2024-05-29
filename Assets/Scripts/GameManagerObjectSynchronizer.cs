@@ -88,6 +88,7 @@ namespace CodingStrategy
             {
                 lilbotAnimation.playerCamera = Camera.main;
             }
+
             _robotDelegateObjects[robotDelegate] = robotObject;
             AddRobotAttackListener(robotDelegate, robotObject);
             StartCoroutine(lilbotAnimation.SpawnAnimationCoroutine());
@@ -98,8 +99,7 @@ namespace CodingStrategy
             robotDelegate.OnRobotAttack.AddListener((_, positions) =>
             {
                 LilbotAnimation lilbotAnimation = robotObject.GetOrAddComponent<LilbotAnimation>();
-                GameManager.AnimationCoroutineManager.AddAnimation(
-                    robotObject,
+                GameManager.AnimationCoroutineManager.AddAnimation(robotObject,
                     lilbotAnimation.AttackLeftAnimationCoroutine());
                 foreach (Coordinate position in positions)
                 {
@@ -121,7 +121,8 @@ namespace CodingStrategy
                 int different = next - previous;
                 if (different < 0)
                 {
-                    GameManager.AnimationCoroutineManager.AddAnimation(robotObject, lilbotAnimation.HitAnimationCoroutine());
+                    GameManager.AnimationCoroutineManager.AddAnimation(robotObject,
+                        lilbotAnimation.HitAnimationCoroutine());
                 }
 
                 if (next <= 0)
@@ -198,9 +199,7 @@ namespace CodingStrategy
             GameManager.AnimationCoroutineManager.AddAnimation(badSectorObject, badSectorAnimation.AnimateItem());
         }
 
-        private void EnableBadSectorPrefab(GameObject badSectorObject, BadSectorAnimation badSectorAnimation)
-        {
-        }
+        private void EnableBadSectorPrefab(GameObject badSectorObject, BadSectorAnimation badSectorAnimation) {}
 
         public void RemoveBadSectorObject(IBadSectorDelegate badSectorDelegate)
         {
@@ -232,7 +231,12 @@ namespace CodingStrategy
             Vector3 position = ConvertToVector(coordinate, 1.5f);
             GameObject bitGameObject =
                 Instantiate(GameManager.bitPrefab, position, Quaternion.Euler(90f, 0, 0), transform);
-            bitDelegate.OnRobotTakeInEvents.AddListener(_ => bitGameObject.SetActive(false));
+            bitDelegate.OnRobotTakeInEvents.AddListener(_ =>
+            {
+                bitGameObject.SetActive(false);
+                InGameSoundManager soundManager = FindObjectOfType<InGameSoundManager>();
+                StartCoroutine(soundManager.GetCoinSound(0f));
+            });
             bitDelegate.OnRobotTakeAwayEvents.AddListener(_ => bitGameObject.SetActive(true));
             _placeableObjects[placeable] = bitGameObject;
         }
@@ -252,7 +256,14 @@ namespace CodingStrategy
             }
 
             BitAnimation bitAnimation = bitGameObject.GetComponent<BitAnimation>();
-            bitAnimation.GetBit();
+            if (bitGameObject.activeSelf)
+            {
+                bitAnimation.GetBit();
+            }
+            else
+            {
+                Destroy(bitGameObject);
+            }
 
             _placeableObjects.Remove(placeable);
         }
