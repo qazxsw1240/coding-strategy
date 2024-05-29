@@ -24,10 +24,6 @@ namespace CodingStrategy.Entities.Runtime.Statement
             Debug.Log("Execute AddMaxEnergyStatement");
             if(_isReverse)
             {
-                if(_value>0)
-                {
-                    throw new ExecutionException();
-                }
                 _robotDelegate.MaxEnergyPoint += _value;
                 _robotDelegate.EnergyPoint = _previousEnergyPoint;
                 Debug.LogFormat("robot max energy point : {0}", _robotDelegate.MaxEnergyPoint);
