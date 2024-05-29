@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Runtime.CommandImpl;
 using CodingStrategy.Entities.Shop;
@@ -19,12 +18,15 @@ namespace CodingStrategy.Entities.CodingTime
 
     public class CodingTimeExecutor : LifeCycleMonoBehaviourBase, ILifeCycle
     {
-        private static readonly IRerollProbability RerollProbability = new RerollProbabilityImpl();
+        public static readonly IRerollProbability RerollProbability = new RerollProbabilityImpl();
+        public static readonly IRequiredExp RequiredExp = new RequiredExpImpl();
 
-        public int countdown = 40;
+        public int countdown = 10;
 
         private int _current = 0;
 
+        public GameManagerUtil Util { get; set; } = null!;
+        public GameMangerNetworkProcessor NetworkProcessor { get; set; } = null!;
         public InGameUI InGameUI { get; set; } = null!;
         public IPlayerPool PlayerPool { get; set; } = null!;
         public IPlayerCommandNetworkDelegate NetworkDelegate { get; set; } = null!;
@@ -45,34 +47,19 @@ namespace CodingStrategy.Entities.CodingTime
             InGameUI.shopUi.OnBuyCommandEvent.AddListener(BuyCommandListener);
             InGameUI.shopUi.OnSellCommandEvent.AddListener(SellCommandListener);
             InGameUI.shopUi.OnChangeCommandEvent.AddListener(SwapCommandListener);
-            InGameUI.shopUi.OnShopRerollEvent.AddListener(RerollCommands);
-            // InGameUI.shopUi.OnShopLevelUpEvent
+            InGameUI.shopUi.OnShopRerollEvent.AddListener(() => RerollCommands(false));
+            InGameUI.shopUi.OnShopLevelUpEvent.AddListener(LevelUpListener);
 
-            IPlayerDelegate playerDelegate = PlayerPool[PhotonNetwork.LocalPlayer.UserId];
-            IAlgorithm algorithm = playerDelegate.Algorithm;
-
-            algorithm.Capacity = 4;
-
-            if (algorithm.Count == 0)
-            {
-                for (int i = 0; i < algorithm.Capacity; i++)
-                {
-                    algorithm[i] = new EmptyCommand();
-                }
-            }
-            else
-            {
-                for (int i = 0; i < algorithm.Capacity; i++)
-                {
-                    if (algorithm[i] == null)
-                    {
-                        algorithm[i] = new EmptyCommand();
-                    }
-                }
-            }
-
-            RerollCommands();
+            DispenseLevelGuarantee();
+            RerollCommands(true);
             UpdatePlayerAlgorithm();
+        }
+
+        private void DispenseLevelGuarantee()
+        {
+            IPlayerDelegate playerDelegate = Util.LocalPhotonPlayerDelegate;
+            int roundBonus = playerDelegate.Currency / 10;
+            playerDelegate.Currency += roundBonus + 3;
         }
 
         public bool MoveNext()
@@ -93,6 +80,8 @@ namespace CodingStrategy.Entities.CodingTime
             InGameUI.shopUi.OnChangeCommandEvent.RemoveAllListeners();
             InGameUI.shopUi.OnShopRerollEvent.RemoveAllListeners();
             InGameUI.shopUi.OnShopLevelUpEvent.RemoveAllListeners();
+            InGameUI.shopUi.OnShopLevelUpEvent.RemoveAllListeners();
+            InGameUI.shopUi.OnShopRerollEvent.RemoveAllListeners();
 
             if (_commands.Count == 0)
             {
@@ -108,6 +97,8 @@ namespace CodingStrategy.Entities.CodingTime
         protected override IEnumerator OnAfterInitialization()
         {
             Debug.Log("CodingTimeExecutor Started.");
+            yield return new WaitForSeconds(1f);
+            InGameUI.GotoShop();
             yield return null;
         }
 
@@ -139,11 +130,26 @@ namespace CodingStrategy.Entities.CodingTime
         protected override IEnumerator OnAfterTermination()
         {
             Debug.Log("CodingTimeExecutor Terminated.");
+            InGameUI.GotoGame();
             yield return null;
         }
 
-        private void RerollCommands()
+        private void RerollCommands(bool init)
         {
+            IPlayerDelegate playerDelegate = Util.LocalPhotonPlayerDelegate;
+
+            if (playerDelegate.Currency < 3)
+            {
+                Debug.Log("not enough currency");
+                return;
+            }
+
+            if (!init)
+            {
+                playerDelegate.Currency -= 3;
+            }
+
+
             if (_commands.Count != 0)
             {
                 foreach (ICommand command in _commands)
@@ -153,7 +159,6 @@ namespace CodingStrategy.Entities.CodingTime
             }
 
             System.Random random = new System.Random();
-            IPlayerDelegate playerDelegate = PlayerPool[PhotonNetwork.LocalPlayer.UserId];
             int grade = RerollProbability.GetRandomGradeFromLevel(playerDelegate.Level);
             int count = 0;
             IList<ICommand> commands = new List<ICommand>
@@ -199,37 +204,56 @@ namespace CodingStrategy.Entities.CodingTime
 
         private void UpdatePlayerAlgorithm()
         {
-            IPlayerDelegate playerDelegate = PlayerPool[PhotonNetwork.LocalPlayer.UserId];
+            IPlayerDelegate playerDelegate = Util.LocalPhotonPlayerDelegate;
             IAlgorithm algorithm = playerDelegate.Algorithm;
-            InGameUI.shopUi.SetMyCommandList(algorithm.ToArray());
+            InGameUI.shopUi.SetMyCommandList(algorithm.AsArray());
         }
 
         private void BuyCommandListener(int shopIndex, int algorithmIndex)
         {
             Debug.LogFormat("Buy event {0} to {1}", shopIndex, algorithmIndex);
-            IPlayerDelegate playerDelegate = PlayerPool[PhotonNetwork.LocalPlayer.UserId];
+            IPlayerDelegate playerDelegate = Util.LocalPhotonPlayerDelegate;
+
+            if (playerDelegate.Currency < 3)
+            {
+                Debug.Log("not enough currency");
+                return;
+            }
+
+            playerDelegate.Currency -= 3;
+
             ICommand command = _commands[shopIndex];
             _commands.RemoveAt(shopIndex);
+            ICommand previousCommand = playerDelegate.Algorithm[algorithmIndex];
+            if (previousCommand.Id != "0")
+            {
+                CommandCache.Sell(previousCommand);
+            }
+
             playerDelegate.Algorithm[algorithmIndex] = command;
-            Debug.Log(BuildAlgorithmCommandsMessage());
             UpdateShopCommandList();
             UpdatePlayerAlgorithm();
+            NetworkProcessor.NotifyLocalPlayerDelegateAlgorithmChange();
         }
 
         private void SellCommandListener(int algorithmIndex)
         {
             Debug.LogFormat("Sell event: {0}", algorithmIndex);
-            IPlayerDelegate playerDelegate = PlayerPool[PhotonNetwork.LocalPlayer.UserId];
+            IPlayerDelegate playerDelegate = Util.LocalPhotonPlayerDelegate;
             IAlgorithm algorithm = playerDelegate.Algorithm;
             ICommand command = algorithm[algorithmIndex];
+
             if (command.Id == "0")
             {
+                //  ignore if the command to sell is emtpy.
                 return;
             }
+
+            playerDelegate.Currency += 1;
+
             algorithm[algorithmIndex] = new EmptyCommand();
-            // UpdateShopCommandList();
-            Debug.Log(BuildAlgorithmCommandsMessage());
             UpdatePlayerAlgorithm();
+            NetworkProcessor.NotifyLocalPlayerDelegateAlgorithmChange();
         }
 
         private void SwapCommandListener(int x, int y)
@@ -239,24 +263,21 @@ namespace CodingStrategy.Entities.CodingTime
             IAlgorithm algorithm = playerDelegate.Algorithm;
             (algorithm[x], algorithm[y]) = (algorithm[y], algorithm[x]);
             UpdatePlayerAlgorithm();
+            NetworkProcessor.NotifyLocalPlayerDelegateAlgorithmChange();
         }
 
-        private string BuildAlgorithmCommandsMessage()
+        private void LevelUpListener()
         {
-            IPlayerDelegate playerDelegate = PlayerPool[PhotonNetwork.LocalPlayer.UserId];
-            IAlgorithm algorithm = playerDelegate.Algorithm;
-            IEnumerator<ICommand> enumerator = algorithm.GetEnumerator();
-            // enumerator.Reset();
-            StringBuilder builder = new StringBuilder('[');
-            while (enumerator.MoveNext())
+            IPlayerDelegate playerDelegate = Util.LocalPhotonPlayerDelegate;
+
+            if (playerDelegate.Currency < 4)
             {
-                ICommand current = enumerator.Current!;
-                builder.Append($"{current.Info.Name}, ");
+                Debug.Log("not enough currency");
+                return;
             }
 
-            enumerator.Dispose();
-            builder.Append(']');
-            return builder.ToString();
+            playerDelegate.Currency -= 4;
+            playerDelegate.Exp += 4;
         }
     }
 }
