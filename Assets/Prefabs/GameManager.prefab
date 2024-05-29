@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8828640577791461952}
   - component: {fileID: 8828640577791461959}
+  - component: {fileID: 4521237723166098893}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -52,8 +53,21 @@ MonoBehaviour:
   bitPrefab: {fileID: 1673981646126080, guid: 7bfe509f1deef15438bdaca9238d498a, type: 3}
   badSectorPrefab: {fileID: 3212966907446845900, guid: bda24f90b38ae7649ace7314f0574711, type: 3}
   robotPrefabs:
-  - {fileID: 7010603943103720382, guid: 4e119c4c9618df34e8eb95f0d3a106eb, type: 3}
-  - {fileID: 7010603943103720382, guid: b8b9fb78e11365049b439941a35cc5bc, type: 3}
-  - {fileID: 7010603943103720382, guid: b869e22e85be8b349bcb75e92b7164d1, type: 3}
-  - {fileID: 7010603943103720382, guid: 37ca2021ed02e1e46a8643879b05e57e, type: 3}
+  - {fileID: 2702004988715988200, guid: ee6db700f4d38ba4fa5445139d260953, type: 3}
+  - {fileID: 7218633729975388582, guid: c5f2a1b4f0dba06459a9218bba65d0c4, type: 3}
+  - {fileID: 2293475918468989177, guid: 3722eb1738db96c4dbe7feb7c8372b40, type: 3}
+  - {fileID: 2302543666404916990, guid: 525e39fcdbe39574987255130ae1796b, type: 3}
   util: {fileID: 0}
+  networkProcessor: {fileID: 0}
+--- !u!114 &4521237723166098893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8828640577791461958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc2b48024ad29f74cbd02d4f01cf644d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

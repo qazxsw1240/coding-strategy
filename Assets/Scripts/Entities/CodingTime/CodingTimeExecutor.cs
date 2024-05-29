@@ -34,9 +34,12 @@ namespace CodingStrategy.Entities.CodingTime
 
         private IList<ICommand> _commands = new List<ICommand>();
 
+        private InGameSoundManager _soundManager = null!;
+
         public void Awake()
         {
             LifeCycle = this;
+            _soundManager = FindObjectOfType<InGameSoundManager>();
         }
 
         public UnityEvent<int, int> OnCountdownChange { get; } = new UnityEvent<int, int>();
@@ -70,6 +73,7 @@ namespace CodingStrategy.Entities.CodingTime
         public bool Execute()
         {
             _current -= 1;
+            _soundManager.CodingTimeCountdown();
             return true;
         }
 

@@ -62,7 +62,9 @@ namespace CodingStrategy
         private const string RobotPlaceStatus = "robot-place";
         private const string PlaceablePlaceStatus = "placeable-place";
         private const string CodingTimeStatus = "coding-time";
+        private const string CodingTimeEndStatus = "coding-time-end";
         private const string RuntimeStatus = "runtime";
+        private const string RuntimeEndStatus = "runtime-end";
 
 
         public int round = 15;
@@ -338,6 +340,8 @@ namespace CodingStrategy
 
                 yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
 
+                yield return StartCoroutine(AwaitAllPlayersStatus(CodingTimeEndStatus));
+
                 #endregion
 
                 #region RUNTIME
@@ -352,6 +356,8 @@ namespace CodingStrategy
                 yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(runtimeExecutor);
 
                 _bitDispenser.Clear();
+
+                yield return StartCoroutine(AwaitAllPlayersStatus(RuntimeEndStatus));
 
                 #endregion
 
