@@ -2,6 +2,10 @@
 
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using CodingStrategy.Entities;
+using CodingStrategy.Entities.CodingTime;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
 using CodingStrategy.UI.InGame;
@@ -9,6 +13,7 @@ using ExitGames.Client.Photon;
 using ExitGames.Client.Photon.StructWrapping;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace CodingStrategy
@@ -21,8 +26,13 @@ namespace CodingStrategy
         private const string LevelKey = "level";
         private const string RobotHpKey = "robotHP";
 
+        private static readonly IRequiredExp RequiredExp = new RequiredExpImpl();
 
         public GameManager GameManager { get; set; } = null!;
+
+        public GameManagerUtil GameManagerUtil { get; set; } = null!;
+
+        public GameMangerNetworkProcessor NetworkProcessor { get; set; } = null!;
 
         private static int GetValidPlayerHp(int playerHp)
         {
@@ -36,6 +46,9 @@ namespace CodingStrategy
 
         public void Start()
         {
+            GameManagerUtil = GameManager.util;
+            NetworkProcessor = GameManager.networkProcessor;
+
             foreach (IPlayerDelegate playerDelegate in GameManager.PlayerPool)
             {
                 PlayerStatusUI? playerStatusUI = GameManager.FindPlayerStatusUI(playerDelegate);
@@ -46,44 +59,11 @@ namespace CodingStrategy
                 }
 
                 AttachPlayerStatusSynchronizer(playerDelegate, playerStatusUI);
-            }
-        }
-
-        public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
-        {
-            IPlayerDelegate playerDelegate = GameManager.PlayerPool[targetPlayer.UserId];
-
-            if (playerDelegate.Id == targetPlayer.UserId)
-            {
-                return;
-            }
-
-            PlayerStatusUI? playerStatusUI = GameManager.FindPlayerStatusUI(playerDelegate);
-
-            if (playerStatusUI == null)
-            {
-                return;
-            }
-
-            // private const string CurrencyKey = "currency";
-            // private const string PlayerHpKey = "playerHP";
-            // private const string ExpKey = "exp";
-            // private const string LevelKey = "level";
-            // private const string RobotHpKey = "robotHP";
-
-            if (changedProps.TryGetValue(CurrencyKey, out int currency))
-            {
-                playerStatusUI.SetMoney(currency);
-            }
-
-            if (changedProps.TryGetValue(PlayerHpKey, out int healthPoint))
-            {
-                playerStatusUI.SetPlayerHP(healthPoint);
-            }
-
-            if (changedProps.TryGetValue(RobotHpKey, out int robotHealthPoint))
-            {
-                playerStatusUI.SetRobotHP(robotHealthPoint);
+                playerStatusUI.OnPlayerUIClickEvent.AddListener(() =>
+                {
+                    RobotStatusUI robotStatusUI = GameManager.inGameUI.statusUI.GetComponent<RobotStatusUI>();
+                    robotStatusUI.SetCommandList(playerDelegate.Algorithm.ToArray());
+                });
             }
         }
 
@@ -92,10 +72,9 @@ namespace CodingStrategy
             IRobotDelegate robotDelegate = GameManager.RobotDelegatePool[playerDelegate.Id];
 
             playerDelegate.OnCurrencyChange.AddListener(GetPlayerCurrencyUpdater(playerDelegate, statusUI));
-            playerDelegate.OnExpChange.AddListener(GetPlayerExpUpdater(playerDelegate));
+            playerDelegate.OnExpChange.AddListener(GetPlayerExpUpdater(playerDelegate, statusUI));
             playerDelegate.OnLevelChange.AddListener(GetPlayerLevelUpdater(playerDelegate));
             playerDelegate.OnHealthPointChange.AddListener(GetPlayerHealthPointUpdater(playerDelegate, statusUI));
-
             robotDelegate.OnHealthPointChange.AddListener(GetRobotHealthPointUpdater(statusUI));
         }
 
@@ -103,20 +82,16 @@ namespace CodingStrategy
             IPlayerDelegate playerDelegate,
             PlayerStatusUI playerStatusUI)
         {
-            Player currentPhotonPlayer = PhotonNetwork.LocalPlayer;
-            string currentPlayerId = currentPhotonPlayer.UserId;
-            return (_, next) =>
+            return (previous, next) =>
             {
-                if (playerDelegate.Id != currentPlayerId)
+                if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
                 {
                     return;
                 }
 
+                Debug.LogFormat("{2} currency change event occurred: {0}->{1}", previous, next, playerDelegate.Id);
                 playerStatusUI.SetMoney(next);
-                currentPhotonPlayer.SetCustomProperties(new Hashtable
-                {
-                    { CurrencyKey, next }
-                });
+                GameManager.inGameUI.shopUi.SetBit(next);
             };
         }
 
@@ -124,76 +99,78 @@ namespace CodingStrategy
             IPlayerDelegate playerDelegate,
             PlayerStatusUI playerStatusUI)
         {
-            Player currentPhotonPlayer = PhotonNetwork.LocalPlayer;
-            string currentPlayerId = currentPhotonPlayer.UserId;
             return (_, next) =>
             {
-                if (playerDelegate.Id != currentPlayerId)
+                if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
                 {
                     return;
                 }
 
-                playerStatusUI.SetPlayerHP(next);
-                currentPhotonPlayer.SetCustomProperties(new Hashtable
-                {
-                    { PlayerHpKey, next }
-                });
+                int validPlayerHp = GetValidPlayerHp(next);
+                playerStatusUI.SetPlayerHP(validPlayerHp);
             };
         }
 
 
-        private UnityAction<int, int> GetPlayerExpUpdater(IPlayerDelegate playerDelegate)
+        private UnityAction<int, int> GetPlayerExpUpdater(IPlayerDelegate playerDelegate, PlayerStatusUI playerStatusUI)
         {
-            Player currentPhotonPlayer = PhotonNetwork.LocalPlayer;
-            string currentPlayerId = currentPhotonPlayer.UserId;
             return (_, next) =>
             {
-                if (playerDelegate.Id != currentPlayerId)
+                if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
                 {
                     return;
                 }
 
-                currentPhotonPlayer.SetCustomProperties(new Hashtable
+                int level = playerDelegate.Level;
+                int exp = playerDelegate.Exp;
+                int requiredExp = CodingTimeExecutor.RequiredExp[level];
+
+                if (exp >= requiredExp)
                 {
-                    { ExpKey, next }
-                });
+                    int nextExp = exp - requiredExp;
+                    playerDelegate.Exp = nextExp;
+                    playerDelegate.Level += 1;
+                    return;
+                }
+
+                GameManager.inGameUI.shopUi.SetExp(next, RequiredExp[playerDelegate.Level]);
             };
         }
 
 
         private UnityAction<int, int> GetPlayerLevelUpdater(IPlayerDelegate playerDelegate)
         {
-            Player currentPhotonPlayer = PhotonNetwork.LocalPlayer;
-            string currentPlayerId = currentPhotonPlayer.UserId;
             return (_, next) =>
             {
-                if (playerDelegate.Id != currentPlayerId)
+                if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
                 {
                     return;
                 }
 
-                currentPhotonPlayer.SetCustomProperties(new Hashtable
-                {
-                    { LevelKey, next }
-                });
+                Debug.LogFormat("rerender algorithm: {0}", next);
+
+                IAlgorithm algorithm = playerDelegate.Algorithm;
+                algorithm.Capacity = next;
+                GameManager.inGameUI.shopUi.SetShopLevel(next);
+                ICommand[] commands = algorithm.AsArray();
+                Debug.Log(string.Join(", ", (IEnumerable<ICommand>) commands));
+                GameManager.inGameUI.shopUi.SetMyCommandList(commands);
+                NetworkProcessor.NotifyLocalPlayerDelegateAlgorithmChange();
             };
         }
 
         private UnityAction<IRobotDelegate, int, int> GetRobotHealthPointUpdater(PlayerStatusUI playerStatusUI)
         {
-            Player currentPhotonPlayer = PhotonNetwork.LocalPlayer;
             return (robotDelegate, _, next) =>
             {
-                if (robotDelegate.Id != currentPhotonPlayer.UserId)
+                IPlayerDelegate playerDelegate = GameManagerUtil.GetPlayerDelegateById(robotDelegate.Id);
+                if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
                 {
                     return;
                 }
 
-                playerStatusUI.SetRobotHP(next);
-                currentPhotonPlayer.SetCustomProperties(new Hashtable
-                {
-                    { RobotHpKey, next }
-                });
+                int validRobotHp = GetValidRobotHp(next);
+                playerStatusUI.SetRobotHP(validRobotHp);
             };
         }
     }

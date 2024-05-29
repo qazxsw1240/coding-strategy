@@ -2,7 +2,6 @@
 
 
 using System.Linq;
-using System.Text;
 using CodingStrategy.Entities.CodingTime;
 using CodingStrategy.Factory;
 using CodingStrategy.Network;
@@ -70,6 +69,7 @@ namespace CodingStrategy
         public GameObject badSectorPrefab = null!;
         public List<GameObject> robotPrefabs = new List<GameObject>();
         public GameManagerUtil util = null!;
+        public GameMangerNetworkProcessor networkProcessor = null!;
 
         public IBoardDelegate BoardDelegate { get; private set; } = null!;
         public IRobotDelegatePool RobotDelegatePool { get; private set; } = null!;
@@ -112,7 +112,8 @@ namespace CodingStrategy
             util = gameObject.GetOrAddComponent<GameManagerUtil>();
             _bitDispenser = new BitDispenser(BoardDelegate, util.PlayerDelegatePool);
             PlayerPool = util.PlayerDelegatePool;
-            // _playerStatusSynchronizer = SetUpPlayerStatusSynchronizer();
+            networkProcessor = gameObject.GetOrAddComponent<GameMangerNetworkProcessor>();
+            networkProcessor.GameManagerUtil = util;
         }
 
         public void Start()
@@ -126,6 +127,7 @@ namespace CodingStrategy
                 PhotonNetwork.NetworkingClient.EnableLobbyStatistics = true;
                 PhotonNetwork.IsMessageQueueRunning = true;
                 PhotonNetwork.ConnectUsingSettings();
+                return;
             }
 
             StartCoroutine(StartGameManagerCoroutine());
@@ -142,7 +144,7 @@ namespace CodingStrategy
             Debug.LogFormat("Connected to Master {0}", PhotonNetwork.CurrentLobby);
             PhotonNetwork.GetCustomRoomList(PhotonNetwork.CurrentLobby, "C0='coding-strategy'");
             PhotonNetwork.NickName = "asdf";
-            PhotonNetwork.JoinRandomOrCreateRoom(roomOptions: new RoomOptions
+            PhotonNetwork.CreateRoom("test", roomOptions: new RoomOptions
             {
                 MaxPlayers = 4,
                 IsVisible = false,
@@ -181,13 +183,7 @@ namespace CodingStrategy
             Player targetPlayer,
             ExitGames.Client.Photon.Hashtable changedProps)
         {
-            StringBuilder builder = new StringBuilder();
-            foreach ((object key, object value) in changedProps)
-            {
-                builder.AppendLine($"{key}: {value}");
-            }
-
-            Debug.Log(builder.ToString());
+            Debug.Log(string.Join(", ", targetPlayer.CustomProperties.ToList()));
         }
 
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -281,14 +277,16 @@ namespace CodingStrategy
 
                 inGameUI.SetCameraPosition(PlayerIndexMap[PhotonNetwork.LocalPlayer.UserId]);
 
-                NotifyDispatchBits();
 
                 foreach (IPlayerDelegate playerDelegate in util.PlayerDelegatePool)
                 {
                     int index = PlayerIndexMap[playerDelegate.Id];
                     (RobotDirection direction, Coordinate position, Color _) = StartPositions[index];
                     IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
+                    BoardDelegate.Add(robotDelegate, position, direction);
                 }
+
+                NotifyDispatchBits();
 
                 yield return StartCoroutine(AwaitAllPlayerPlaceablePlaceEventSynchronization());
 
@@ -354,9 +352,11 @@ namespace CodingStrategy
 
         private void PrepareCodingTimeExecutor(CodingTimeExecutor codingTimeExecutor)
         {
+            codingTimeExecutor.Util = util;
             codingTimeExecutor.InGameUI = inGameUI;
             codingTimeExecutor.PlayerPool = util.PlayerDelegatePool;
             codingTimeExecutor.NetworkDelegate = _networkDelegate;
+            codingTimeExecutor.NetworkProcessor = networkProcessor;
             codingTimeExecutor.CommandCache = _commandCache;
         }
 

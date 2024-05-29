@@ -117,10 +117,11 @@ namespace CodingStrategy
             });
             robotDelegate.OnHealthPointChange.AddListener((_, previous, next) =>
             {
+                LilbotAnimation lilbotAnimation = robotObject.GetOrAddComponent<LilbotAnimation>();
                 int different = next - previous;
                 if (different < 0)
                 {
-
+                    GameManager.AnimationCoroutineManager.AddAnimation(robotObject, lilbotAnimation.HitAnimationCoroutine());
                 }
             });
         }
