@@ -40,12 +40,14 @@ namespace CodingStrategy.UI.InGame
 
         public void GotoShop()
         {
+            Debug.Log("GotoShop");
             StopScroll();
             direction = 1;
         }
 
         public void GotoGame()
         {
+            Debug.Log("GotoGame");
             StopScroll();
             direction = -1;
         }
@@ -61,21 +63,21 @@ namespace CodingStrategy.UI.InGame
             {
                 return;
             }
-            if (shopScrollRect.horizontalNormalizedPosition < 0.01f)
+            if (direction == -1 && shopScrollRect.horizontalNormalizedPosition < 0.01f)
             {
                 shopScrollRect.StopMovement();
                 shopScrollRect.horizontalNormalizedPosition = 0.0f;
                 shopScrollRect.enabled = true;
                 direction = 0;
             }
-            else if (0.99f < shopScrollRect.horizontalNormalizedPosition)
+            else if (direction == 1 && 0.99f < shopScrollRect.horizontalNormalizedPosition)
             {
                 shopScrollRect.StopMovement();
                 shopScrollRect.horizontalNormalizedPosition = 1.0f;
                 shopScrollRect.enabled = true;
                 direction = 0;
             }
-            else if (MathF.Abs(shopScrollRect.velocity.x) < 100.0f)
+            else if (direction == 0 && MathF.Abs(shopScrollRect.velocity.x) < 100.0f && 0.01f < shopScrollRect.horizontalNormalizedPosition && shopScrollRect.horizontalNormalizedPosition < 0.99f)
             {
                 if (shopScrollRect.horizontalNormalizedPosition < 0.5f)
                 {
