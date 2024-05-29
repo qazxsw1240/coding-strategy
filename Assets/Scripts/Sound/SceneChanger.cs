@@ -26,6 +26,12 @@ public class SceneChanger : MonoBehaviour
         StartCoroutine(FadeOutBgmAndLoadScene("GameLobby", "Sound/GameLobby_Sleepy Sunshine"));
     }
 
+    public void RoomScene() 
+    {
+        StartCoroutine(FadeOutBgmAndLoadScene("GameRoom", "Sound/GameLobby_Sleepy Sunshine")); // Bgm ¹Ù²ã¾ßÇÔ.
+        Debug.Log("Successfully joined room");
+    }
+
     private IEnumerator FadeOutBgmAndLoadScene(string sceneName, string newBgmPath)
     {
         AudioSource bgmSource = soundManager.GetBgmSource();
