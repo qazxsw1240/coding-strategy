@@ -8,8 +8,8 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
     public class Adware : AbstractAbnormality
     {
         public new static readonly string Name = "애드웨어";
-        public Adware(IRobotDelegate robotDelegate, IPlayerDelegate playerDelegate, int value=0)
-        :base(Name, robotDelegate, playerDelegate, value)
+        public Adware(IRobotDelegate robotDelegate, int value=0)
+        :base(Name, robotDelegate, value)
         {
         }
         public override int Value
