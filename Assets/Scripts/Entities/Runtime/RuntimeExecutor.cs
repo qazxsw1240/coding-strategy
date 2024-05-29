@@ -2,6 +2,7 @@
 
 
 using System.Linq;
+using CodingStrategy.Entities.Runtime.Statement;
 using CodingStrategy.Entities.Runtime.Validator;
 using Unity.VisualScripting;
 using UnityEngine.Events;
@@ -203,8 +204,14 @@ namespace CodingStrategy.Entities.Runtime
         {
             return (_, playerDelegate, statement)=>
             {
-                if(statement.Phase == StatementPhase.Move)
+                if (statement.Phase == StatementPhase.Move)
+                {
+                    if (statement is RotateStatement)
+                    {
+                        return;
+                    }
                     playerDelegate.Currency+=1;
+                }
             };
         }
     }
