@@ -8,6 +8,7 @@ namespace CodingStrategy.UI.InGame
 	public class OnClickCommandDetail : MonoBehaviour
 	{
 		public GameObject detailPrefab;
+		public string Id;
 
 		// Start is called before the first frame update
 		void Start()
@@ -22,7 +23,11 @@ namespace CodingStrategy.UI.InGame
 						Destroy(child.gameObject);
 					}
 				}
-				Instantiate(detailPrefab, alwaysOnTop.transform).transform.position = Input.mousePosition;
+				GameObject detail = Instantiate(detailPrefab, alwaysOnTop.transform);
+				detail.transform.position = Input.mousePosition;
+				detail.GetComponent<SetCommandDetail>().Id = Id;
+				alwaysOnTop.GetComponent<CommandDetailEvent>().setCommandDetail = detail.GetComponent<SetCommandDetail>();
+				alwaysOnTop.GetComponent<CommandDetailEvent>().OnCommandClickEvent.Invoke(Id);
 			});
 		}
 

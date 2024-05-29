@@ -1,7 +1,8 @@
 using UnityEngine;
 using System.Collections;
 using DG.Tweening;
-
+using UnityEngine.UI;
+using CodingStrategy.Entities.Runtime;
 
 namespace CodingStrategy.Entities.Animations
 {
@@ -24,6 +25,24 @@ namespace CodingStrategy.Entities.Animations
 
         public float duration = 1f;
         public Camera playerCamera;
+
+
+        LilboStatment lilboStatment;
+        public Image[] statements;
+
+        public void Start()
+        {
+            lilboStatment = gameObject.GetComponent<LilboStatment>();
+            statements = lilboStatment.statements;
+        }
+
+        public void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                StartCoroutine(StatementActive("Trojan"));
+            }
+        }
 
         public IEnumerator Walk(float speed, int x, int z)
         {
@@ -48,11 +67,29 @@ namespace CodingStrategy.Entities.Animations
             animator.SetFloat(Speed, 0);
         }
 
-        public IEnumerator JumpAnimationCoroutine()
+        public IEnumerator SpawnAnimationCoroutine()
         {
-            animator.SetTrigger(Jump);
-            yield return new WaitForSeconds(1); // 1초 대기
-            animator.ResetTrigger(Jump);
+            Vector3 returnPosition = gameObject.transform.position;
+            
+            Vector3 endPosition = new Vector3(transform.position.x, transform.position.y + 1.3f, transform.position.z);
+
+            gameObject.transform.position = new Vector3(transform.position.x, transform.position.y + 10.0f, transform.position.z);
+
+            
+
+            Sequence sequence = DOTween.Sequence();
+
+            sequence.AppendCallback(() => animator.SetTrigger(Jump));
+
+            sequence.Insert(0, transform.DOMove(endPosition, 0.8f).SetEase(Ease.OutCubic));
+
+            sequence.AppendCallback(() => animator.ResetTrigger(Jump));
+
+            sequence.Append(transform.DOMove(returnPosition, 0.2f));
+
+            yield return sequence.WaitForCompletion();
+            // 1초 대기
+
         }
 
 
@@ -83,7 +120,7 @@ namespace CodingStrategy.Entities.Animations
         {
             animator.SetTrigger(Death);
 
-            playerCamera.DOShakePosition(1, 5);
+            playerCamera.DOShakePosition(1, 3);
             yield return new WaitForSeconds(1); // 1초 대기
             animator.ResetTrigger(Death);
         }
@@ -97,11 +134,37 @@ namespace CodingStrategy.Entities.Animations
         public IEnumerator HitAnimationCoroutine()
         {
             animator.SetTrigger(Hit);
-            playerCamera.DOShakePosition(1, 3);
+            playerCamera.DOShakePosition(1, 1);
             yield return new WaitForSeconds(1); // 1초 대기
             animator.ResetTrigger(Hit);
         }
 
+        #endregion
+
+        #region define Statement
+
+        public IEnumerator StatementActive(string statement)
+        {
+            animator.SetTrigger(Hit);
+            
+            if(statement == "Trojan")
+            {
+                statements[0].gameObject.SetActive(true);
+            }
+            else if(statement == "Malware")
+            {
+                statements[1].gameObject.SetActive(true);
+            }
+            
+            yield return new WaitForSeconds(0.8f); // 0.8초 대기
+
+            for(int i =0;i<statement.Length;i++)
+            {
+                statements[i].gameObject.SetActive(false);
+            }
+
+            animator.ResetTrigger(Hit);
+        }
         #endregion
     }
 }

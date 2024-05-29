@@ -277,5 +277,26 @@ public class RoomManager : MonoBehaviourPunCallbacks
         // 게임을 시작합니다.
         Debug.Log("게임을 시작합니다.");
         // 게임을 시작하는 로직을 이곳 아래에 구현하세요.
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
+            {
+                { "C2", 1 }
+            });
+
+            StartCoroutine(StartCountdownCoroutine());
+        }
+    }
+
+    private IEnumerator StartCountdownCoroutine()
+    {
+        for (int i = 3; i > 0; i--)
+        {
+            ChatManager.Announce($"{i}초 후 게임을 시작합니다.");
+            yield return new WaitForSeconds(1f);
+        }
+
+        PhotonNetwork.LoadLevel("GameScene");
     }
 }

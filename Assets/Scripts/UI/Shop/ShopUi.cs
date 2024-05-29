@@ -54,7 +54,21 @@ namespace CodingStrategy.UI.Shop
             foreach (ICommand command in commandList)
             {
                 GameObject _object = Instantiate(iconList[int.Parse(command.Id)], shopCommandList);
-            }
+				Image image;
+				switch (command.Info.EnhancedLevel)
+				{
+					case 2:
+						image = _object.transform.GetChild(0).GetComponent<Image>();
+						image.sprite = Resources.Load<Sprite>("Image/Frame");
+						image.color = new Vector4(0, 0, 0, 200) / 255;
+						break;
+					case 3:
+						image = _object.transform.GetChild(0).GetComponent<Image>();
+						image.sprite = Resources.Load<Sprite>("Image/Frame2");
+						image.color = new Vector4(144, 36, 33, 200) / 255;
+						break;
+				}
+			}
         }
 
 		public void SetMyCommandList(ICommand[] commandList)
@@ -63,6 +77,20 @@ namespace CodingStrategy.UI.Shop
 			foreach (ICommand command in commandList)
 			{
 				GameObject _object = Instantiate(iconList[int.Parse(command.Id)], myCommandList);
+				Image image;
+				switch (command.Info.EnhancedLevel)
+				{
+					case 2:
+						image = _object.transform.GetChild(0).GetComponent<Image>();
+						image.sprite = Resources.Load<Sprite>("Image/Frame");
+						image.color = new Vector4(0, 0, 0, 200) / 255;
+						break;
+					case 3:
+						image = _object.transform.GetChild(0).GetComponent<Image>();
+						image.sprite = Resources.Load<Sprite>("Image/Frame2");
+						image.color = new Vector4(144, 36, 33, 200) / 255;
+						break;
+				}
 			}
 		}
 
@@ -88,12 +116,11 @@ namespace CodingStrategy.UI.Shop
         public void SetExp(int currentExp, int fullExp)
         {
             Exp.text = currentExp.ToString() + "/" + fullExp.ToString();
-            SetLevelUpCost(fullExp - currentExp);
+            //SetLevelUpCost(fullExp - currentExp);
             ExpImage.fillAmount = (float)currentExp / (float)fullExp;
 		}
 
-        // Implicitly set in SetExp().
-        private void SetLevelUpCost(int levelUpCost)
+        public void SetLevelUpCost(int levelUpCost)
         {
             LevelUpCost.text = levelUpCost.ToString() + " Bit";
         }

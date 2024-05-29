@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DestroyOnClick : MonoBehaviour
+namespace CodingStrategy.UI.InGame
 {
-    // Start is called before the first frame update
-    void Start()
+    public class DestroyOnClick : MonoBehaviour
     {
-        GetComponent<Button>().onClick.AddListener(() => Destroy(gameObject));
-    }
+        // Start is called before the first frame update
+        void Start()
+        {
+            GetComponent<Button>().onClick.AddListener(() => Destroy(gameObject));
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
     }
 }

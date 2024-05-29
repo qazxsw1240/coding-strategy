@@ -67,6 +67,7 @@ namespace CodingStrategy.UI.Shop
             if (name != "ItemSelectInfo" && transform.parent.name != "MyCommandList")
             {
                 Destroy(gameObject.GetComponent<Drop>());
+                return;
             }
             ShopUi shopUi = GameObject.Find("ShopUI").GetComponent<ShopUi>();
             OnBuyCommandEvent = shopUi.OnBuyCommandEvent;

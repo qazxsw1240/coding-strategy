@@ -28,6 +28,7 @@ namespace CodingStrategy.UI.Shop
             if (transform.parent.name != "MyCommandList" && transform.parent.name != "ShopCommandList")
             {
                 Destroy(gameObject.GetComponent<Drag>());
+                return;
             }
             _image = GetComponent<Image>();
             alwaysOntop = GameObject.Find("AlwaysOnTop").transform;

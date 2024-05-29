@@ -23,6 +23,16 @@ namespace CodingStrategy.Entities
             _animationQueues.Clear();
         }
 
+        public bool HasAnimationQueue(object target)
+        {
+            if (!_animationQueues.TryGetValue(target, out Queue<IEnumerator> queue))
+            {
+                return false;
+            }
+
+            return queue.Count != 0;
+        }
+
         /// <summary>
         /// 코루틴 애니메이션을 큐에 추가합니다. 각 큐는 오브젝트를 기준으로 삼아,
         /// 한 오브젝트에 할당된 큐는 한 번에 하나의 애니메이션만 실행합니다.

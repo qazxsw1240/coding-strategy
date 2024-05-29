@@ -1,6 +1,7 @@
 #nullable enable
 
 
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CodingStrategy.Entities.Robot
@@ -35,6 +36,7 @@ namespace CodingStrategy.Entities.Robot
 
         private readonly UnityEvent<IRobotDelegate, Coordinate, Coordinate> _robotChangePositionEvents;
         private readonly UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> _robotChangeDirectionEvents;
+        private readonly UnityEvent<IRobotDelegate, IList<Coordinate>> _robotAttackEvents;
         private readonly UnityEvent<IRobotDelegate, int, int> _healthPointChangeEvents;
         private readonly UnityEvent<IRobotDelegate, int, int> _maxHealthPointChangeEvents;
         private readonly UnityEvent<IRobotDelegate, int, int> _energyPointChangeEvents;
@@ -70,6 +72,7 @@ namespace CodingStrategy.Entities.Robot
             _maxAttackPoint = maxAttackPoint;
             _robotChangePositionEvents = new UnityEvent<IRobotDelegate, Coordinate, Coordinate>();
             _robotChangeDirectionEvents = new UnityEvent<IRobotDelegate, RobotDirection, RobotDirection>();
+            _robotAttackEvents = new UnityEvent<IRobotDelegate, IList<Coordinate>>();
             _healthPointChangeEvents = new UnityEvent<IRobotDelegate, int, int>();
             _maxHealthPointChangeEvents = new UnityEvent<IRobotDelegate, int, int>();
             _energyPointChangeEvents = new UnityEvent<IRobotDelegate, int, int>();
@@ -82,6 +85,7 @@ namespace CodingStrategy.Entities.Robot
             _boardDelegate.OnRobotChangePosition.AddListener(InvokeRobotChangePositionEvents);
             _boardDelegate.OnRobotChangeDirection.AddListener(InvokeRobotChangeDirectionEvents);
         }
+
         public Coordinate[] Vectors => _vectors;
 
         public string Id => _id;
@@ -223,18 +227,43 @@ namespace CodingStrategy.Entities.Robot
 
         public bool Rotate(RobotDirection direction) => _boardDelegate.Rotate(this, direction);
 
+        private bool IsValidCoordinate(Coordinate coordinate)
+        {
+            return coordinate.X >= 0 && coordinate.X < _boardDelegate.Width &&
+                   coordinate.Y >= 0 && coordinate.Y < _boardDelegate.Height;
+        }
+
         public bool Attack(IRobotAttackStrategy strategy, params Coordinate[] relativePositions)
         {
             Coordinate currentPosition = Position;
             int checksum = 0;
+            IList<Coordinate> targetPositions = new List<Coordinate>();
+            IList<IRobotDelegate> robotDelegates = new List<IRobotDelegate>();
             foreach (Coordinate relativePosition in relativePositions)
             {
                 Coordinate targetPosition = currentPosition + relativePosition;
-                ICellDelegate cellDelegate = _boardDelegate[targetPosition];
-                foreach (IRobotDelegate robotDelegate in cellDelegate.Placeables.Where(p => p is IRobotDelegate).Cast<IRobotDelegate>())
+                if (!IsValidCoordinate(targetPosition))
                 {
-                    robotDelegate.HealthPoint -= strategy.CalculateAttackPoint(this, robotDelegate);
+                    continue;
+                }
+
+                targetPositions.Add(targetPosition);
+                ICellDelegate cellDelegate = _boardDelegate[targetPosition];
+                foreach (IRobotDelegate robotDelegate in cellDelegate.Placeables.Where(p => p is IRobotDelegate)
+                             .Cast<IRobotDelegate>())
+                {
+                    robotDelegates.Add(robotDelegate);
                     checksum++;
+                }
+            }
+
+            if (targetPositions.Count != 0)
+            {
+                _robotAttackEvents.Invoke(this, targetPositions);
+                for (int i = 0; i < robotDelegates.Count; i++)
+                {
+                    IRobotDelegate robotDelegate = robotDelegates[i];
+                    robotDelegate.HealthPoint -= strategy.CalculateAttackPoint(this, robotDelegate);
                 }
             }
 
@@ -247,6 +276,8 @@ namespace CodingStrategy.Entities.Robot
 
         public UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> OnRobotChangeDirection =>
             _robotChangeDirectionEvents;
+
+        public UnityEvent<IRobotDelegate, IList<Coordinate>> OnRobotAttack => _robotAttackEvents;
 
         public UnityEvent<IRobotDelegate, int, int> OnHealthPointChange => _healthPointChangeEvents;
 
