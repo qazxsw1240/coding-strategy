@@ -17,12 +17,7 @@ namespace CodingStrategy.UI.InGame
     
         public Button QuitRoomBtn;
     
-        public void Awake()
-        {
-            QuitRoomBtn = GameObject.Find("Quit Room Button").GetComponent<Button>();
-            QuitRoomBtn.onClick.AddListener(PlayerLeave);
-            //Rank.text = 
-        }
+        
 
         public void PlayerLeave()
         {
@@ -35,6 +30,9 @@ namespace CodingStrategy.UI.InGame
         public IEnumerator ResultUIAnimation()
         {
             Gameresult.SetActive(true);
+
+            QuitRoomBtn = GameObject.Find("Quit Room Button").GetComponent<Button>();
+            QuitRoomBtn.onClick.AddListener(PlayerLeave);
 
             yield return new WaitForSeconds(0.2f);
 
