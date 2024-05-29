@@ -146,6 +146,7 @@ GameObject:
   - component: {fileID: 4639742808592928255}
   - component: {fileID: 2222093588091131533}
   - component: {fileID: 4185391362853897370}
+  - component: {fileID: 8718295185294915443}
   - component: {fileID: 5798740637217630013}
   - component: {fileID: 7040050869946182180}
   m_Layer: 5
@@ -216,6 +217,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8718295185294915443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4817986621349432130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23596261f6d7f45488c83b1caa11ea59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CreatedBtn: {fileID: 0}
 --- !u!114 &5798740637217630013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,6 +290,18 @@ MonoBehaviour:
       - m_Target: {fileID: 5798740637217630013}
         m_TargetAssemblyTypeName: BtnMovement, Assembly-CSharp
         m_MethodName: AnimateButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 118406632084334533, guid: c226bbbb384612e4297a72035147b08c, type: 3}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
+        m_MethodName: LobbyRoomButtonSound
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
