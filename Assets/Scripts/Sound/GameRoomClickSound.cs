@@ -11,7 +11,6 @@ public class GameRoomClickSound : MonoBehaviour
     {
         StartCoroutine(CommandClickedSound(0));
     }
-
     public IEnumerator CommandClickedSound(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -81,4 +80,7 @@ public class GameRoomClickSound : MonoBehaviour
         soundManager.Play(effectClip, Sound.Effect, 1.0f);
         Debug.Log("Game quit button sound is comming out!");
     }
+
+
+
 }

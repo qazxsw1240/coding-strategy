@@ -61,6 +61,7 @@ public class ShopSoundManager : MonoBehaviour
         Debug.Log("Levelup sound is comming out!");
     }
 
+    /*
     // 상점에서 커멘드 옮기기 위해 클릭할 때 사운드
     public void CommandClicked()
     {
@@ -77,6 +78,6 @@ public class ShopSoundManager : MonoBehaviour
         AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_CommandClick_Sound");
         soundManager.Play(effectClip, Sound.Effect, 1.0f);
         Debug.Log("CommnadClickedSound is comming out!");
-    }
+    }*/
 
 }

@@ -42,6 +42,11 @@ public class SceneChanger : MonoBehaviour
         bgmSource.Stop();
     }
 
+    public void GameScene()
+    {
+        StartCoroutine(SoundsVolumesDown());
+    }
+
     public IEnumerator SoundsVolumesUp(string newBgmPath)
     {
         AudioSource bgmSource = soundManager.GetBgmSource();

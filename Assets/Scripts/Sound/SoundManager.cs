@@ -43,7 +43,7 @@ public class SoundManager : MonoBehaviour
         if (sceneName == "GameStartScene")
         {
             // Bgm을 불러오고 재생합니다.
-            AudioClip BgmClip = Resources.Load<AudioClip>("Sound/GameScene_Bgm");
+            AudioClip BgmClip = Resources.Load<AudioClip>("Sound/Game_Play_Ost");
             Play(BgmClip, Sound.Bgm, 1.0f, 0.1f);
 
             // 닉네임 입력 필드의 이벤트에 리스너 추가

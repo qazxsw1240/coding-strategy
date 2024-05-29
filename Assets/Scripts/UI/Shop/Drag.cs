@@ -12,6 +12,8 @@ namespace CodingStrategy.UI.Shop
         private Transform alwaysOntop;
         private Transform _tmpObject;
 
+        private SoundManager soundManager; // 사운드
+
         public int GetIndex()
         {
             return _oldIndex;
@@ -44,6 +46,13 @@ namespace CodingStrategy.UI.Shop
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            // 드래그 시작 사운드
+            soundManager = FindObjectOfType<SoundManager>();
+            soundManager.Init();
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_CommandClick_Sound");
+            soundManager.Play(effectClip, Sound.Effect, 1.0f);
+            Debug.Log("Command clicked sound is comming out!");
+
             _image.raycastTarget = false;
 			_oldParent = transform.parent;
 			_oldIndex = transform.GetSiblingIndex();
@@ -54,6 +63,12 @@ namespace CodingStrategy.UI.Shop
         public void OnEndDrag(PointerEventData eventData)
         {
             ResetPosition();
+            // 명령어 배치 사운드
+            soundManager = FindObjectOfType<SoundManager>();
+            soundManager.Init();
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_CommandPutdown_Sound");
+            soundManager.Play(effectClip, Sound.Effect, 1.0f);
+            Debug.Log("Commnad put down sound is comming out!");
         }
 
         public void ResetPosition()
