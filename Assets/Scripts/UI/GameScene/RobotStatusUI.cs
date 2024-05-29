@@ -45,9 +45,9 @@ namespace CodingStrategy.UI.InGame
 		public void SetCommandList(ICommand[] commandList)
 		{
 			scrollRect.horizontalNormalizedPosition = 0.0f;
+			DestroyChildren(CommandList);
 			foreach (ICommand command in commandList)
 			{
-				DestroyChildren(CommandList);
 				GameObject _object = Instantiate(shopUi.iconList[int.Parse(command.Id)], CommandList);
 				Image image;
 				switch (command.Info.EnhancedLevel)
