@@ -91,7 +91,7 @@ namespace CodingStrategy
                 algorithm.Select(command => $"{command.Id}-{command.Info.EnhancedLevel}"));
             PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
             {
-                { AlgorithmUpdateKey, algorithmRequest }
+                { AlgorithmUpdateKey, new object[] { playerDelegate.Id, algorithmRequest } }
             });
         }
 

@@ -202,7 +202,7 @@ namespace CodingStrategy
             RemoveBadSectorDelegateObject(badSectorDelegate);
             BadSectorAnimation badSectorAnimation = badSectorObject.GetComponent<BadSectorAnimation>();
             GameManager.AnimationCoroutineManager.AddAnimation(badSectorDelegate,
-                badSectorAnimation.AnimateItemReverse());
+                badSectorAnimation.ActivateBadsector());
         }
 
         private GameObject? FindBadSectorDelegateObject(IBadSectorDelegate badSectorDelegate)

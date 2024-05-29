@@ -24,6 +24,7 @@ namespace CodingStrategy.Entities.Runtime
 
         public IExecutionValidator Validator { get; set; } = null!;
 
+        public GameManager GameManager { get; set; } = null!;
         public RuntimeExecutorContext Context { get; set; } = null!;
 
         public UnityEvent<IRobotDelegate, IPlayerDelegate,  IStatement> OnStatementExecuteEvents { get; } =
@@ -72,6 +73,20 @@ namespace CodingStrategy.Entities.Runtime
                 {
                     RollbackCommands(executionQueue, statements);
                     _problematicRobots.Add(robotDelegate);
+                }
+            }
+
+            IList<IRobotDelegate> invalidRobots = Validator.GetInvalidRobots(Context.BoardDelegate);
+
+            if (invalidRobots.Count == 0)
+            {
+                return true;
+            }
+
+            foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in  Context.ExecutionQueuePool)
+            {
+                if (invalidRobots.Contains(robotDelegate))
+                {
                     continue;
                 }
 
@@ -90,6 +105,8 @@ namespace CodingStrategy.Entities.Runtime
                     continue;
                 }
 
+                Stack<IStatement> statements = _statements[robotDelegate];
+
                 badSectorDelegate.Remove();
                 statements.Clear();
                 executionQueue.Clear();
@@ -100,13 +117,17 @@ namespace CodingStrategy.Entities.Runtime
                 {
                     executionQueue.EnqueueFirst(s);
                 }
-            }
 
-            IList<IRobotDelegate> invalidRobots = Validator.GetInvalidRobots(Context.BoardDelegate);
+                if (robotDelegate.HealthPoint <= 0)
+                {
+                    statements.Clear();
+                    executionQueue.Clear();
 
-            if (invalidRobots.Count == 0)
-            {
-                return true;
+                    if (robotDelegate.Id == GameManager.util.LocalPhotonPlayerDelegate.Id)
+                    {
+                        GameManager.util.LocalPhotonPlayerDelegate.HealthPoint -= 1;
+                    }
+                }
             }
 
             foreach (IRobotDelegate robotDelegate in invalidRobots)

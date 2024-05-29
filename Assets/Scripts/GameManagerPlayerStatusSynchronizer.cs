@@ -65,12 +65,13 @@ namespace CodingStrategy
                         .Select(pair => pair.Value)
                         .First(player => player.UserId == playerDelegate.Id);
                     RobotStatusUI robotStatusUI = GameManager.inGameUI.statusUI.GetComponent<RobotStatusUI>();
+                    robotStatusUI.SetCameraTexture(GameManager.PlayerIndexMap[photonPlayer.UserId]);
                     robotStatusUI.SetName(photonPlayer.NickName);
                     robotStatusUI.State.text = "상태 이상: " + string.Join(",  ", GameManager.GetAbnormalities()
                         .Where(pair => pair.Key.StartsWith(playerDelegate.Id))
                         .Select(pair => pair.Value)
                         .Select(abnormality => abnormality.Name));
-                    robotStatusUI.SetCommandList(playerDelegate.Algorithm.ToArray());
+                    robotStatusUI.SetCommandList(playerDelegate.Algorithm.AsArray());
                 });
             }
         }
