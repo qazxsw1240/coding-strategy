@@ -23,6 +23,10 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public GameObject existingLoginManager;
 
+    // Sound 추가 부분
+    private SoundManager soundManager;
+    public SceneChanger sceneChanger;
+
     // 갱신된 방 리스트를 저장해 둘 변수
     public static List<RoomInfo> cachedRoomList = new List<RoomInfo>();
 
@@ -38,6 +42,16 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     //닉네임값 받아오기
     private void Start()
     {
+        // Sound 추가 부분
+        soundManager = FindObjectOfType<SoundManager>();
+        soundManager.Init();
+        sceneChanger = FindObjectOfType<SceneChanger>();
+        if (sceneChanger == null)
+        {
+            GameObject sceneChangerObj = new GameObject("SceneChanger");
+            sceneChanger = sceneChangerObj.AddComponent<SceneChanger>();
+        }
+
         DontDestroyOnLoad(gameObject);
         UpdateRoomListUI();
     }
@@ -56,6 +70,11 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     // standard 이미지일 경우 해당 방의 ID를 받아와서 참가할 것입니다.
     public void OnJoinedRoomButtonClick()
     {
+        // Sound 추가 부분
+        AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_Experience_Up");
+        soundManager.Play(effectClip, Sound.Effect, 1.0f);
+        Debug.Log("JoinRoom button sound is comming out!");
+
         if (RandomImage.gameObject.activeInHierarchy)
         {
             PhotonNetwork.JoinRandomRoom();
@@ -69,11 +88,11 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         base.OnJoinedRoom();
-        Debug.Log("Successfully joined room");
+        //Debug.Log("Successfully joined room");
         
         Destroy(existingLoginManager);
-
-        SceneManager.LoadScene("GameRoom");
+        sceneChanger.RoomScene();
+        //SceneManager.LoadScene("GameRoom");
     }
 
 
