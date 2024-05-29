@@ -101,6 +101,7 @@ namespace CodingStrategy.UI.Shop
 
         public void SetBit(int bit)
         {
+            Debug.Log("SetBit: " + bit);
             if (bit < 0)
             {
                 Bit.color = Color.red;
