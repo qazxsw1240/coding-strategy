@@ -123,6 +123,12 @@ namespace CodingStrategy
                 {
                     GameManager.AnimationCoroutineManager.AddAnimation(robotObject, lilbotAnimation.HitAnimationCoroutine());
                 }
+
+                if (next <= 0)
+                {
+                    GameManager.AnimationCoroutineManager.AddAnimation(robotObject,
+                        lilbotAnimation.DeathAnimationCoroutine());
+                }
             });
         }
 
