@@ -76,7 +76,7 @@ namespace CodingStrategy
                 ICommand[] commands = ParseCommands(algorithmResponse);
                 IPlayerDelegate playerDelegate = gameManagerUtil.GetPlayerDelegateById(target);
                 IAlgorithm algorithm = playerDelegate.Algorithm;
-
+                algorithm.Capacity = commands.Length;
                 for (int i = 0; i < commands.Length; i++)
                 {
                     algorithm[i] = commands[i];
