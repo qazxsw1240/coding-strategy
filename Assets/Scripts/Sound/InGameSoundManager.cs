@@ -5,6 +5,11 @@ using UnityEngine;
 public class InGameSoundManager : MonoBehaviour
 {
     private SoundManager soundManager;
+    
+    public void RobotStatus()
+    {
+        StartCoroutine(RobotStatusSound(0));
+    }
 
     // PlayerInfo 또는 PlayerColor를 클릭했을 때 소리(RobotStatus 보일 때 소리)
     // RobotStatus 닫기 소리가 구현되지 않음.
