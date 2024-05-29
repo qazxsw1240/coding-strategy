@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
 using UnityEngine.SceneManagement;
 using TMPro;
@@ -89,10 +90,19 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
+            PhotonNetwork.FetchServerTimestamp();
             PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
             {
-                { "C1", PhotonNetwork.CurrentRoom.PlayerCount }
+                { "C1", PhotonNetwork.CurrentRoom.PlayerCount },
+                { "Timer", PhotonNetwork.ServerTimestamp }
             });
+        }
+        else
+        {
+            int startTime = (int) PhotonNetwork.CurrentRoom.CustomProperties["Timer"];
+            int delay = unchecked(PhotonNetwork.ServerTimestamp - startTime);
+
+            Debug.LogFormat("Server delay is {0}ms", delay);
         }
 
         PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
