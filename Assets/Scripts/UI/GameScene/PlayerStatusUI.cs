@@ -86,6 +86,10 @@ namespace CodingStrategy.UI.InGame
             {
                 Money.color = Color.red;
             }
+            else
+            {
+                Money.color = Color.white;
+            }
         }
 
         public void SetPlayerHP(int hp)
