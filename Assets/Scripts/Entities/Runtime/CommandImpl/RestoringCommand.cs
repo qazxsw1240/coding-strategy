@@ -3,17 +3,14 @@
 
 namespace CodingStrategy.Entities.Runtime.CommandImpl
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using CodingStrategy.Entities.Robot;
+    using Robot;
     using Statement;
 
-    public class ChargeEnergyCommand : AbstractCommand
+    public class RestoringCommand : AbstractCommand
     {
-        private readonly IList<Coordinate> _coordinates=new List<Coordinate>();
 
-        public ChargeEnergyCommand(string id="17", string name="에너지 충전", int enhancedLevel=1, int grade=1,
-        string explanation="사용시 현재 에너지를 1 충전합니다.")
+        public RestoringCommand(string id="24", string name="원상 복구", int enhancedLevel=1, int grade=5,
+        string explanation="사용시 사용한 로봇의 체력이 4 미만일 경우, 체력을 4로 회복시킵니다. 에너지를 모두 소모합니다.")
         : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
@@ -22,9 +19,9 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
         {
             if(!keepStatus)
             {
-                return new ChargeEnergyCommand();
+                return new RestoringCommand();
             }
-            return new ChargeEnergyCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return new RestoringCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
 
         public override bool Invoke(params object[] args)
@@ -39,7 +36,8 @@ namespace CodingStrategy.Entities.Runtime.CommandImpl
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)
         {
-            _commandBuilder.Append(new AddEnergyStatement(robotDelegate, Info.EnhancedLevel));
+            robotDelegate.EnergyPoint=0;
+            _commandBuilder.Append(new AddHealthPointStatement(robotDelegate, 4,4));
         }
 
         protected override void AddStatementOnLevel2(IRobotDelegate robotDelegate)

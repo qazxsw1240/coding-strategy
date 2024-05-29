@@ -4,10 +4,12 @@
 namespace CodingStrategy.Entities.Runtime.Abnormality
 {
     using Robot;
+    using Player;
     public class TrojanHorse : AbstractAbnormality
     {
         public new static readonly string Name = "트로이 목마";
-        public TrojanHorse(IRobotDelegate robotDelegate) : base(Name, robotDelegate)
+        public TrojanHorse(IRobotDelegate robotDelegate, int value=0)
+        :base(Name, robotDelegate, value)
         {
         }
 
@@ -35,7 +37,8 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
 
         public override void Execute()
         {
-            return;
+            if(_value <= 0)
+                return;
         }
     }
 }

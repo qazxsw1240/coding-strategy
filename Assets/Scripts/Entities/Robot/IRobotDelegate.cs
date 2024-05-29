@@ -30,9 +30,14 @@ namespace CodingStrategy.Entities.Robot
         public abstract RobotDirection Direction { get; set; }
 
         /// <summary>
-        ///  로봇의 체력입니다.
+        /// 로봇의 체력입니다.
         /// </summary>
         public abstract int HealthPoint { get; set; }
+
+        /// <summary>
+        /// 로봇의 최대 체력입니다.
+        /// </summary>
+        public abstract int MaxHealthPoint { get; set; }
 
         /// <summary>
         /// 로봇의 에너지입니다.
@@ -40,14 +45,29 @@ namespace CodingStrategy.Entities.Robot
         public abstract int EnergyPoint { get; set; }
 
         /// <summary>
+        /// 로봇의 최대 에너지입니다.
+        /// </summary>
+        public abstract int MaxEnergyPoint { get; set; }
+
+        /// <summary>
         /// 로봇의 방어력입니다.
         /// </summary>
         public abstract int ArmorPoint { get; set; }
 
         /// <summary>
+        /// 로봇의 최대 방어력입니다.
+        /// </summary>
+        public abstract int MaxArmorPoint { get; set; }
+
+        /// <summary>
         /// 로봇의 공격력입니다.
         /// </summary>
         public abstract int AttackPoint { get; set; }
+
+        /// <summary>
+        /// 로봇의 최대 공격력입니다.
+        /// </summary>
+        public abstract int MaxAttackPoint { get; set; }
 
         /// <summary>
         /// 로봇이 앞이나 뒤로 일정한 수의 셀을 이동합니다.
@@ -116,9 +136,19 @@ namespace CodingStrategy.Entities.Robot
         public abstract UnityEvent<IRobotDelegate, int, int> OnHealthPointChange { get; }
 
         /// <summary>
+        /// 로봇의 최대 체력이 변할 때 발생하는 이벤트입니다.
+        /// </summary>
+        public abstract UnityEvent<IRobotDelegate, int, int> OnMaxHealthPointChange { get; }
+
+        /// <summary>
         /// 로봇의 에너지가 변할 때 발생하는 이벤트입니다.
         /// </summary>
         public abstract UnityEvent<IRobotDelegate, int, int> OnEnergyPointChange { get; }
+
+        /// <summary>
+        /// 로봇의 최대 에너지가 변할 때 발생하는 이벤트입니다.
+        /// </summary>
+        public abstract UnityEvent<IRobotDelegate, int, int> OnMaxEnergyPointChange { get; }
 
         /// <summary>
         /// 로봇의 방어력이 변할 때 발생하는 이벤트입니다.
@@ -126,8 +156,18 @@ namespace CodingStrategy.Entities.Robot
         public abstract UnityEvent<IRobotDelegate, int, int> OnArmorPointChange { get; }
 
         /// <summary>
+        /// 로봇의 최대 방어력이 변할 때 발생하는 이벤트입니다.
+        /// </summary>
+        public abstract UnityEvent<IRobotDelegate, int, int> OnMaxArmorPointChange { get; }
+
+        /// <summary>
         /// 로봇의 공격력이 변할 때 발생하는 이벤트입니다.
         /// </summary>
         public abstract UnityEvent<IRobotDelegate, int, int> OnAttackPointChange { get; }
+        
+        /// <summary>
+        /// 로봇의 최대 공격력이 변할 때 발생하는 이벤트입니다.
+        /// </summary>
+        public abstract UnityEvent<IRobotDelegate, int, int> OnMaxAttackPointChange { get; }
     }
 }

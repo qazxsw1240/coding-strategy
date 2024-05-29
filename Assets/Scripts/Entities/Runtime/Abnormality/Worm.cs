@@ -4,10 +4,12 @@
 namespace CodingStrategy.Entities.Runtime.Abnormality
 {
     using Robot;
+    using Player;
     public class Worm : AbstractAbnormality
     {
         public new static readonly string Name = "웜";
-        public Worm(IRobotDelegate robotDelegate) : base(Name, robotDelegate)
+        public Worm(IRobotDelegate robotDelegate, int value=0)
+        :base(Name, robotDelegate, value)
         {
         }
 

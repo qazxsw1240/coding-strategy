@@ -4,10 +4,12 @@
 namespace CodingStrategy.Entities.Runtime.Abnormality
 {
     using Robot;
+    using Player;
     public class Spyware : AbstractAbnormality
     {
         public new static readonly string Name = "스파이웨어";
-        public Spyware(IRobotDelegate robotDelegate) : base(Name, robotDelegate)
+        public Spyware(IRobotDelegate robotDelegate, int value=0)
+        :base(Name, robotDelegate, value)
         {
         }
 
@@ -35,7 +37,8 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
 
         public override void Execute()
         {
-            return;
+            if(_value <= 0)
+                return;
         }
     }
 }

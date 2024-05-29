@@ -26,17 +26,25 @@ namespace CodingStrategy.Entities.Robot
         private readonly IAlgorithm _algorithm;
 
         private int _healthPoint;
+        private int _maxHealthPoint;
         private int _energyPoint;
+        private int _maxEnergyPoint;
         private int _armorPoint;
+        private int _maxArmorPoint;
         private int _attackPoint;
+        private int _maxAttackPoint;
 
         private readonly UnityEvent<IRobotDelegate, Coordinate, Coordinate> _robotChangePositionEvents;
         private readonly UnityEvent<IRobotDelegate, RobotDirection, RobotDirection> _robotChangeDirectionEvents;
         private readonly UnityEvent<IRobotDelegate, IList<Coordinate>> _robotAttackEvents;
         private readonly UnityEvent<IRobotDelegate, int, int> _healthPointChangeEvents;
+        private readonly UnityEvent<IRobotDelegate, int, int> _maxHealthPointChangeEvents;
         private readonly UnityEvent<IRobotDelegate, int, int> _energyPointChangeEvents;
+        private readonly UnityEvent<IRobotDelegate, int, int> _maxEnergyPointChangeEvents;
         private readonly UnityEvent<IRobotDelegate, int, int> _armorPointChangeEvents;
+        private readonly UnityEvent<IRobotDelegate, int, int> _maxArmorPointChangeEvents;
         private readonly UnityEvent<IRobotDelegate, int, int> _attackPointChangeEvents;
+        private readonly UnityEvent<IRobotDelegate, int, int> _maxAttackPointChangeEvents;
 
         public RobotDelegateImpl(
             string id,
@@ -45,22 +53,34 @@ namespace CodingStrategy.Entities.Robot
             int healthPoint,
             int energyPoint,
             int armorPoint,
-            int attackPoint)
+            int attackPoint,
+            int maxHealthPoint = 5,
+            int maxEnergyPoint = 10,
+            int maxArmorPoint = 5,
+            int maxAttackPoint = 5)
         {
             _id = id;
             _boardDelegate = boardDelegate;
             _algorithm = algorithm;
             _healthPoint = healthPoint;
+            _maxHealthPoint = maxHealthPoint;
             _energyPoint = energyPoint;
+            _maxEnergyPoint = maxEnergyPoint;
             _armorPoint = armorPoint;
+            _maxArmorPoint = maxArmorPoint;
             _attackPoint = attackPoint;
+            _maxAttackPoint = maxAttackPoint;
             _robotChangePositionEvents = new UnityEvent<IRobotDelegate, Coordinate, Coordinate>();
             _robotChangeDirectionEvents = new UnityEvent<IRobotDelegate, RobotDirection, RobotDirection>();
             _robotAttackEvents = new UnityEvent<IRobotDelegate, IList<Coordinate>>();
             _healthPointChangeEvents = new UnityEvent<IRobotDelegate, int, int>();
+            _maxHealthPointChangeEvents = new UnityEvent<IRobotDelegate, int, int>();
             _energyPointChangeEvents = new UnityEvent<IRobotDelegate, int, int>();
+            _maxEnergyPointChangeEvents = new UnityEvent<IRobotDelegate, int, int>();
             _armorPointChangeEvents = new UnityEvent<IRobotDelegate, int, int>();
+            _maxArmorPointChangeEvents = new UnityEvent<IRobotDelegate, int, int>();
             _attackPointChangeEvents = new UnityEvent<IRobotDelegate, int, int>();
+            _maxAttackPointChangeEvents = new UnityEvent<IRobotDelegate, int, int>();
 
             _boardDelegate.OnRobotChangePosition.AddListener(InvokeRobotChangePositionEvents);
             _boardDelegate.OnRobotChangeDirection.AddListener(InvokeRobotChangeDirectionEvents);
@@ -91,7 +111,22 @@ namespace CodingStrategy.Entities.Robot
             {
                 int previousHealthPoint = _healthPoint;
                 _healthPoint = value;
+                if(_healthPoint > _maxHealthPoint)
+                {
+                    _healthPoint = _maxHealthPoint;
+                }
                 _healthPointChangeEvents.Invoke(this, previousHealthPoint, _healthPoint);
+            }
+        }
+
+        public int MaxHealthPoint
+        {
+            get => _maxHealthPoint;
+            set
+            {
+                int previousMaxHealthPoint = _maxHealthPoint;
+                _maxHealthPoint = value;
+                _maxHealthPointChangeEvents.Invoke(this, previousMaxHealthPoint, _maxHealthPoint);
             }
         }
 
@@ -102,7 +137,22 @@ namespace CodingStrategy.Entities.Robot
             {
                 int previousEnergyPoint = _energyPoint;
                 _energyPoint = value;
+                if(_energyPoint > _maxEnergyPoint)
+                {
+                    _energyPoint = _maxEnergyPoint;
+                }
                 _energyPointChangeEvents.Invoke(this, previousEnergyPoint, _energyPoint);
+            }
+        }
+
+        public int MaxEnergyPoint
+        {
+            get => _maxEnergyPoint;
+            set
+            {
+                int previousMaxEnergyPoint = _maxEnergyPoint;
+                _maxEnergyPoint = value;
+                _maxEnergyPointChangeEvents.Invoke(this, previousMaxEnergyPoint, _maxEnergyPoint);
             }
         }
 
@@ -113,7 +163,22 @@ namespace CodingStrategy.Entities.Robot
             {
                 int previousArmorPoint = _armorPoint;
                 _armorPoint = value;
+                if(_armorPoint > _maxArmorPoint)
+                {
+                    _armorPoint = _maxArmorPoint;
+                }
                 _armorPointChangeEvents.Invoke(this, previousArmorPoint, _armorPoint);
+            }
+        }
+
+        public int MaxArmorPoint
+        {
+            get => _maxArmorPoint;
+            set
+            {
+                int previousMaxArmorPoint = _maxArmorPoint;
+                _maxArmorPoint = value;
+                _maxArmorPointChangeEvents.Invoke(this, previousMaxArmorPoint, _maxArmorPoint);
             }
         }
 
@@ -124,10 +189,25 @@ namespace CodingStrategy.Entities.Robot
             {
                 int previousAttackPoint = _attackPoint;
                 _attackPoint = value;
+                if(_attackPoint > _maxAttackPoint)
+                {
+                    _attackPoint = _maxAttackPoint;
+                }
                 _attackPointChangeEvents.Invoke(this, previousAttackPoint, _attackPoint);
             }
         }
 
+        public int MaxAttackPoint
+        {
+            get => _maxAttackPoint;
+            set
+            {
+                int previousMaxAttackPoint = _maxAttackPoint;
+                _maxAttackPoint = value;
+                _maxAttackPointChangeEvents.Invoke(this, previousMaxAttackPoint, _maxAttackPoint);
+            }
+        }
+        
         public bool Move(int count)
         {
             Coordinate vector = Vectors[(int) Direction];
@@ -201,11 +281,19 @@ namespace CodingStrategy.Entities.Robot
 
         public UnityEvent<IRobotDelegate, int, int> OnHealthPointChange => _healthPointChangeEvents;
 
+        public UnityEvent<IRobotDelegate, int, int> OnMaxHealthPointChange => _maxHealthPointChangeEvents;
+
         public UnityEvent<IRobotDelegate, int, int> OnEnergyPointChange => _energyPointChangeEvents;
+
+        public UnityEvent<IRobotDelegate, int, int> OnMaxEnergyPointChange => _maxEnergyPointChangeEvents;
 
         public UnityEvent<IRobotDelegate, int, int> OnArmorPointChange => _armorPointChangeEvents;
 
+        public UnityEvent<IRobotDelegate, int, int> OnMaxArmorPointChange => _maxArmorPointChangeEvents;
+
         public UnityEvent<IRobotDelegate, int, int> OnAttackPointChange => _attackPointChangeEvents;
+
+        public UnityEvent<IRobotDelegate, int, int> OnMaxAttackPointChange => _maxArmorPointChangeEvents;
 
         private void InvokeRobotChangePositionEvents(IRobotDelegate robotDelegate, Coordinate previousPosition,
             Coordinate newPosition)

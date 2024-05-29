@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using CodingStrategy.Entities.Robot;
 using CodingStrategy.Entities.Runtime;
 using CodingStrategy.Entities.Runtime.CommandImpl;
+using UnityEngine;
 
 namespace CodingStrategy.Entities
 {
@@ -54,6 +55,7 @@ namespace CodingStrategy.Entities
             _commandBuilder.Clear();
             if(robotDelegate.EnergyPoint<_energyPoint)
             {
+                Debug.LogFormat("Energy is insufficient. Robot Id:{0}", robotDelegate.Id);
                 return _commandBuilder.Build();
             }
             robotDelegate.EnergyPoint-=_energyPoint;

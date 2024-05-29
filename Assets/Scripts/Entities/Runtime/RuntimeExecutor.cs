@@ -14,6 +14,7 @@ namespace CodingStrategy.Entities.Runtime
     using Board;
     using Player;
     using Robot;
+    using Abnormality;
 
     public class RuntimeExecutor : LifeCycleMonoBehaviourBase, ILifeCycle
     {
@@ -161,6 +162,12 @@ namespace CodingStrategy.Entities.Runtime
                 robotStatementExecutor.OnStatementExecuteEvents.AddListener(AddCurrencyOnMove());
                 yield return AwaitLifeCycleCoroutine(robotStatementExecutor);
                 Destroy(robotStatementExecutor);
+
+                IDictionary<string, IAbnormality> abnormalities = GameManager.GetAbnormalities();
+                foreach(IAbnormality abnormality in abnormalities.Values)
+                {
+                    abnormality.Execute();
+                }
 
                 BitDispenser.ClearTakenBits();
             }

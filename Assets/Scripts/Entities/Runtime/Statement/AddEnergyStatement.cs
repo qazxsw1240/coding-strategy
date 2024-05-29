@@ -20,7 +20,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _robotDelegate.EnergyPoint+=_energyPoint;
         }
 
-        public override StatementPhase Phase => StatementPhase.Move;
+        public override StatementPhase Phase => StatementPhase.Static;
 
         public override IStatement Reverse => new AddEnergyStatement(_robotDelegate, -_energyPoint);
     }
