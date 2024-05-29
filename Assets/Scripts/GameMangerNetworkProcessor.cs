@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using CodingStrategy.Entities;
 using CodingStrategy.Entities.Player;
+using CodingStrategy.Entities.Runtime.CommandImpl;
 using CodingStrategy.Network;
 using ExitGames.Client.Photon;
 using Photon.Pun;
@@ -105,6 +106,11 @@ namespace CodingStrategy
                 string[] args = token.Split('-');
                 string id = args[0];
                 int enhancedLevel = int.Parse(args[1]);
+                if (id == "0")
+                {
+                    commands[i] = new EmptyCommand();
+                    continue;
+                }
                 ICommand command = PhotonPlayerCommandCache.GetCachedCommands()[id].Copy();
                 command.Info.EnhancedLevel = enhancedLevel;
                 commands[i] = command;
