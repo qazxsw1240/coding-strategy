@@ -7045,6 +7045,22 @@ PrefabInstance:
       propertyPath: inGameUI
       value: 
       objectReference: {fileID: 1390008034}
+    - target: {fileID: 8828640577791461959, guid: fc60ece958d742a4baae6c8805dbee6c, type: 3}
+      propertyPath: robotPrefabs.Array.data[0]
+      value: 
+      objectReference: {fileID: 2702004988715988200, guid: ee6db700f4d38ba4fa5445139d260953, type: 3}
+    - target: {fileID: 8828640577791461959, guid: fc60ece958d742a4baae6c8805dbee6c, type: 3}
+      propertyPath: robotPrefabs.Array.data[1]
+      value: 
+      objectReference: {fileID: 7218633729975388582, guid: c5f2a1b4f0dba06459a9218bba65d0c4, type: 3}
+    - target: {fileID: 8828640577791461959, guid: fc60ece958d742a4baae6c8805dbee6c, type: 3}
+      propertyPath: robotPrefabs.Array.data[2]
+      value: 
+      objectReference: {fileID: 2293475918468989177, guid: 3722eb1738db96c4dbe7feb7c8372b40, type: 3}
+    - target: {fileID: 8828640577791461959, guid: fc60ece958d742a4baae6c8805dbee6c, type: 3}
+      propertyPath: robotPrefabs.Array.data[3]
+      value: 
+      objectReference: {fileID: 2302543666404916990, guid: 525e39fcdbe39574987255130ae1796b, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fc60ece958d742a4baae6c8805dbee6c, type: 3}
 --- !u!1 &910154082
@@ -16811,7 +16827,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2644432175534134307}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9991454
+  m_Size: 0.9999979
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -18839,7 +18855,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -870.0222, y: 0}
+  m_AnchoredPosition: {x: -870.0225, y: 0}
   m_SizeDelta: {x: 1740.045, y: 250}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!1 &3808750195988157148
