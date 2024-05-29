@@ -40,14 +40,14 @@ namespace CodingStrategy.UI.InGame
 
         public void GotoShop()
         {
-            Debug.Log("GotoShop");
+            //Debug.Log("GotoShop");
             StopScroll();
             direction = 1;
         }
 
         public void GotoGame()
         {
-            Debug.Log("GotoGame");
+            //Debug.Log("GotoGame");
             StopScroll();
             direction = -1;
         }
