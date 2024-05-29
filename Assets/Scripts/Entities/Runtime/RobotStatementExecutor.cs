@@ -143,10 +143,12 @@ namespace CodingStrategy.Entities.Runtime
 
             foreach (IRobotDelegate robotDelegate in _problematicRobots)
             {
-                IExecutionQueue executionQueue = Context.ExecutionQueuePool[robotDelegate];
-                if (executionQueue.Count == 0)
+                if (Context.ExecutionQueuePool.TryGetValue(robotDelegate, out IExecutionQueue executionQueue))
                 {
-                    Context.ExecutionQueuePool.Remove(robotDelegate);
+                    if (executionQueue.Count == 0)
+                    {
+                        Context.ExecutionQueuePool.Remove(robotDelegate);
+                    }
                 }
             }
 
