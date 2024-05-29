@@ -27,7 +27,7 @@ namespace CodingStrategy.Entities.Runtime
         public GameManager GameManager { get; set; } = null!;
         public RuntimeExecutorContext Context { get; set; } = null!;
 
-        public UnityEvent<IRobotDelegate, IPlayerDelegate,  IStatement> OnStatementExecuteEvents { get; } =
+        public UnityEvent<IRobotDelegate, IPlayerDelegate, IStatement> OnStatementExecuteEvents { get; } =
             new UnityEvent<IRobotDelegate, IPlayerDelegate, IStatement>();
 
         public void Awake()
@@ -83,7 +83,7 @@ namespace CodingStrategy.Entities.Runtime
                 return true;
             }
 
-            foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in  Context.ExecutionQueuePool)
+            foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in Context.ExecutionQueuePool)
             {
                 if (invalidRobots.Contains(robotDelegate))
                 {
@@ -132,9 +132,12 @@ namespace CodingStrategy.Entities.Runtime
 
             foreach (IRobotDelegate robotDelegate in invalidRobots)
             {
-                IExecutionQueue executionQueue = Context.ExecutionQueuePool[robotDelegate];
-                Stack<IStatement> statements = _statements[robotDelegate];
-                RollbackCommands(executionQueue, statements);
+                if (Context.ExecutionQueuePool.TryGetValue(robotDelegate, out IExecutionQueue executionQueue))
+                {
+                    Stack<IStatement> statements = _statements[robotDelegate];
+                    RollbackCommands(executionQueue, statements);
+                }
+
                 _problematicRobots.Add(robotDelegate);
             }
 
