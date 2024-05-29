@@ -61,7 +61,15 @@ namespace CodingStrategy
                 AttachPlayerStatusSynchronizer(playerDelegate, playerStatusUI);
                 playerStatusUI.OnPlayerUIClickEvent.AddListener(() =>
                 {
+                    Player photonPlayer = PhotonNetwork.CurrentRoom.Players
+                        .Select(pair => pair.Value)
+                        .First(player => player.UserId == playerDelegate.Id);
                     RobotStatusUI robotStatusUI = GameManager.inGameUI.statusUI.GetComponent<RobotStatusUI>();
+                    robotStatusUI.SetName(photonPlayer.NickName);
+                    robotStatusUI.State.text = "상태 이상: " + string.Join(",  ", GameManager.GetAbnormalities()
+                        .Where(pair => pair.Key.StartsWith(playerDelegate.Id))
+                        .Select(pair => pair.Value)
+                        .Select(abnormality => abnormality.Name));
                     robotStatusUI.SetCommandList(playerDelegate.Algorithm.ToArray());
                 });
             }

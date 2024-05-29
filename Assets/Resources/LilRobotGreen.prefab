@@ -286,6 +286,7 @@ GameObject:
   - component: {fileID: 2135240575905392528}
   - component: {fileID: 6524024162003032478}
   - component: {fileID: 8994519565409197764}
+  - component: {fileID: 9172272303898321381}
   m_Layer: 0
   m_Name: LilRobotGreen
   m_TagString: Player
@@ -357,6 +358,25 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &9172272303898321381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2293475918468989177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0cabec16e3500f47bfb21ec1775ac05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statements:
+  - {fileID: 6269780612941323719}
+  - {fileID: 545564049149619448}
+  - {fileID: 6269780612941323719}
+  - {fileID: 6269780612941323719}
+  - {fileID: 6269780612941323719}
+  - {fileID: 6269780612941323719}
 --- !u!1 &2384518472051494923
 GameObject:
   m_ObjectHideFlags: 0
@@ -1174,6 +1194,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 3532336549614167548, guid: b90b5e664a77f6f49915f79222ca88de, type: 3}
   m_PrefabInstance: {fileID: 2056208107310365016}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6269780612941323719 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5443623102195737759, guid: b90b5e664a77f6f49915f79222ca88de, type: 3}
+  m_PrefabInstance: {fileID: 2056208107310365016}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &9075072291029633491
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1275,6 +1306,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1f67c95a37acf7243a41462cf96873ce, type: 3}
+--- !u!114 &545564049149619448 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8818920765031621931, guid: 1f67c95a37acf7243a41462cf96873ce, type: 3}
+  m_PrefabInstance: {fileID: 9075072291029633491}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &7796585255257737394 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1279632325312790881, guid: 1f67c95a37acf7243a41462cf96873ce, type: 3}
