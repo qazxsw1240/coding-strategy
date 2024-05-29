@@ -188,7 +188,7 @@ namespace CodingStrategy
             Player targetPlayer,
             ExitGames.Client.Photon.Hashtable changedProps)
         {
-            Debug.Log(string.Join(", ", targetPlayer.CustomProperties.ToList()));
+            Debug.Log(targetPlayer.NickName + ": " + string.Join(", ", targetPlayer.CustomProperties.ToList()));
         }
 
         public override void OnRoomListUpdate(List<RoomInfo> roomList)

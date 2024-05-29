@@ -108,13 +108,14 @@ namespace CodingStrategy
             IPlayerDelegate playerDelegate,
             PlayerStatusUI playerStatusUI)
         {
-            return (_, next) =>
+            return (previous, next) =>
             {
                 if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
                 {
                     return;
                 }
 
+                Debug.LogFormat("{2} HP change event occurred: {0}->{1}", previous, next, playerDelegate.Id);
                 int validPlayerHp = GetValidPlayerHp(next);
                 playerStatusUI.SetPlayerHP(validPlayerHp);
             };
@@ -123,7 +124,7 @@ namespace CodingStrategy
 
         private UnityAction<int, int> GetPlayerExpUpdater(IPlayerDelegate playerDelegate, PlayerStatusUI playerStatusUI)
         {
-            return (_, next) =>
+            return (previous, next) =>
             {
                 if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
                 {
@@ -142,6 +143,7 @@ namespace CodingStrategy
                     return;
                 }
 
+                Debug.LogFormat("{2} exp change event occurred: {0}->{1}", previous, next, playerDelegate.Id);
                 GameManager.inGameUI.shopUi.SetExp(next, RequiredExp[playerDelegate.Level]);
             };
         }
@@ -149,7 +151,7 @@ namespace CodingStrategy
 
         private UnityAction<int, int> GetPlayerLevelUpdater(IPlayerDelegate playerDelegate)
         {
-            return (_, next) =>
+            return (previous, next) =>
             {
                 if (playerDelegate != GameManagerUtil.LocalPhotonPlayerDelegate)
                 {
@@ -163,6 +165,7 @@ namespace CodingStrategy
                 GameManager.inGameUI.shopUi.SetShopLevel(next);
                 ICommand[] commands = algorithm.AsArray();
                 Debug.Log(string.Join(", ", (IEnumerable<ICommand>) commands));
+                Debug.LogFormat("{2} level change event occurred: {0}->{1}", previous, next, playerDelegate.Id);
                 GameManager.inGameUI.shopUi.SetMyCommandList(commands);
                 NetworkProcessor.NotifyLocalPlayerDelegateAlgorithmChange();
             };
