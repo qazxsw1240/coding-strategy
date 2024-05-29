@@ -23,6 +23,8 @@ namespace CodingStrategy.Entities.Animations
         public SpriteRenderer[] childSprites; // 자식 스프라이트
         private static readonly int Surface = Shader.PropertyToID("_Surface");
 
+        private SoundManager soundManager; // 사운드
+
         private void Awake()
         {
             // shader = Shader.Find("Universal Render Pipeline/Lit");
@@ -58,8 +60,14 @@ namespace CodingStrategy.Entities.Animations
             // Sequence를 시작합니다.
             yield return sequence.WaitForCompletion();
 
-            // 카메라 흔들기 애니메이션
+            // 위에서 떨어졌을 때 사운드
+            soundManager = FindObjectOfType<SoundManager>();
+            soundManager.Init();
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_BadSctor_Sound");
+            soundManager.Play(effectClip, Sound.Effect, 1.0f);
+            Debug.Log("Badsector landed sound is comming out!");
 
+            // 카메라 흔들기 애니메이션
             yield return camera.DOShakePosition(shakeDuration, shakeStrength, shakeVibrato).WaitForCompletion();
 
             Debug.Log("Bad sector install animation ended.");
@@ -97,6 +105,13 @@ namespace CodingStrategy.Entities.Animations
             // 알파값을 천천히 0으로 변경합니다
             // 애니메이션이 끝나면 자동으로 Destroy(gameObject)를 호출합니다
             GetComponent<MeshRenderer>().material.DOFade(0, duration).SetEase(Ease.OutCubic);
+
+            // 사운드 배드섹터 밟고 사라졌을 때 사운드
+            soundManager = FindObjectOfType<SoundManager>();
+            soundManager.Init();
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_BadscetorActivate_Sound");
+            soundManager.Play(effectClip, Sound.Effect, 1.0f);
+            Debug.Log("Badsector activate sound is comming out!");
 
             foreach (SpriteRenderer sprite in childSprites)
             {

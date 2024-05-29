@@ -30,6 +30,8 @@ namespace CodingStrategy.Entities.Animations
         LilboStatment lilboStatment;
         public Image[] statements;
 
+        private SoundManager soundManager; // 사운드
+
         public void Start()
         {
             lilboStatment = gameObject.GetComponent<LilboStatment>();
@@ -53,6 +55,13 @@ namespace CodingStrategy.Entities.Animations
 
             // 현재 객체를 (x, y, z) 위치로 speed 속도로 이동합니다. 그러니까,
             Vector3 targetPosition = new Vector3(x, transform.position.y, z);
+
+            // 캐릭터가 걸을 때 나는 소리. 단, 이 코드는 한 발자국 이동했을 때 사운드만 들림.
+            soundManager = FindObjectOfType<SoundManager>();
+            soundManager.Init();
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_CharacterWalk_Sound");
+            soundManager.Play(effectClip, Sound.Effect, 1.0f);
+            Debug.Log("Character walk sound is comming out!");
 
 
             // DoTween의 DoMove 함수를 사용하여 이동합니다.
@@ -99,6 +108,13 @@ namespace CodingStrategy.Entities.Animations
         public IEnumerator AttackRightAnimationCoroutine()
         {
             animator.SetTrigger(Attack1);
+            // 오른손 어퍼컷 사운드. 왼손과 동일
+            soundManager = FindObjectOfType<SoundManager>();
+            soundManager.Init();
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_RobotAttacked_Sound");
+            soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
+            Debug.Log("Robot Attacked sound is comming out!");
+
             yield return new WaitForSeconds(1); // 1초 대기
             animator.ResetTrigger(Attack1);
         }
@@ -107,6 +123,13 @@ namespace CodingStrategy.Entities.Animations
         public IEnumerator AttackLeftAnimationCoroutine()
         {
             animator.SetTrigger(Attack2);
+            // 왼손 어퍼컷 사운드. 오른손과 동일
+            soundManager = FindObjectOfType<SoundManager>();
+            soundManager.Init();
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_RobotAttacked_Sound");
+            soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
+            Debug.Log("Robot Attacked sound is comming out!");
+
             yield return new WaitForSeconds(1); // 1초 대기
             animator.ResetTrigger(Attack2);
         }
@@ -119,6 +142,12 @@ namespace CodingStrategy.Entities.Animations
         public IEnumerator DeathAnimationCoroutine()
         {
             animator.SetTrigger(Death);
+            // 죽고 나오는 사운드 GameScene_RobotDeath_Sound
+            soundManager = FindObjectOfType<SoundManager>();
+            soundManager.Init();
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_RobotDeath_Sound");
+            soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
+            Debug.Log("Robot death sound is comming out!");
 
             playerCamera.DOShakePosition(1, 3);
             yield return new WaitForSeconds(1); // 1초 대기
@@ -134,6 +163,14 @@ namespace CodingStrategy.Entities.Animations
         public IEnumerator HitAnimationCoroutine()
         {
             animator.SetTrigger(Hit);
+
+            // 피격당하고 나오는 사운드
+            soundManager = FindObjectOfType<SoundManager>();
+            soundManager.Init();
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_GotAttacked_Sound");
+            soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
+            Debug.Log("GetAttacked sound is comming out!");
+
             playerCamera.DOShakePosition(1, 1);
             yield return new WaitForSeconds(1); // 1초 대기
             animator.ResetTrigger(Hit);

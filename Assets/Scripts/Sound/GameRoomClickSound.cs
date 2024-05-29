@@ -59,7 +59,7 @@ public class GameRoomClickSound : MonoBehaviour
 
         // 효과음을 불러오고 재생합니다.
         AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameRoom_GameStartSound");
-        soundManager.Play(effectClip, Sound.Effect, 1.0f);
+        soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
         Debug.Log("GameStart button sound is comming out!");
     }
 
