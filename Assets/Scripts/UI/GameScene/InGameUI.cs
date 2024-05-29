@@ -1,5 +1,4 @@
 using CodingStrategy.UI.Shop;
-using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -58,6 +57,10 @@ namespace CodingStrategy.UI.InGame
         void Update()
         {
             shopScrollRect.horizontalNormalizedPosition += direction * Time.deltaTime / time;
+            if (shopScrollRect.GetComponent<ShopScroll>().isScrolling)
+            {
+                return;
+            }
             if (shopScrollRect.horizontalNormalizedPosition < 0.01f)
             {
                 shopScrollRect.StopMovement();
@@ -72,6 +75,17 @@ namespace CodingStrategy.UI.InGame
                 shopScrollRect.enabled = true;
                 direction = 0;
             }
+            else if (MathF.Abs(shopScrollRect.velocity.x) < 100.0f)
+            {
+                if (shopScrollRect.horizontalNormalizedPosition < 0.5f)
+                {
+                    GotoGame();
+                }
+                else
+                {
+                    GotoShop();
+                }
+            };
         }
     }
 }
