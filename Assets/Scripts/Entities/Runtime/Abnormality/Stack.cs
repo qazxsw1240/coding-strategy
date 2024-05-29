@@ -4,10 +4,12 @@
 namespace CodingStrategy.Entities.Runtime.Abnormality
 {
     using Robot;
+    using Player;
     public class Stack : AbstractAbnormality
     {
         public new static readonly string Name = "스택";
-        public Stack(IRobotDelegate robotDelegate) : base(Name, robotDelegate)
+        public Stack(IRobotDelegate robotDelegate, int value=0)
+        :base(Name, robotDelegate, value)
         {
         }
         public override int Value
@@ -35,7 +37,8 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
 
         public override void Execute()
         {
-            return;
+            if(_value <= 0)
+                return;
         }
     }
 }

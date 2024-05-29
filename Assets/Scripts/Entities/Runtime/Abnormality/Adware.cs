@@ -3,11 +3,13 @@
 
 namespace CodingStrategy.Entities.Runtime.Abnormality
 {
+    using CodingStrategy.Entities.Player;
     using Robot;
     public class Adware : AbstractAbnormality
     {
         public new static readonly string Name = "애드웨어";
-        public Adware(IRobotDelegate robotDelegate) : base(Name, robotDelegate)
+        public Adware(IRobotDelegate robotDelegate, IPlayerDelegate playerDelegate, int value=0)
+        :base(Name, robotDelegate, playerDelegate, value)
         {
         }
         public override int Value
