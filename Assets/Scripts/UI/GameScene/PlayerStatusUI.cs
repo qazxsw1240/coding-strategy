@@ -45,6 +45,11 @@ namespace CodingStrategy.UI.InGame
             image.color = color;
         }
 
+        public string GetRank()
+        {
+            return Rank.text;
+        }
+
         public void SetRank(int rank)
         {
             switch (rank)
@@ -64,7 +69,12 @@ namespace CodingStrategy.UI.InGame
             }
         }
 
-        public void SetName(string name)
+		public string GetName()
+		{
+			return Name.text;
+		}
+
+		public void SetName(string name)
         {
             Name.text = name;
         }
