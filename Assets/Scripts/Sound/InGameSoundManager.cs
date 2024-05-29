@@ -6,8 +6,8 @@ public class InGameSoundManager : MonoBehaviour
 {
     private SoundManager soundManager;
 
-    // PlayerInfo ¶Ç´Â PlayerColor¸¦ Å¬¸¯ÇßÀ» ¶§ ¼Ò¸®(RobotStatus º¸ÀÏ ¶§ ¼Ò¸®)
-    // RobotStatus ´İ±â ¼Ò¸®°¡ ±¸ÇöµÇÁö ¾ÊÀ½.
+    // PlayerInfo ë˜ëŠ” PlayerColorë¥¼ í´ë¦­í–ˆì„ ë•Œ ì†Œë¦¬(RobotStatus ë³´ì¼ ë•Œ ì†Œë¦¬)
+    // RobotStatus ë‹«ê¸° ì†Œë¦¬ê°€ êµ¬í˜„ë˜ì§€ ì•ŠìŒ.
     public void RobotStatus()
     {
         StartCoroutine(RobotStatusSound(0));
@@ -19,13 +19,13 @@ public class InGameSoundManager : MonoBehaviour
         soundManager = FindObjectOfType<SoundManager>();
         soundManager.Init();
 
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
+        // íš¨ê³¼ìŒì„ ë¶ˆëŸ¬ì˜¤ê³  ì¬ìƒí•©ë‹ˆë‹¤.
         AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_RobotStatus_Sound");
         soundManager.Play(effectClip, Sound.Effect, 1.0f);
         Debug.Log("PlayerInfo or PlayerColor is clicked!");
     }
 
-    // ÄÚÀÎ ¸ÔÀ» ¶§ ¼Ò¸®. ±¸Çö ÇØ¾ßÇÔ.
+    // ì½”ì¸ ë¨¹ì„ ë•Œ ì†Œë¦¬. êµ¬í˜„ í•´ì•¼í•¨.
     public IEnumerator GetCoinSound(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -33,13 +33,13 @@ public class InGameSoundManager : MonoBehaviour
         soundManager = FindObjectOfType<SoundManager>();
         soundManager.Init();
 
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
+        // íš¨ê³¼ìŒì„ ë¶ˆëŸ¬ì˜¤ê³  ì¬ìƒí•©ë‹ˆë‹¤.
         AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_GetCoin_Sound");
         soundManager.Play(effectClip, Sound.Effect, 1.0f);
         Debug.Log("Coin get sound is comming out!");
     }
 
-    // ÄÚÀÎ »ı¼ºµÉ ¶§ ¼Ò¸®. ±¸ÇöÇÏ¸é ÁÁÀ» °Í °°À½.
+    // ì½”ì¸ ìƒì„±ë  ë•Œ ì†Œë¦¬. êµ¬í˜„í•˜ë©´ ì¢‹ì„ ê²ƒ ê°™ìŒ.
     public void CoinSpawn()
     {
         StartCoroutine(CoinSpawnSound(0));
@@ -51,13 +51,13 @@ public class InGameSoundManager : MonoBehaviour
         soundManager = FindObjectOfType<SoundManager>();
         soundManager.Init();
 
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
+        // íš¨ê³¼ìŒì„ ë¶ˆëŸ¬ì˜¤ê³  ì¬ìƒí•©ë‹ˆë‹¤.
         AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_CoinSpawn_Sound");
         soundManager.Play(effectClip, Sound.Effect, 1.0f);
         Debug.Log("Coin spawn sound is comming out!");
     }
 
-    // ÄÚµùÅ¸ÀÓ Ä«¿îÆ® ´Ù¿î ¼Ò¸®. ±¸Çö ÇØ¾ßÇÔ
+    // ì½”ë”©íƒ€ì„ ì¹´ìš´íŠ¸ ë‹¤ìš´ ì†Œë¦¬. êµ¬í˜„ í•´ì•¼í•¨
     public void CodingTimeCountdown()
     {
         StartCoroutine(CodingTimeCountdownSound(0));
@@ -69,14 +69,14 @@ public class InGameSoundManager : MonoBehaviour
         soundManager = FindObjectOfType<SoundManager>();
         soundManager.Init();
 
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
+        // íš¨ê³¼ìŒì„ ë¶ˆëŸ¬ì˜¤ê³  ì¬ìƒí•©ë‹ˆë‹¤.
         AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_CodingTimeCountdown_Sound");
         soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
         Debug.Log("CodingTime countdown sound is comming out!");
     }
 
     /*
-    // ÅÏ ¹Ù²ğ ¶§ »ç¿îµå. ¾ø´Â°Ô ³ªÀ» °Í °°À½.
+    // í„´ ë°”ë€” ë•Œ ì‚¬ìš´ë“œ. ì—†ëŠ”ê²Œ ë‚˜ì„ ê²ƒ ê°™ìŒ.
     public IEnumerator GameTurnSound(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -84,7 +84,7 @@ public class InGameSoundManager : MonoBehaviour
         soundManager = FindObjectOfType<SoundManager>();
         soundManager.Init();
 
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
+        // íš¨ê³¼ìŒì„ ë¶ˆëŸ¬ì˜¤ê³  ì¬ìƒí•©ë‹ˆë‹¤.
         AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_GameTurnChanged_Sound");
         soundManager.Play(effectClip, Sound.Effect, 1.0f);
         Debug.Log("Gameturn sound is comming out!");
@@ -93,7 +93,7 @@ public class InGameSoundManager : MonoBehaviour
 
 
 
-    // ÄÚµùÅ¸ÀÓ ¸í·É¾î ¹èÄ¡ »ç¿îµå??
+    // ì½”ë”©íƒ€ì„ ëª…ë ¹ì–´ ë°°ì¹˜ ì‚¬ìš´ë“œ??
     // 
 
 
