@@ -72,6 +72,20 @@ namespace CodingStrategy.Entities.Runtime
                 {
                     RollbackCommands(executionQueue, statements);
                     _problematicRobots.Add(robotDelegate);
+                }
+            }
+
+            IList<IRobotDelegate> invalidRobots = Validator.GetInvalidRobots(Context.BoardDelegate);
+
+            if (invalidRobots.Count == 0)
+            {
+                return true;
+            }
+
+            foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in  Context.ExecutionQueuePool)
+            {
+                if (invalidRobots.Contains(robotDelegate))
+                {
                     continue;
                 }
 
@@ -90,6 +104,8 @@ namespace CodingStrategy.Entities.Runtime
                     continue;
                 }
 
+                Stack<IStatement> statements = _statements[robotDelegate];
+
                 badSectorDelegate.Remove();
                 statements.Clear();
                 executionQueue.Clear();
@@ -100,13 +116,6 @@ namespace CodingStrategy.Entities.Runtime
                 {
                     executionQueue.EnqueueFirst(s);
                 }
-            }
-
-            IList<IRobotDelegate> invalidRobots = Validator.GetInvalidRobots(Context.BoardDelegate);
-
-            if (invalidRobots.Count == 0)
-            {
-                return true;
             }
 
             foreach (IRobotDelegate robotDelegate in invalidRobots)
