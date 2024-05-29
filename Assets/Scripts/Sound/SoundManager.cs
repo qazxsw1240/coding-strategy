@@ -1,6 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public enum Sound
@@ -19,11 +19,80 @@ public class SoundManager : MonoBehaviour
     // 오디오 클립들을 저장할 딕셔너리
     private Dictionary<string, AudioClip> _audioClips = new Dictionary<string, AudioClip>();
 
+    public SceneChanger sceneChanger;
+    public InputField nicknameInputField;
+    public GameObject RoomEnterBtn;
 
-    private void Start()
+    private void Awake()
     {
         Init();
         DontDestroyOnLoad(this);
+    }
+
+    void Start()
+    {
+        // 씬 이름이 GameStartScene이라면
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (sceneName == "GameStartScene")
+        {
+            Init();
+
+            // SceneChanger 초기화
+            sceneChanger = FindObjectOfType<SceneChanger>();
+
+            if (sceneChanger == null)
+            {
+                GameObject sceneChangerObj = new GameObject("SceneChanger");
+                sceneChanger = sceneChangerObj.AddComponent<SceneChanger>();
+            }
+
+            // Bgm을 불러오고 재생합니다.
+            AudioClip BgmClip = Resources.Load<AudioClip>("Sound/Game_Play_Ost");
+            Play(BgmClip, Sound.Bgm, 1.0f, 0.1f);
+
+            // 닉네임 입력 필드의 이벤트에 리스너 추가
+            nicknameInputField.onValueChanged.AddListener(OnNicknameChanged);
+        }
+        // 씬 이름이 GameLobby라면
+        else if (sceneName == "GameLobby")
+        {
+            StartCoroutine(sceneChanger.SoundsVolumesUp("Sound/GameLobby_Sleepy Sunshine"));
+           
+            RoomEnterBtn = GameObject.Find("EnterRoom");
+            
+            Button EnterBtn = RoomEnterBtn.GetComponent<Button>();
+
+            EnterBtn.onClick.AddListener(OnStartButtonClick);
+        }
+        else if (sceneName == "GameRoom")
+        {
+            RoomEnterBtn = GameObject.Find("GameReadyBtn");
+
+            Button EnterBtn = RoomEnterBtn.GetComponent<Button>();
+
+            EnterBtn.onClick.AddListener(OnStartButtonClick);
+
+            GameObject chatInputField = GameObject.Find("ChatInputField");
+
+            nicknameInputField = chatInputField.GetComponent<InputField>();
+
+            nicknameInputField.onValueChanged.AddListener(OnNicknameChanged);
+        }
+    }
+
+    public void OnStartButtonClick()
+    {
+        // 효과음을 불러오고 재생합니다.
+        AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_Experience_Up");
+        Play(effectClip, Sound.Effect, 1.0f);
+        Debug.Log("Start button sound is comming out!");
+    }
+
+    private void OnNicknameChanged(string newNickname)
+    {
+        // 닉네임이 변경될 때마다 효과음 재생
+        AudioClip typingSoundClip = Resources.Load<AudioClip>("Sound/Keyboard_Click_Sound");
+        Play(typingSoundClip, Sound.Effect, 3.0f, 0.6f);
     }
 
     // 초기화
@@ -31,7 +100,7 @@ public class SoundManager : MonoBehaviour
     {
         GameObject root = GameObject.Find("@Sound");
 
-        if (root == null) 
+        if (root == null)
         {
             root = new GameObject { name = "@Sound" };
             Object.DontDestroyOnLoad(root); // Bgm을 씬마다 다르게 할거라면 주석처리 해야함.
@@ -52,7 +121,7 @@ public class SoundManager : MonoBehaviour
     public void Clear()
     {
         // 모든 오디오 소스 정지 및 클립 제거
-        foreach(AudioSource audioSource in _audioSources)
+        foreach (AudioSource audioSource in _audioSources)
         {
             audioSource.Stop();
             audioSource.clip = null;
@@ -65,13 +134,13 @@ public class SoundManager : MonoBehaviour
     // 오디오 클립 재생
     public void Play(AudioClip audioClip, Sound type = Sound.Effect, float pitch = 1.0f)
     {
-        if(audioClip == null)
+        if (audioClip == null)
         {
             Debug.LogWarning("AudioClip is null");
             return;
         }
 
-        if(type == Sound.Bgm)
+        if (type == Sound.Bgm)
         {
             AudioSource audioSource = _audioSources[(int)Sound.Bgm];
             if (audioSource.isPlaying) // BGM 중첩 방지
@@ -79,7 +148,7 @@ public class SoundManager : MonoBehaviour
 
             audioSource.pitch = pitch;
             audioSource.clip = audioClip;
-            audioSource.volume = 0.5f; // 볼륨 조절
+            //audioSource.volume = 0.5f; // 볼륨 조절
             audioSource.Play();
         }
 
@@ -128,8 +197,8 @@ public class SoundManager : MonoBehaviour
         AudioClip audioClip = GetorAddAudioClip(path, type);
         Play(audioClip, type, pitch);
     }
-    
-    
+
+
     // 오디오 클립 로드 또는 딕셔너리에서 검색
     public AudioClip GetorAddAudioClip(string path, Sound type = Sound.Effect)
     {
