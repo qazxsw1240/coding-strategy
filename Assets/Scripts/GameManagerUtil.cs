@@ -2,6 +2,7 @@
 
 
 using System;
+using System.Linq;
 using CodingStrategy.Entities;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
@@ -91,6 +92,11 @@ namespace CodingStrategy
 
                 return _localRobotDelegate;
             }
+        }
+
+        public bool HasRobotDelegate(string id)
+        {
+            return PlayerDelegatePool.Contains(id);
         }
 
         public IRobotDelegate GetRobotDelegateById(string id)
