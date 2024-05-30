@@ -30,6 +30,8 @@ namespace CodingStrategy.Entities.BadSector
 
         public Coordinate Position => _boardDelegate.GetPosition(this);
 
+        public abstract string Explanation { get; }
+
         public void Remove()
         {
             _boardDelegate.Remove(this);

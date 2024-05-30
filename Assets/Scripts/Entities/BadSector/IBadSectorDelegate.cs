@@ -9,6 +9,8 @@ namespace CodingStrategy.Entities.BadSector
 {
     public interface IBadSectorDelegate : IGameEntity, IPlaceable
     {
+        public abstract string Explanation { get; }
+        
         public abstract IRobotDelegate Installer { get; }
 
         public new abstract Coordinate Position { get; }

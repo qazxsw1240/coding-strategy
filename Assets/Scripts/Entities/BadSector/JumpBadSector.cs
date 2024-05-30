@@ -16,6 +16,8 @@ namespace CodingStrategy.Entities.BadSector
         {
         }
 
+        public override string Explanation => "발동시 바라보는 방향으로 1칸 이동합니다.";
+
         public override IList<IStatement> Execute(IRobotDelegate target)
         {
             _commandBuilder.Clear();
