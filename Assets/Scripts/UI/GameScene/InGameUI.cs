@@ -19,6 +19,7 @@ namespace CodingStrategy.UI.InGame
         public ScrollRect shopScrollRect;
         public static readonly float time = 0.2f;
         private int direction = 0;
+        public UnityEvent<string> OnBadSectorClickEvent;
 
         // set character visiblity, index: 0 ~ n-1(3)
         public void SetCharacterVisible(int index, bool visibility)

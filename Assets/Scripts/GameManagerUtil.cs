@@ -23,7 +23,7 @@ namespace CodingStrategy
 
         public void Awake()
         {
-            DontDestroyOnLoad(this);
+            // DontDestroyOnLoad(this);
         }
 
         public void InitializePlayersByPhoton()

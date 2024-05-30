@@ -11575,6 +11575,9 @@ MonoBehaviour:
   statusUI: {fileID: 2849131918818085009}
   shopUi: {fileID: 2644432177309334659}
   shopScrollRect: {fileID: 1945058741735951135}
+  OnBadSectorClickEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1416045142
 GameObject:
   m_ObjectHideFlags: 0
@@ -16043,6 +16046,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2135051858}
   - component: {fileID: 2135051859}
+  - component: {fileID: 2135051860}
   m_Layer: 0
   m_Name: AlwaysOnTop
   m_TagString: Untagged
@@ -16086,6 +16090,22 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   setCommandDetail: {fileID: 0}
+--- !u!114 &2135051860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2135051857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4920655c71ef6e4288f5085cacf7236, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnBadSectorClickEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  setBadSectorDetail: {fileID: 0}
 --- !u!1 &2146677692
 GameObject:
   m_ObjectHideFlags: 0
@@ -17404,7 +17424,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2644432175534134307}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9994806
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
