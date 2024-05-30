@@ -45,7 +45,14 @@ namespace CodingStrategy.Entities.Animations
             }
         }
 
-        public IEnumerator Walk(float speed, int x, int z)
+        private void Vibrate()
+		{
+        #if (UNITY_ANDROID || UNITY_IOS)
+            Handheld.Vibrate();
+        #endif
+		}
+
+		public IEnumerator Walk(float speed, int x, int z)
         {
             //speed의 값이 1에 가까우면 가까울수록 달리는 애니메이션이 틀어질거에요.
             //1이면 나루토 달리기, 0.5면 뚜방뚜방 걷기, 0이면 가만히 서있기를 실행합니다.
@@ -114,7 +121,7 @@ namespace CodingStrategy.Entities.Animations
             soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
             Debug.Log("Robot Attacked sound is comming out!");
 
-            Handheld.Vibrate();
+            Vibrate();
 
             yield return new WaitForSeconds(1); // 1초 대기
             animator.ResetTrigger(Attack1);
@@ -131,7 +138,7 @@ namespace CodingStrategy.Entities.Animations
             soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
             Debug.Log("Robot Attacked sound is comming out!");
 
-            Handheld.Vibrate();
+            Vibrate();
 
             yield return new WaitForSeconds(1); // 1초 대기
             animator.ResetTrigger(Attack2);
@@ -174,7 +181,7 @@ namespace CodingStrategy.Entities.Animations
             soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
             Debug.Log("GetAttacked sound is comming out!");
 
-            Handheld.Vibrate();
+            Vibrate();
 
             playerCamera.DOShakePosition(1, 1);
             yield return new WaitForSeconds(1); // 1초 대기
