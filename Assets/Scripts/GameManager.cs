@@ -165,16 +165,6 @@ namespace CodingStrategy
             }
         }
 
-        private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
-
-        public void Update()
-        {
-            if (_actions.TryDequeue(out Action action))
-            {
-                action();
-            }
-        }
-
         public override void OnConnectedToMaster()
         {
             TypedLobby lobby = new TypedLobby("coding-strategy", LobbyType.SqlLobby);
