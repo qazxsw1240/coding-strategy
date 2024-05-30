@@ -78,10 +78,10 @@ namespace CodingStrategy.Entities.Runtime
 
             IList<IRobotDelegate> invalidRobots = Validator.GetInvalidRobots(Context.BoardDelegate);
 
-            if (invalidRobots.Count == 0)
-            {
-                return true;
-            }
+            // if (invalidRobots.Count == 0)
+            // {
+            //     return true;
+            // }
 
             foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in Context.ExecutionQueuePool)
             {
@@ -92,31 +92,31 @@ namespace CodingStrategy.Entities.Runtime
 
                 // BadSector Check
 
+                Stack<IStatement> statements = _statements[robotDelegate];
                 IBadSectorDelegate? badSectorDelegate =
                     Context.BoardDelegate.GetBadSectorDelegate(robotDelegate.Position);
 
-                if (ReferenceEquals(badSectorDelegate, null) || badSectorDelegate.Installer == robotDelegate)
+                Debug.LogErrorFormat("badsector {0} found", badSectorDelegate?.Id);
+
+                if (!ReferenceEquals(badSectorDelegate, null) && badSectorDelegate.Installer.Id != robotDelegate.Id)
                 {
-                    continue;
+                    if (executionQueue.IsProtected)
+                    {
+                        continue;
+                    }
+
+                    badSectorDelegate.Remove();
+                    statements.Clear();
+                    executionQueue.Clear();
+
+                    IList<IStatement> badSectorStatements = badSectorDelegate.Execute(robotDelegate);
+
+                    foreach (IStatement s in badSectorStatements.Reverse())
+                    {
+                        executionQueue.EnqueueFirst(s);
+                    }
                 }
 
-                if (executionQueue.IsProtected)
-                {
-                    continue;
-                }
-
-                Stack<IStatement> statements = _statements[robotDelegate];
-
-                badSectorDelegate.Remove();
-                statements.Clear();
-                executionQueue.Clear();
-
-                IList<IStatement> badSectorStatements = badSectorDelegate.Execute(robotDelegate);
-
-                foreach (IStatement s in badSectorStatements.Reverse())
-                {
-                    executionQueue.EnqueueFirst(s);
-                }
 
                 if (robotDelegate.HealthPoint <= 0)
                 {
