@@ -201,7 +201,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         if (propertiesThatChanged.TryGetValue("C1", out object value))
         {
             int intValue = (int) value;
-            if (intValue == 4)
+            if (intValue == 5)
             {
                 if (PhotonNetwork.IsMasterClient)
                 {
@@ -307,7 +307,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
             {
-                { "C1", 4 }
+                { "C1", 5 }
             });
         }
     }
