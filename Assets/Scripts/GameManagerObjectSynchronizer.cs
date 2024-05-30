@@ -191,7 +191,7 @@ namespace CodingStrategy
             GameObject badSectorObject =
                 Instantiate(GameManager.badSectorPrefab, vectorPosition, Quaternion.identity, transform);
             BadSectorAnimation badSectorAnimation = badSectorObject.GetComponent<BadSectorAnimation>();
-            EnableBadSectorPrefab(badSectorObject, badSectorAnimation);
+            EnableBadSectorPrefab(badSectorObject, badSectorDelegate, badSectorAnimation);
             badSectorAnimation.camera = Camera.main;
             badSectorObject.name = badSectorDelegate.Id;
             badSectorAnimation.ChangeBadSectorColor(color);
@@ -199,7 +199,14 @@ namespace CodingStrategy
             GameManager.AnimationCoroutineManager.AddAnimation(badSectorObject, badSectorAnimation.AnimateItem());
         }
 
-        private void EnableBadSectorPrefab(GameObject badSectorObject, BadSectorAnimation badSectorAnimation) {}
+        private void EnableBadSectorPrefab(GameObject badSectorObject, IBadSectorDelegate badSectorDelegate, BadSectorAnimation badSectorAnimation)
+        {
+            if (badSectorDelegate is MalwareBadSector)
+            {
+                Transform image = badSectorObject.transform.GetChild(4);
+                image.gameObject.SetActive(true);
+            }
+        }
 
         public void RemoveBadSectorObject(IBadSectorDelegate badSectorDelegate)
         {

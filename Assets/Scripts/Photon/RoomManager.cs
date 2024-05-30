@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using Photon.Pun;
 using System.Text;
+using CodingStrategy;
+using CodingStrategy.Entities;
+using CodingStrategy.Network;
 using UnityEngine;
 using Photon.Realtime;
 using TMPro;
 using CodingStrategy.Photon.Chat;
+using CodingStrategy.UI.InGame;
 using CodingStrategy.Utility;
 using UnityEngine.SceneManagement;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
@@ -27,7 +31,18 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        GameInitializer.Initialize();
+
         StartCoroutine(AwaitJoiningRoom());
+
+        CommandDetailEvent commandDetailEvent = FindObjectOfType<CommandDetailEvent>();
+        commandDetailEvent.OnCommandClickEvent.AddListener(id =>
+        {
+            ICommand command = PhotonPlayerCommandCache.GetCachedCommands()[id];
+            commandDetailEvent.setCommandDetail.SetCommandName(command.Info.Name);
+            commandDetailEvent.setCommandDetail.SetCommandAttackRange(command.Info.EnhancedLevel);
+            commandDetailEvent.setCommandDetail.SetCommandDescription(command.Info.Explanation);
+        });
     }
 
     private IEnumerator AwaitJoiningRoom()

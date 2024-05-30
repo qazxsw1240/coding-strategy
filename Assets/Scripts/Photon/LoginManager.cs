@@ -42,8 +42,8 @@ public class LoginManager : MonoBehaviourPunCallbacks
         //닉네임 설정합니다.
         PhotonNetwork.LocalPlayer.NickName = nicknameInputField.text;
         PhotonNetwork.AutomaticallySyncScene = true;
-        PhotonNetwork.PhotonServerSettings.AppSettings.EnableLobbyStatistics = true;
-        PhotonNetwork.NetworkingClient.EnableLobbyStatistics = true;
+        PhotonNetwork.PhotonServerSettings.AppSettings.EnableLobbyStatistics = false;
+        PhotonNetwork.NetworkingClient.EnableLobbyStatistics = false;
         PhotonNetwork.IsMessageQueueRunning = true;
         //방을 연결합니다.
         PhotonNetwork.ConnectUsingSettings();

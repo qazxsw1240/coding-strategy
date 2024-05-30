@@ -154,6 +154,7 @@ namespace CodingStrategy.Entities.Runtime
                 }
 
                 RobotStatementExecutor robotStatementExecutor = gameObject.GetOrAddComponent<RobotStatementExecutor>();
+                robotStatementExecutor.GameManager = GameManager;
                 robotStatementExecutor.Validator = validator;
                 robotStatementExecutor.Context = new RuntimeExecutorContext(BoardDelegate,
                     PlayerPool,
