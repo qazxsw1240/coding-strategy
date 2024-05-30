@@ -12,6 +12,8 @@ namespace CodingStrategy.Entities
 
         public abstract void Add(string id, Func<string, TEntity> generator);
 
+        public abstract bool Contains(string id);
+
         public abstract void Remove(string id);
 
         public abstract void Clear();

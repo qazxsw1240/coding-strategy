@@ -127,6 +127,10 @@ namespace CodingStrategy.Entities.Runtime
                     {
                         GameManager.util.LocalPhotonPlayerDelegate.HealthPoint -= 1;
                     }
+                    else
+                    {
+                        robotDelegate.HealthPoint -= 1;
+                    }
                 }
             }
 
@@ -211,10 +215,12 @@ namespace CodingStrategy.Entities.Runtime
         {
             foreach (IRobotDelegate problematicRobot in _problematicRobots)
             {
-                IExecutionQueue executionQueue = Context.ExecutionQueuePool[problematicRobot];
-                if (executionQueue.Count == 0)
+                if (Context.ExecutionQueuePool.TryGetValue(problematicRobot, out IExecutionQueue executionQueue))
                 {
-                    Context.ExecutionQueuePool.Remove(problematicRobot);
+                    if (executionQueue.Count == 0)
+                    {
+                        Context.ExecutionQueuePool.Remove(problematicRobot);
+                    }
                 }
             }
 

@@ -19,7 +19,6 @@ namespace CodingStrategy.UI.Shop
 			soundManager.Init();
 			AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_DragBtnClick_Sound");
 			soundManager.Play(effectClip, Sound.Effect, 1.0f);
-			Debug.Log("Shop button Click sound is comming out!");
 			isScrolling = true;
 		}
 

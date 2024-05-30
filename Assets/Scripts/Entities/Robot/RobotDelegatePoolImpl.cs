@@ -28,6 +28,11 @@ namespace CodingStrategy.Entities.Robot
             _pool[id] = obj;
         }
 
+        public bool Contains(string id)
+        {
+            return _pool.ContainsKey(id);
+        }
+
         public void Clear() => _pool.Clear();
 
         public IEnumerator<IRobotDelegate> GetEnumerator() => _pool.Values.GetEnumerator();
