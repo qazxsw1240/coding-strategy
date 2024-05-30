@@ -12,30 +12,23 @@ namespace CodingStrategy.UI.InGame
 			
 		}
 
-        // Update is called once per frame
-        void Update()
-        {
-			if (Input.GetMouseButtonDown(0))
+		private void OnMouseDown()
+		{
+			GameObject ActiveChild = null;
+			foreach (Transform child in transform)
 			{
-				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-				RaycastHit hit;
-
-				if (Physics.Raycast(ray, out hit))
+				if (child.gameObject.activeSelf)
 				{
-					GameObject ActiveChild = null;
-					foreach (Transform child in transform)
-					{
-						if (child.gameObject.activeSelf)
-						{
-							ActiveChild = child.gameObject;
-							break;
-						}
-					}
-					BadSectorClickEvent badSectorClickEvent = GameObject.Find("AlwaysOnTop").GetComponent<BadSectorClickEvent>();
-					badSectorClickEvent.OnBadSectorClickEvent.Invoke(ActiveChild.name);
-					badSectorClickEvent.setBadSectorDetail = GetComponent<SetBadSectorDetail>();
+					ActiveChild = child.gameObject;
+					break;
 				}
 			}
-        }
+			BadSectorClickEvent badSectorClickEvent = GameObject.Find("AlwaysOnTop").GetComponent<BadSectorClickEvent>();
+			badSectorClickEvent.OnBadSectorClickEvent.Invoke(ActiveChild.name);
+			badSectorClickEvent.setBadSectorDetail = GetComponent<SetBadSectorDetail>();
+		}
+
+		// Update is called once per frame
+		void Update() { }
     }
 }
