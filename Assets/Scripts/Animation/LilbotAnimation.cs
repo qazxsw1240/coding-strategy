@@ -48,7 +48,7 @@ namespace CodingStrategy.Entities.Animations
         private void Vibrate()
 		{
         #if (UNITY_ANDROID || UNITY_IOS)
-            //Handheld.Vibrate();
+            // Handheld.Vibrate();
         #endif
 		}
 

@@ -121,13 +121,21 @@ namespace CodingStrategy
                 int different = next - previous;
                 if (different < 0)
                 {
-                    GameManager.AnimationCoroutineManager.AddAnimation(robotObject,
+                    GameManager.AnimationCoroutineManager.AddAnimation(robotDelegate,
                         lilbotAnimation.HitAnimationCoroutine());
+                }
+                else
+                {
+                    if (next > 0)
+                    {
+                        GameManager.AnimationCoroutineManager.AddAnimation(robotDelegate,
+                            lilbotAnimation.SpawnAnimationCoroutine());
+                    }
                 }
 
                 if (next <= 0)
                 {
-                    GameManager.AnimationCoroutineManager.AddAnimation(robotObject,
+                    GameManager.AnimationCoroutineManager.AddAnimation(robotDelegate,
                         lilbotAnimation.DeathAnimationCoroutine());
                 }
             });
@@ -145,7 +153,7 @@ namespace CodingStrategy
             LilbotAnimation animation = robotObject.GetComponent<LilbotAnimation>();
             Vector3 end = ConvertToVector(next, 0.5f);
             IEnumerator controllerAnimation = animation.Walk(0.5f, (int) end.x, (int) end.z);
-            GameManager.AnimationCoroutineManager.AddAnimation(robotObject, controllerAnimation);
+            GameManager.AnimationCoroutineManager.AddAnimation(robotDelegate, controllerAnimation);
         }
 
         public void RotateRobotObject(IRobotDelegate robotDelegate, RobotDirection previous, RobotDirection next)
@@ -160,7 +168,7 @@ namespace CodingStrategy
             Quaternion start = Quaternion.Euler(0, (int) previous * 90f, 0);
             Quaternion end = Quaternion.Euler(0, (int) next * 90f, 0);
             RotateAnimation rotateAnimation = new RotateAnimation(robotObject, start, end, 0.125f);
-            GameManager.AnimationCoroutineManager.AddAnimation(robotObject, rotateAnimation);
+            GameManager.AnimationCoroutineManager.AddAnimation(robotDelegate, rotateAnimation);
         }
 
         public void RemoveRobotObject(IRobotDelegate robotDelegate)
@@ -196,7 +204,7 @@ namespace CodingStrategy
             badSectorObject.name = badSectorDelegate.Id;
             badSectorAnimation.ChangeBadSectorColor(color);
             _badSectorDelegateObjects[badSectorDelegate] = badSectorObject;
-            GameManager.AnimationCoroutineManager.AddAnimation(badSectorObject, badSectorAnimation.AnimateItem());
+            GameManager.AnimationCoroutineManager.AddAnimation(badSectorDelegate, badSectorAnimation.AnimateItem());
         }
 
         private void EnableBadSectorPrefab(GameObject badSectorObject, IBadSectorDelegate badSectorDelegate, BadSectorAnimation badSectorAnimation)
