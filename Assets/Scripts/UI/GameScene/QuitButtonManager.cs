@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class QuitButtonManager : MonoBehaviour
 {
 	public Button gameTurnButton; // Gameturn Button
 	public Button gameRoomQuitButton; // GameroomQuit Button
+	public UnityEvent OnQuitButtonClick;
 
 	void Start()
 	{
@@ -14,6 +16,7 @@ public class QuitButtonManager : MonoBehaviour
 		// Gameturn Button을 눌렀을 때의 동작을 설정합니다.
 		gameTurnButton.onClick.AddListener(() =>
 		{
+			Debug.Log("눌림");
 			// GameroomQuit Button을 활성화합니다.
 			gameRoomQuitButton.gameObject.SetActive(true);
 		});
@@ -21,7 +24,10 @@ public class QuitButtonManager : MonoBehaviour
 		// [태명씨에게 전달] GameroomQuit Button을 눌렀을 때의 동작을 설정합니다.
 		gameRoomQuitButton.onClick.AddListener(() =>
 		{
+			Debug.Log("눌림2");
+
 			// TODO: GameroomQuit Button의 기능을 구현합니다.
+			OnQuitButtonClick.Invoke();
 
 			// GameroomQuit Button을 비활성화합니다.
 			gameRoomQuitButton.gameObject.SetActive(false);
@@ -30,10 +36,6 @@ public class QuitButtonManager : MonoBehaviour
 
 	void Update()
 	{
-		// 다른 곳을 터치했을 때 GameroomQuit Button을 비활성화합니다.
-		if (Input.GetMouseButton(0) && !gameRoomQuitButton.gameObject.GetComponent<RectTransform>().rect.Contains(Input.mousePosition))
-		{
-			gameRoomQuitButton.gameObject.SetActive(false);
-		}
+
 	}
 }
