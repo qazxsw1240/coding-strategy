@@ -38,6 +38,16 @@ namespace CodingStrategy
             AddCommand(new InstallMalwareBadSectorCommand(), DefaultGrade3CommandStockCount);
             AddCommand(new CoinMiningCommand(), DefaultGrade4CommandStockCount);
             AddCommand(new BotnetsCommand(), DefaultGrade5CommandStockCount);
+            AddCommand(new InstallJumpBadSectorCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new InstallPropellerBadSectorCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new AttackForwardCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new AttackBackCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new ChargeEnergyCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new DashCommand(), DefaultGrade2CommandStockCount);
+            AddCommand(new SecureEnergyStorageCommand(), DefaultGrade2CommandStockCount);
+            AddCommand(new ReinforceCommand(), DefaultGrade2CommandStockCount);
+            AddCommand(new SelfRepairCommand(), DefaultGrade4CommandStockCount);
+            AddCommand(new RestoringCommand(), DefaultGrade5CommandStockCount);
         }
     }
 }
