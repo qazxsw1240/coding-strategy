@@ -8,6 +8,7 @@ using CodingStrategy.Entities;
 using CodingStrategy.Entities.CodingTime;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
+using CodingStrategy.Network;
 using CodingStrategy.UI.InGame;
 using ExitGames.Client.Photon;
 using ExitGames.Client.Photon.StructWrapping;
@@ -68,8 +69,7 @@ namespace CodingStrategy
                     RobotStatusUI robotStatusUI = GameManager.inGameUI.statusUI.GetComponent<RobotStatusUI>();
                     robotStatusUI.SetCameraTexture(GameManager.PlayerIndexMap[photonPlayer.UserId]);
                     robotStatusUI.SetName(photonPlayer.NickName);
-                    robotStatusUI.SetDescription(
-                        robotDelegate.HealthPoint,
+                    robotStatusUI.SetDescription(robotDelegate.HealthPoint,
                         robotDelegate.AttackPoint,
                         robotDelegate.ArmorPoint,
                         robotDelegate.EnergyPoint);
@@ -81,8 +81,25 @@ namespace CodingStrategy
                 });
             }
 
+            foreach (PlayerStatusUI playerStatusUI in GameManager.inGameUI.playerStatusUI)
+            {
+                if (string.IsNullOrEmpty(playerStatusUI.GetUserID()))
+                {
+                    playerStatusUI.SetVisible(false);
+                }
+            }
+
             IPlayerDelegate localPlayerDelegate = GameManagerUtil.LocalPhotonPlayerDelegate;
             IRobotDelegate localRobotDelegate = GameManagerUtil.LocalPhotonRobotDelegate;
+
+            CommandDetailEvent commandDetailEvent = GameManager.inGameUI.transform.GetComponentInChildren<CommandDetailEvent>();
+            commandDetailEvent.OnCommandClickEvent.AddListener(id =>
+            {
+                ICommand command =  PhotonPlayerCommandCache.GetCachedCommands()[id];
+                commandDetailEvent.setCommandDetail.SetCommandName(command.Info.Name);
+                commandDetailEvent.setCommandDetail.SetCommandAttackRange(command.Info.EnhancedLevel);
+                commandDetailEvent.setCommandDetail.SetCommandDescription(command.Info.Explanation);
+            });
         }
 
         private void AttachPlayerStatusSynchronizer(IPlayerDelegate playerDelegate, PlayerStatusUI statusUI)
@@ -184,10 +201,13 @@ namespace CodingStrategy
         {
             return (robotDelegate, _, next) =>
             {
-                IPlayerDelegate playerDelegate = GameManagerUtil.GetPlayerDelegateById(robotDelegate.Id);
-                if (playerDelegate.Id != GameManagerUtil.LocalPhotonPlayerDelegate.Id)
+                if (GameManagerUtil.PlayerDelegatePool.Contains(robotDelegate.Id))
                 {
-                    return;
+                    IPlayerDelegate playerDelegate = GameManagerUtil.GetPlayerDelegateById(robotDelegate.Id);
+                    if (playerDelegate.Id != GameManagerUtil.LocalPhotonPlayerDelegate.Id)
+                    {
+                        return;
+                    }
                 }
 
                 int validRobotHp = GetValidRobotHp(next);
