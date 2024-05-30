@@ -386,23 +386,12 @@ namespace CodingStrategy
                     {
                         BoardDelegate.Add(robotDelegate, position, direction);
                     }
-                }
 
-                // IPlayerDelegate dummyPlayerDelegate =
-                //     new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("1234"))
-                //         .Build();
-                // IRobotDelegate dummy = new RobotDelegateCreateFactory(new RobotDelegateCreateStrategy(), BoardDelegate, dummyPlayerDelegate).Build();
-                //
-                // // util.PlayerDelegatePool["1234"] = dummyPlayerDelegate;
-                // PlayerIndexMap["1234"] = 2;
-                //
-                // util.LocalPhotonPlayerDelegate.Currency = 1000;
-                //
-                // BoardDelegate.Add(new MalwareBadSector("1", BoardDelegate, dummy), new Coordinate(4, 1));
-                // BoardDelegate.Add(new MalwareBadSector("1", BoardDelegate, dummy), new Coordinate(3, 1));
-                // BoardDelegate.Add(new MalwareBadSector("1", BoardDelegate, dummy), new Coordinate(3, 0));
-                // BoardDelegate.Add(new MalwareBadSector("1", BoardDelegate, dummy), new Coordinate(5, 0));
-                // BoardDelegate.Add(new MalwareBadSector("1", BoardDelegate, dummy), new Coordinate(5, 1));
+                    if (robotDelegate.HealthPoint <= 0)
+                    {
+                        robotDelegate.HealthPoint = 3;
+                    }
+                }
 
                 NotifyDispatchBits();
 
