@@ -478,6 +478,10 @@ namespace CodingStrategy
             _expectedStatus = status;
             _expectedStatusTimestamp = PhotonNetwork.ServerTimestamp;
             int currentExpectedStatusTimestamp = _expectedStatusTimestamp;
+            if (retry)
+            {
+                Debug.LogWarningFormat("Retry to synchronize state {0}", _expectedStatus);
+            }
             if (PhotonNetwork.IsMasterClient)
             {
                 _currentStatusRequest = status;
@@ -667,8 +671,6 @@ namespace CodingStrategy
         public void OnEvent(EventData photonEvent)
         {
             byte eventCode = photonEvent.Code;
-
-            Debug.LogFormat("event fired: {0}", eventCode);
 
             if (eventCode == StateSynchronizationRequestCode)
             {
