@@ -121,7 +121,7 @@ namespace CodingStrategy.Entities.Animations
             soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
             Debug.Log("Robot Attacked sound is comming out!");
 
-            Vibrate();
+            //Vibrate();
 
             yield return new WaitForSeconds(1); // 1초 대기
             animator.ResetTrigger(Attack1);
@@ -138,7 +138,7 @@ namespace CodingStrategy.Entities.Animations
             soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
             Debug.Log("Robot Attacked sound is comming out!");
 
-            Vibrate();
+            //Vibrate();
 
             yield return new WaitForSeconds(1); // 1초 대기
             animator.ResetTrigger(Attack2);
@@ -181,7 +181,7 @@ namespace CodingStrategy.Entities.Animations
             soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
             Debug.Log("GetAttacked sound is comming out!");
 
-            Vibrate();
+            //Vibrate();
 
             playerCamera.DOShakePosition(1, 1);
             yield return new WaitForSeconds(1); // 1초 대기

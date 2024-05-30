@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 0}
+  m_Sun: {fileID: 700120823}
   m_IndirectSpecularColor: {r: 0.43503454, g: 0.48215264, b: 0.56308335, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: ed317f2ac210c7040af5a332ef23a980, type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 95d690e71c9b99d4ea988ae36d3c8ea3, type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -5863,8 +5863,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1390008033}
-  m_RootOrder: 2
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 80.069, y: 0, z: 0}
 --- !u!114 &700120822
 MonoBehaviour:
@@ -11518,7 +11518,6 @@ Transform:
   m_Children:
   - {fileID: 1533505903}
   - {fileID: 964679437}
-  - {fileID: 700120821}
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -19451,7 +19450,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -870.02246, y: 0}
+  m_AnchoredPosition: {x: -870.0226, y: 0}
   m_SizeDelta: {x: 1740.045, y: 250}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!1 &3808750195988157148
