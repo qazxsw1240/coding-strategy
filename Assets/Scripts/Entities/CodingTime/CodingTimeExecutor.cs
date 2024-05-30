@@ -21,7 +21,7 @@ namespace CodingStrategy.Entities.CodingTime
         public static readonly IRerollProbability RerollProbability = new RerollProbabilityImpl();
         public static readonly IRequiredExp RequiredExp = new RequiredExpImpl();
 
-        public int countdown = 10;
+        public int countdown = 20;
 
         private int _current = 0;
 
@@ -52,6 +52,7 @@ namespace CodingStrategy.Entities.CodingTime
             InGameUI.shopUi.OnChangeCommandEvent.AddListener(SwapCommandListener);
             InGameUI.shopUi.OnShopRerollEvent.AddListener(() => RerollCommands(false));
             InGameUI.shopUi.OnShopLevelUpEvent.AddListener(LevelUpListener);
+            InGameUI.shopUi.SetTimer(countdown - _current, countdown);
 
             DispenseLevelGuarantee();
             RerollCommands(true);
@@ -67,13 +68,14 @@ namespace CodingStrategy.Entities.CodingTime
 
         public bool MoveNext()
         {
-            return _current >= 0;
+            return _current > 0;
         }
 
         public bool Execute()
         {
             _current -= 1;
             _soundManager.CodingTimeCountdown();
+            InGameUI.shopUi.SetTimer(_current, countdown);
             return true;
         }
 
