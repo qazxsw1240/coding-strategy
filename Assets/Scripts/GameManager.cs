@@ -82,6 +82,7 @@ namespace CodingStrategy
         public GameManagerUtil util = null!;
         public GameMangerNetworkProcessor networkProcessor = null!;
         public GameResult gameResult = null!;
+        public QuitButtonManager quitButtonManager = null!;
 
         public bool awaitLobby = false;
 
@@ -132,6 +133,7 @@ namespace CodingStrategy
             networkProcessor = gameObject.GetOrAddComponent<GameMangerNetworkProcessor>();
             networkProcessor.GameManagerUtil = util;
             gameResult = FindObjectOfType<GameResult>();
+            quitButtonManager = FindObjectOfType<QuitButtonManager>();
         }
 
         public void Start()
@@ -149,6 +151,13 @@ namespace CodingStrategy
             }
 
             _coroutine = StartCoroutine(StartGameManagerCoroutine());
+
+            quitButtonManager.OnQuitButtonClick.AddListener(() =>
+            {
+                Debug.Log("button click in");
+                awaitLobby = true;
+                PhotonNetwork.LeaveRoom();
+            });
         }
 
         private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
@@ -214,7 +223,7 @@ namespace CodingStrategy
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
             DetachPlayerUI(otherPlayer);
-            util.RemovePlayerDelegate(otherPlayer);
+            // util.RemovePlayerDelegate(otherPlayer);
         }
 
         public override void OnPlayerPropertiesUpdate(
