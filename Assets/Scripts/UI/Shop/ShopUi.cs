@@ -150,7 +150,7 @@ namespace CodingStrategy.UI.Shop
             //SetBit(1);
             //SetExp(10, 20);
             //SetRerollCost(7);
-            SetTimer(12, 20);
+            //SetTimer(12, 20);
         }
 
         // Update is called once per frame
