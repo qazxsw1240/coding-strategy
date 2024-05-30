@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -24,9 +24,9 @@ namespace CodingStrategy.UI.InGame
             SceneManager.LoadScene("GameLobby");
         }
 
-        //È­¸é À§¿¡¼­ ¾Æ·¡·Î ¶³¾îÁöµíÀÌ ³ª¿À´Â ¸ğ½À ¿¬Ãâ
-        //ÀÏ´Ü RankÀÇ ÅØ½ºÆ® ÁöÁ¤ÇÑ ÈÄ¿¡
-        //ÄÚ·çÆ¾ ½ÇÇà½ÃÅ°½Ã¸é µË´Ï´Ù.
+        //í™”ë©´ ìœ„ì—ì„œ ì•„ë˜ë¡œ ë–¨ì–´ì§€ë“¯ì´ ë‚˜ì˜¤ëŠ” ëª¨ìŠµ ì—°ì¶œ
+        //ì¼ë‹¨ Rankì˜ í…ìŠ¤íŠ¸ ì§€ì •í•œ í›„ì—
+        //ì½”ë£¨í‹´ ì‹¤í–‰ì‹œí‚¤ì‹œë©´ ë©ë‹ˆë‹¤.
         public IEnumerator ResultUIAnimation()
         {
             Gameresult.SetActive(true);
@@ -39,16 +39,16 @@ namespace CodingStrategy.UI.InGame
 
             if (Rank.text == "1st")
             {
-                EndingMessage.text = "ÃàÇÏµå¸³´Ï´Ù! 1µîÀÔ´Ï´Ù!";
+                EndingMessage.text = "ì¶•í•˜ë“œë¦½ë‹ˆë‹¤! 1ë“±ì…ë‹ˆë‹¤!";
             }
 
             else if (Rank.text == "2nd")
             {
-                EndingMessage.text = "2µî ÃàÇÏµå¸³´Ï´Ù!";
+                EndingMessage.text = "2ë“± ì¶•í•˜ë“œë¦½ë‹ˆë‹¤!";
             }
             else
             {
-                EndingMessage.text = "´ÙÀ½¹ø¿£ ÀßÇÒ ¼ö ÀÖÀ»°Ì´Ï´Ù.";
+                EndingMessage.text = "ë‹¤ìŒë²ˆì—” ì˜í•  ìˆ˜ ìˆì„ê²ë‹ˆë‹¤.";
             }
 
             Sequence sequence = DOTween.Sequence();
