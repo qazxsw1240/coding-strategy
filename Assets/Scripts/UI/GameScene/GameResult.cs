@@ -29,12 +29,11 @@ namespace CodingStrategy.UI.InGame
         //코루틴 실행시키시면 됩니다.
         public IEnumerator ResultUIAnimation(int rank)
         {
-            Gameresult.SetActive(true);
+            yield return new WaitForSeconds(0.2f);
 
+            Gameresult.SetActive(true);
             QuitRoomBtn = GameObject.Find("Quit Room Button").GetComponent<Button>();
             QuitRoomBtn.onClick.AddListener(PlayerLeave);
-
-            yield return new WaitForSeconds(0.2f);
 
             switch (rank)
             {
