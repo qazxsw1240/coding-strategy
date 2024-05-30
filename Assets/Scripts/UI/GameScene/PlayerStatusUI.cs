@@ -120,7 +120,7 @@ namespace CodingStrategy.UI.InGame
 
         public void SetVisible(bool visibility)
         {
-            status.SetActive(visibility);
+            gameObject.SetActive(visibility);
         }
 
         // Start is called before the first frame update
