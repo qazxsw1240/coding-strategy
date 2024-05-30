@@ -135,7 +135,7 @@ namespace CodingStrategy.Network
                     }
 
                     AttachCommandKeyValuePairs((object[][]) photonEvent.CustomData);
-                    Debug.Log("Command refreshed");
+                    // Debug.Log("Command refreshed");
                     return;
                 }
                 case PhotonNetworkCodes.CommandModifyRequest:
