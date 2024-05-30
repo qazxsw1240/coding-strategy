@@ -12,7 +12,7 @@ namespace CodingStrategy.Entities.BadSector
 
     public class PropellerBadSector : AbstractBadSectorDelegate
     {
-        private readonly string _explanation = "발동시 바라보는 방향의 반대 방향으로 1칸 이동합니다.";
+        private readonly static string _explanation = "발동시 바라보는 방향의 반대 방향으로 1칸 이동합니다.";
         public PropellerBadSector(string id, IBoardDelegate boardDelegate, IRobotDelegate installer) : base(id, boardDelegate, installer)
         {
         }
