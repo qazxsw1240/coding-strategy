@@ -44,6 +44,14 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             { "isReady", PhotonNetwork.IsMasterClient ? 1 : 0 }
         });
+
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            int startTime = (int) PhotonNetwork.CurrentRoom.CustomProperties["Timer"];
+            int delay = unchecked(PhotonNetwork.ServerTimestamp - startTime);
+
+            Debug.LogFormat("Server delay is {0}ms", delay);
+        }
     }
 
     public void UpdatePlayerNicknames()
@@ -190,10 +198,10 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         LogRoomProperties();
 
-        if (propertiesThatChanged.TryGetValue("C2", out object value))
+        if (propertiesThatChanged.TryGetValue("C1", out object value))
         {
             int intValue = (int) value;
-            if (intValue == 1)
+            if (intValue == 4)
             {
                 if (PhotonNetwork.IsMasterClient)
                 {
@@ -299,7 +307,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
             {
-                { "C2", 1 }
+                { "C1", 4 }
             });
         }
     }

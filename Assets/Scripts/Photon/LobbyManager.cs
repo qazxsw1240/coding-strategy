@@ -56,7 +56,9 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
         if (string.IsNullOrEmpty(RoomID))
         {
-            PhotonNetwork.JoinRandomOrCreateRoom(roomOptions: new RoomOptions
+            PhotonNetwork.JoinRandomOrCreateRoom(
+                sqlLobbyFilter: "C0='coding-strategy' AND C1 < 4 AND C2=0",
+                roomOptions: new RoomOptions
             {
                 MaxPlayers = 4,
                 IsVisible = true,
@@ -69,7 +71,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
                     { "C2", 0 }
                 },
                 CustomRoomPropertiesForLobby = new string[] { "C0", "C1", "C2" },
-                BroadcastPropsChangeToAll = true
+                BroadcastPropsChangeToAll = true,
             });
         }
         else
