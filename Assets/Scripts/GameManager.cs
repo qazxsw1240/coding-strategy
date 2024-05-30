@@ -4,6 +4,7 @@
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
+using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.CodingTime;
 using CodingStrategy.Factory;
 using CodingStrategy.Network;
@@ -69,8 +70,8 @@ namespace CodingStrategy
         private const string RuntimeStatus = "runtime";
         private const string RuntimeEndStatus = "runtime-end";
 
-
-        public int round = 15;
+        public int currentRound = 0;
+        public int round = 3;
         public int boardWidth = 9;
         public int boardHeight = 9;
         public InGameUI inGameUI = null!;
@@ -80,6 +81,9 @@ namespace CodingStrategy
         public List<GameObject> robotPrefabs = new List<GameObject>();
         public GameManagerUtil util = null!;
         public GameMangerNetworkProcessor networkProcessor = null!;
+        public GameResult gameResult = null!;
+
+        public bool awaitLobby = false;
 
         public IBoardDelegate BoardDelegate { get; private set; } = null!;
 
@@ -96,6 +100,8 @@ namespace CodingStrategy
         private GameManagerPlayerStatusSynchronizer _playerStatusSynchronizer = null!;
 
         public readonly IDictionary<string, int> PlayerIndexMap = new Dictionary<string, int>();
+
+        private Coroutine? _coroutine;
 
         public static IPlayerDelegate BuildPlayerDelegate(string id)
         {
@@ -125,6 +131,7 @@ namespace CodingStrategy
             _bitDispenser = new BitDispenser(BoardDelegate, util.PlayerDelegatePool);
             networkProcessor = gameObject.GetOrAddComponent<GameMangerNetworkProcessor>();
             networkProcessor.GameManagerUtil = util;
+            gameResult = FindObjectOfType<GameResult>();
         }
 
         public void Start()
@@ -141,7 +148,7 @@ namespace CodingStrategy
                 return;
             }
 
-            StartCoroutine(StartGameManagerCoroutine());
+            _coroutine = StartCoroutine(StartGameManagerCoroutine());
         }
 
         private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
@@ -150,6 +157,10 @@ namespace CodingStrategy
         {
             if (_actions.TryDequeue(out Action action))
             {
+                if (!PhotonNetwork.InRoom)
+                {
+                    return;
+                }
                 action();
             }
         }
@@ -162,6 +173,11 @@ namespace CodingStrategy
 
         public override void OnJoinedLobby()
         {
+            if (awaitLobby)
+            {
+                return;
+            }
+
             Debug.LogFormat("Connected to Master {0}", PhotonNetwork.CurrentLobby);
             // PhotonNetwork.GetCustomRoomList(PhotonNetwork.CurrentLobby, "C0='coding-strategy'");
             PhotonNetwork.NickName = "asdf";
@@ -172,7 +188,7 @@ namespace CodingStrategy
                 PublishUserId = true,
                 CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
                 {
-                    { "C0", "coding-strategy" }
+                    { "C0", "coding-strategy-debug" }
                 },
                 CustomRoomPropertiesForLobby = new string[] { "C0" }
             });
@@ -191,7 +207,7 @@ namespace CodingStrategy
                 RobotDelegatePool[id] = robotDelegate;
             }
 
-            StartCoroutine(StartGameManagerCoroutine());
+            _coroutine = StartCoroutine(StartGameManagerCoroutine());
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -228,6 +244,13 @@ namespace CodingStrategy
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
         {
             Debug.LogFormat("Room list count: {0}", roomList.Count);
+        }
+
+        public override void OnLeftRoom()
+        {
+            PlayerStatusUI playerStatus = FindPlayerStatusUI(util.LocalPhotonPlayerDelegate)!;
+            StartCoroutine(gameResult.ResultUIAnimation(int.Parse(playerStatus.GetRank().Substring(0, 1))));
+            awaitLobby = true;
         }
 
         private GameManagerObjectSynchronizer SetUpObjectSynchronizer()
@@ -280,8 +303,17 @@ namespace CodingStrategy
 
             #region ITERATION
 
-            for (int i = 0; i < round; i++)
+            currentRound = 0;
+
+            while (currentRound < round)
             {
+                Debug.LogErrorFormat("round: {0} of {1}", currentRound, round); ;
+
+                if (currentRound++ == round)
+                {
+                    break;
+                }
+
                 yield return StartCoroutine(AwaitAllPlayersStatus(ReadyStatus));
 
                 #region INITIALIZATION
@@ -328,6 +360,22 @@ namespace CodingStrategy
                     }
                 }
 
+                // IPlayerDelegate dummyPlayerDelegate =
+                //     new PlayerDelegateCreateFactory(new PlayerDelegateCreateStrategy("1234"))
+                //         .Build();
+                // IRobotDelegate dummy = new RobotDelegateCreateFactory(new RobotDelegateCreateStrategy(), BoardDelegate, dummyPlayerDelegate).Build();
+                //
+                // // util.PlayerDelegatePool["1234"] = dummyPlayerDelegate;
+                // PlayerIndexMap["1234"] = 2;
+                //
+                // util.LocalPhotonPlayerDelegate.Currency = 1000;
+                //
+                // BoardDelegate.Add(new MalwareBadSector("1", BoardDelegate, dummy), new Coordinate(4, 1));
+                // BoardDelegate.Add(new MalwareBadSector("1", BoardDelegate, dummy), new Coordinate(3, 1));
+                // BoardDelegate.Add(new MalwareBadSector("1", BoardDelegate, dummy), new Coordinate(3, 0));
+                // BoardDelegate.Add(new MalwareBadSector("1", BoardDelegate, dummy), new Coordinate(5, 0));
+                // BoardDelegate.Add(new MalwareBadSector("1", BoardDelegate, dummy), new Coordinate(5, 1));
+
                 NotifyDispatchBits();
 
                 yield return StartCoroutine(AwaitAllPlayerPlaceablePlaceEventSynchronization());
@@ -369,13 +417,22 @@ namespace CodingStrategy
 
                 if (util.LocalPhotonPlayerDelegate.HealthPoint > 0)
                 {
+                    yield return null;
                     continue;
                 }
 
-
-                Debug.LogFormat("Runtime terminated: {0}", i);
-                PhotonNetwork.LeaveRoom();
                 yield break;
+            }
+
+            yield return null;
+
+
+            Debug.LogFormat("Runtime terminated");
+            PhotonNetwork.LeaveRoom();
+
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
             }
 
             #endregion
@@ -505,7 +562,7 @@ namespace CodingStrategy
 
                 if (ReferenceEquals(playerStatusUI, null))
                 {
-                    throw new Exception();
+                    continue;
                 }
 
                 if (i != 0)
@@ -590,10 +647,12 @@ namespace CodingStrategy
                     Player photonPlayer = PhotonNetwork.CurrentRoom.Players[photonEvent.Sender];
                     _responsePlayers.Add(photonPlayer);
 
-                    if (_responsePlayers.Count < PhotonNetwork.CurrentRoom.PlayerCount - 1)
+                    if (_responsePlayers.Count >= PhotonNetwork.CurrentRoom.PlayerCount)
                     {
                         return;
                     }
+
+                    Debug.Log("All player has placed all bits");
 
                     _responsePlayers.Clear();
                     PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
