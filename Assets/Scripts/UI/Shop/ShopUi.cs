@@ -15,6 +15,8 @@ namespace CodingStrategy.UI.Shop
         public TMP_Text LevelUpCost, RerollCost;
         public TMP_Text Exp;
         public Image ExpImage;
+        public TMP_Text Timer;
+        public Image TimerImage;
 
         public Button levelUpButton;
         public Button rerollButton;
@@ -96,13 +98,13 @@ namespace CodingStrategy.UI.Shop
 
         public void SetShopLevel(int level)
         {
-			Debug.Log("SetLevel: " + level);
+			//Debug.Log("SetLevel: " + level);
 			ShopLevel.text = level.ToString() + "레벨 상점";
         }
 
         public void SetBit(int bit)
         {
-            Debug.Log("SetBit: " + bit);
+            //Debug.Log("SetBit: " + bit);
             if (bit < 0)
             {
                 Bit.color = Color.red;
@@ -117,11 +119,17 @@ namespace CodingStrategy.UI.Shop
 
         public void SetExp(int currentExp, int fullExp)
         {
-            Debug.Log("SetExp: " + currentExp + " " + fullExp);
+            //Debug.Log("SetExp: " + currentExp + " " + fullExp);
             Exp.text = currentExp.ToString() + "/" + fullExp.ToString();
             //SetLevelUpCost(fullExp - currentExp);
             ExpImage.fillAmount = (float)currentExp / (float)fullExp;
 		}
+
+        public void SetTimer(int remainingTime, int fullTime)
+        {
+            Timer.text = remainingTime.ToString("00");
+            TimerImage.fillAmount = (float)remainingTime / (float)fullTime;
+        }
 
         public void SetLevelUpCost(int levelUpCost)
         {
@@ -142,6 +150,7 @@ namespace CodingStrategy.UI.Shop
             //SetBit(1);
             //SetExp(10, 20);
             //SetRerollCost(7);
+            SetTimer(12, 20);
         }
 
         // Update is called once per frame
