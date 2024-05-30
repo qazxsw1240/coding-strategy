@@ -165,6 +165,16 @@ namespace CodingStrategy
             }
         }
 
+        private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
+
+        public void Update()
+        {
+            if (_actions.TryDequeue(out Action action))
+            {
+                action();
+            }
+        }
+
         public override void OnConnectedToMaster()
         {
             TypedLobby lobby = new TypedLobby("coding-strategy", LobbyType.SqlLobby);
@@ -420,7 +430,6 @@ namespace CodingStrategy
                     yield return null;
                     continue;
                 }
-
                 yield break;
             }
 
@@ -634,10 +643,8 @@ namespace CodingStrategy
                         PhotonNetwork.LocalPlayer.CustomProperties.ContainsKey("status"));
                     _isStatusSynchronized = true;
                 });
-
                 return;
             }
-
 
             if (eventCode == BitPlaceResponseCode)
             {
@@ -653,7 +660,6 @@ namespace CodingStrategy
                     }
 
                     Debug.Log("All player has placed all bits");
-
                     _responsePlayers.Clear();
                     PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
                     {
