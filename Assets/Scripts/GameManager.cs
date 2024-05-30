@@ -173,6 +173,15 @@ namespace CodingStrategy
 
                 action();
             }
+
+            if (_expectedStatus != null)
+            {
+                int elapsedTime = unchecked(PhotonNetwork.ServerTimestamp - _expectedStatusTimestamp);
+                if (elapsedTime > 3000)
+                {
+                    AwaitAllPlayersStatus(_expectedStatus, retry: true);
+                }
+            }
         }
 
         public override void OnConnectedToMaster()
@@ -458,15 +467,22 @@ namespace CodingStrategy
         }
 
         private string? _expectedStatus;
+        private int _expectedStatusTimestamp;
         private string? _actualStatus;
 
-        public IEnumerator AwaitAllPlayersStatus(string status, bool includingMasterClient = true)
+
+        private CustomYieldInstruction? _lastStatusSync;
+
+        public IEnumerator AwaitAllPlayersStatus(string status, bool includingMasterClient = true, bool retry = false)
         {
             _expectedStatus = status;
+            _expectedStatusTimestamp = PhotonNetwork.ServerTimestamp;
+            int currentExpectedStatusTimestamp = _expectedStatusTimestamp;
             if (PhotonNetwork.IsMasterClient)
             {
                 _currentStatusRequest = status;
             }
+
             if (includingMasterClient)
             {
                 _actions.Enqueue(() =>
@@ -513,41 +529,44 @@ namespace CodingStrategy
             //     }
             // }
 
-            yield return new WaitUntil(() =>
+            if (!retry)
             {
-                // if (!_isStatusSynchronized)
-                // {
-                //     return false;
-                // }
-
-                // HashSet<string> status = new HashSet<string>();
-                // int count = 0;
-                //
-                // foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
-                // {
-                //     if (!player.CustomProperties.ContainsKey("status"))
-                //     {
-                //         continue;
-                //     }
-                //
-                //     count++;
-                //     status.Add((string) player.CustomProperties["status"]);
-                // }
-                //
-                // Debug.LogFormat("count: {0}, status: {1}", PhotonNetwork.CurrentRoom.PlayerCount,
-                //     string.Join(", ", status));
-                // return count == PhotonNetwork.CurrentRoom.PlayerCount && status.Count == 1;
-                if (_expectedStatus == null || _actualStatus == null)
+                yield return new WaitUntil(() =>
                 {
-                    return false;
-                }
+                    // if (!_isStatusSynchronized)
+                    // {
+                    //     return false;
+                    // }
 
-                _isStatusSynchronized = _expectedStatus == _actualStatus;
-                return _isStatusSynchronized;
-            });
-            _expectedStatus = null;
-            _actualStatus = null;
-            _isStatusSynchronized = false;
+                    // HashSet<string> status = new HashSet<string>();
+                    // int count = 0;
+                    //
+                    // foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
+                    // {
+                    //     if (!player.CustomProperties.ContainsKey("status"))
+                    //     {
+                    //         continue;
+                    //     }
+                    //
+                    //     count++;
+                    //     status.Add((string) player.CustomProperties["status"]);
+                    // }
+                    //
+                    // Debug.LogFormat("count: {0}, status: {1}", PhotonNetwork.CurrentRoom.PlayerCount,
+                    //     string.Join(", ", status));
+                    // return count == PhotonNetwork.CurrentRoom.PlayerCount && status.Count == 1;
+                    if (_expectedStatus == null || _actualStatus == null)
+                    {
+                        return false;
+                    }
+
+                    _isStatusSynchronized = _expectedStatus == _actualStatus;
+                    return _isStatusSynchronized;
+                });
+                _expectedStatus = null;
+                _actualStatus = null;
+                _isStatusSynchronized = false;
+            }
         }
 
         private void PreparePlayerUI(Player photonPlayer, PlayerStatusUI playerStatusUI, Color color)
