@@ -46,6 +46,11 @@ namespace CodingStrategy.Entities.Player
             _pool[id] = obj;
         }
 
+        public bool Contains(string id)
+        {
+            return _pool.ContainsKey(id);
+        }
+
         /// <summary>
         /// 플레이어 풀에서 특정 플레이어를 제거합니다.
         /// </summary>

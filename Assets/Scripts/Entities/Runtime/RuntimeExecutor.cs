@@ -172,6 +172,8 @@ namespace CodingStrategy.Entities.Runtime
 
                 BitDispenser.ClearTakenBits();
             }
+
+            yield return GameManager.AwaitAllPlayersStatus("turn" + _currentCountdown);
         }
 
         protected override IEnumerator OnAfterTermination()
