@@ -50,6 +50,16 @@ namespace CodingStrategy.Entities
             animationQueue.Enqueue(coroutine);
         }
 
+        public void ClearAnimationQueue(object target)
+        {
+            if (!_animationQueues.TryGetValue(target, out Queue<IEnumerator> animationQueue))
+            {
+                return;
+            }
+
+            animationQueue.Clear();
+        }
+
         /// <summary>
         /// 큐에 저장된 코루틴 애니메이션을 실행합니다.
         /// </summary>

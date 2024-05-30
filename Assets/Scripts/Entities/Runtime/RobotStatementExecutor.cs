@@ -122,7 +122,7 @@ namespace CodingStrategy.Entities.Runtime
                 {
                     statements.Clear();
                     executionQueue.Clear();
-
+                    Context.AnimationCoroutineManager.ClearAnimationQueue(robotDelegate);
                     if (robotDelegate.Id == GameManager.util.LocalPhotonPlayerDelegate.Id)
                     {
                         GameManager.util.LocalPhotonPlayerDelegate.HealthPoint -= 1;
