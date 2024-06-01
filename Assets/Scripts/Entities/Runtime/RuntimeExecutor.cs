@@ -166,7 +166,7 @@ namespace CodingStrategy.Entities.Runtime
                 Destroy(robotStatementExecutor);
 
                 IDictionary<string, IAbnormality> abnormalities = GameManager.GetAbnormalities();
-                foreach(IAbnormality abnormality in abnormalities.Values)
+                foreach (IAbnormality abnormality in abnormalities.Values)
                 {
                     abnormality.Execute();
                 }
@@ -174,7 +174,8 @@ namespace CodingStrategy.Entities.Runtime
                 BitDispenser.ClearTakenBits();
             }
 
-            yield return GameManager.AwaitAllPlayersStatus("turn" + _currentCountdown);
+            yield return GameManager.statusSynchronizer.AwaitAllPlayersStatus("turn" + _currentCountdown, "ready",
+                "turn" + (_currentCountdown + 1));
         }
 
         protected override IEnumerator OnAfterTermination()
@@ -203,9 +204,10 @@ namespace CodingStrategy.Entities.Runtime
                 robotDelegate,
                 playerDelegate);
         }
+
         private UnityAction<IRobotDelegate, IPlayerDelegate, IStatement> AddCurrencyOnMove()
         {
-            return (_, playerDelegate, statement)=>
+            return (_, playerDelegate, statement) =>
             {
                 if (statement.Phase == StatementPhase.Move)
                 {
@@ -213,7 +215,8 @@ namespace CodingStrategy.Entities.Runtime
                     {
                         return;
                     }
-                    playerDelegate.Currency+=1;
+
+                    playerDelegate.Currency += 1;
                 }
             };
         }

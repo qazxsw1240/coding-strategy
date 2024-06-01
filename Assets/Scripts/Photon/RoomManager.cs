@@ -11,6 +11,7 @@ using TMPro;
 using CodingStrategy.Photon.Chat;
 using CodingStrategy.UI.InGame;
 using CodingStrategy.Utility;
+using Unity.VisualScripting;
 using UnityEngine.SceneManagement;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -28,6 +29,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public ChatManager ChatManager;
 
     public readonly Color ReadyGreen = new Vector4(51, 164, 49, 255) / 255;
+
+    // public InGameStatusSynchronizer statusSynchronizer;
 
     private void Start()
     {
@@ -67,6 +70,10 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
             Debug.LogFormat("Server delay is {0}ms", delay);
         }
+
+        // GameObject gameObject = new GameObject { name = "statusSynchronizer" };
+        // statusSynchronizer = gameObject.GetOrAddComponent<InGameStatusSynchronizer>();
+        // DontDestroyOnLoad(gameObject);
     }
 
     public void UpdatePlayerNicknames()
@@ -307,6 +314,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         SceneManager.LoadScene("GameLobby");
+        // Destroy(statusSynchronizer.gameObject);
     }
 
     public void OnGameStart()
