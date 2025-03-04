@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-using CodingStrategy.Entities.Runtime.CommandImpl;
+using CodingStrategy.Entities.Runtime.Command;
 
 namespace CodingStrategy.Entities
 {
@@ -56,14 +56,11 @@ namespace CodingStrategy.Entities
 
         public int Count { get; private set; }
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         public int Capacity
         {
-            get { return Count; }
+            get => Count;
             set
             {
                 if (value < 0 || value > MaxCapacity)
