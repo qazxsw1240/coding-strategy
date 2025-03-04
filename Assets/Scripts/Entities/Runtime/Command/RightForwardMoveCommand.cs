@@ -7,35 +7,26 @@ namespace CodingStrategy.Entities.Runtime.Command
 {
     public class RightForwardMoveCommand : AbstractCommand
     {
-        private static readonly Coordinate _coordinate = new Coordinate(1, 1);
+        private static readonly Coordinate Coordinate = new Coordinate(1, 1);
 
-        public RightForwardMoveCommand(
-            string id = "7",
-            string name = "우측 대각선 이동",
-            int enhancedLevel = 1,
-            int grade = 2,
-            string explanation = "바라보는 기준에서 오른쪽 앞 대각선 방향으로 1칸 이동합니다.")
-            : base(id, name, enhancedLevel, grade, 0, explanation)
+        public RightForwardMoveCommand(int enhancedLevel = 1)
+            : base(CommandLoader.Load(7), enhancedLevel, 0)
         {
         }
 
         public override ICommand Copy(bool keepStatus = true)
         {
-            if (!keepStatus)
-            {
-                return new RightForwardMoveCommand();
-            }
-            return new RightForwardMoveCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return keepStatus ? new RightForwardMoveCommand(Info.EnhancedLevel) : new RightForwardMoveCommand();
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)
         {
-            _commandBuilder.Append(new MoveCoordinateStatement(robotDelegate, _coordinate));
+            _commandBuilder.Append(new MoveCoordinateStatement(robotDelegate, Coordinate));
         }
 
         protected override void AddStatementOnLevel2(IRobotDelegate robotDelegate)
         {
-            _commandBuilder.Append(new MoveCoordinateStatement(robotDelegate, _coordinate));
+            _commandBuilder.Append(new MoveCoordinateStatement(robotDelegate, Coordinate));
         }
 
         protected override void AddStatementOnLevel3(IRobotDelegate robotDelegate)

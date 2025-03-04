@@ -14,11 +14,7 @@ namespace CodingStrategy.Entities.Runtime.Command
 
         public override ICommand Copy(bool keepStatus = true)
         {
-            if (!keepStatus)
-            {
-                return new SelfRepairCommand();
-            }
-            return new SelfRepairCommand(Info.EnhancedLevel);
+            return keepStatus ? new SelfRepairCommand(Info.EnhancedLevel) : new SelfRepairCommand();
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)

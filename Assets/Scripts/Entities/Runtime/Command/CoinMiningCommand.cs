@@ -16,24 +16,15 @@ namespace CodingStrategy.Entities.Runtime.Command
 
         private readonly AbnormalityProfile _abnormalityProfile;
 
-        public CoinMiningCommand(
-            string id = "11",
-            string name = "코인 채굴",
-            int enhancedLevel = 1,
-            int grade = 4,
-            string explanation = "사용시 자신의 스택 계수만큼 비트를 획득합니다.")
-            : base(id, name, enhancedLevel, grade, 0, explanation)
+        public CoinMiningCommand(int enhancedLevel = 1)
+            : base(CommandLoader.Load(11), enhancedLevel, 0)
         {
             _abnormalityProfile = AbnormalityLoader.Load("Stack");
         }
 
         public override ICommand Copy(bool keepStatus = true)
         {
-            if (!keepStatus)
-            {
-                return new CoinMiningCommand();
-            }
-            return new CoinMiningCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return keepStatus ? new CoinMiningCommand(Info.EnhancedLevel) : new CoinMiningCommand();
         }
 
         public override IList<IStatement> GetCommandStatements(IRobotDelegate robot)

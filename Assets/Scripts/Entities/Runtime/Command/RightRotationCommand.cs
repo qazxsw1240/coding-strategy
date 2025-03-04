@@ -7,23 +7,14 @@ namespace CodingStrategy.Entities.Runtime.Command
 {
     public class RightRotationCommand : AbstractCommand
     {
-        public RightRotationCommand(
-            string id = "5",
-            string name = "우회전",
-            int enhancedLevel = 1,
-            int grade = 1,
-            string explanation = "바라보는 기준에서 오른쪽으로 90도 회전합니다.")
-            : base(id, name, enhancedLevel, grade, 0, explanation)
+        public RightRotationCommand(int enhancedLevel = 1)
+            : base(CommandLoader.Load(5), enhancedLevel, 0)
         {
         }
 
         public override ICommand Copy(bool keepStatus = true)
         {
-            if (!keepStatus)
-            {
-                return new RightRotationCommand();
-            }
-            return new RightRotationCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return keepStatus ? new RightRotationCommand(Info.EnhancedLevel) : new RightRotationCommand();
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)

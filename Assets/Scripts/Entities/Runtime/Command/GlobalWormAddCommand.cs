@@ -8,23 +8,16 @@ namespace CodingStrategy.Entities.Runtime.Command
 {
     public class GlobalWormAddCommand : AbstractCommand
     {
-        public GlobalWormAddCommand(
-            string id = "9",
-            string name = "전역 웜 추가",
-            int enhancedLevel = 1,
-            int grade = 2,
-            string explanation = "모든 캐릭터에게 웜 1만큼 부여합니다.")
-            : base(id, name, enhancedLevel, grade, 0, explanation)
+        public GlobalWormAddCommand(int enhancedLevel = 1)
+            : base(CommandLoader.Load(9), enhancedLevel, 0)
         {
         }
 
         public override ICommand Copy(bool keepStatus = true)
         {
-            if (!keepStatus)
-            {
-                return new GlobalWormAddCommand();
-            }
-            return new GlobalWormAddCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return keepStatus
+                ? new GlobalWormAddCommand(Info.EnhancedLevel)
+                : new GlobalWormAddCommand();
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)

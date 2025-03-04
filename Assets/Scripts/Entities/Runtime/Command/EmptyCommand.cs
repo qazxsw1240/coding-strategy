@@ -6,23 +6,14 @@ namespace CodingStrategy.Entities.Runtime.Command
 {
     public class EmptyCommand : AbstractCommand
     {
-        public EmptyCommand(
-            string id = "0",
-            string name = "빈 커맨드",
-            int enhancedLevel = 0,
-            int grade = 0,
-            string explanation = "")
-            : base(id, name, enhancedLevel, grade, 0, explanation)
+        public EmptyCommand(int enhancedLevel = 0)
+            : base(CommandLoader.Load(0), enhancedLevel, 0)
         {
         }
 
         public override ICommand Copy(bool keepStatus = true)
         {
-            if (!keepStatus)
-            {
-                return new EmptyCommand();
-            }
-            return new EmptyCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return keepStatus ? new EmptyCommand(Info.EnhancedLevel) : new EmptyCommand();
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate) {}

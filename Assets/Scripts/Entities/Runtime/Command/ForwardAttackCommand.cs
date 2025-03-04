@@ -12,23 +12,16 @@ namespace CodingStrategy.Entities.Runtime.Command
     {
         private readonly IList<Coordinate> _coordinates = new List<Coordinate>();
 
-        public ForwardAttackCommand(
-            string id = "15",
-            string name = "앞 공격",
-            int enhancedLevel = 1,
-            int grade = 1,
-            string explanation = "사용시 공격 범위에 해당하는  칸에 있는 로봇을 본인 공격력 수치만큼 공격합니다. 에너지를 1 소모합니다.")
-            : base(id, name, enhancedLevel, grade, 1, explanation)
+        public ForwardAttackCommand(int enhancedLevel = 1)
+            : base(CommandLoader.Load(15), enhancedLevel, 1)
         {
         }
 
         public override ICommand Copy(bool keepStatus = true)
         {
-            if (!keepStatus)
-            {
-                return new ForwardAttackCommand();
-            }
-            return new ForwardAttackCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return keepStatus
+                ? new ForwardAttackCommand(Info.EnhancedLevel)
+                : new ForwardAttackCommand();
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)

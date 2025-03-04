@@ -11,16 +11,12 @@ namespace CodingStrategy.Entities.Runtime.Command
 {
     public class SchanzeInstallerCommand : AbstractCommand
     {
-        public static int installNum;
+        private static int _installNum;
+
         private readonly List<Coordinate> _coordinates = new List<Coordinate>();
 
-        public SchanzeInstallerCommand(
-            string id = "13",
-            string name = "점프대 설치",
-            int enhancedLevel = 1,
-            int grade = 1,
-            string explanation = "사용시 공격 범위에 해당하는 칸에 로봇이 바라보는 방향으로 로봇이 이동하게 만드는 배드섹터를 설치합니다.에너지를 1 소모합니다.")
-            : base(id, name, enhancedLevel, grade, 1, explanation)
+        public SchanzeInstallerCommand(int enhancedLevel = 1)
+            : base(CommandLoader.Load(13), enhancedLevel, 1)
         {
         }
 
@@ -30,18 +26,20 @@ namespace CodingStrategy.Entities.Runtime.Command
             {
                 return new SchanzeInstallerCommand();
             }
-            return new SchanzeInstallerCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return new SchanzeInstallerCommand(Info.EnhancedLevel);
         }
 
-        public IBadSectorDelegate InstallJumpBadSector(IBoardDelegate boardDelegate, IRobotDelegate robotDelegate)
+        private static IBadSectorDelegate CreateJumpBadSector(
+            IBoardDelegate boardDelegate,
+            IRobotDelegate robotDelegate)
         {
-            return new JumpBadSector(robotDelegate.Id + "-" + installNum++, boardDelegate, robotDelegate);
+            return new JumpBadSector($"{robotDelegate.Id}-{_installNum++}", boardDelegate, robotDelegate);
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)
         {
             _coordinates.Add(new Coordinate(0, 1));
-            _commandBuilder.Append(new PointerStatement(robotDelegate, InstallJumpBadSector, _coordinates));
+            _commandBuilder.Append(new PointerStatement(robotDelegate, CreateJumpBadSector, _coordinates));
         }
 
         protected override void AddStatementOnLevel2(IRobotDelegate robotDelegate) {}
@@ -51,7 +49,7 @@ namespace CodingStrategy.Entities.Runtime.Command
             _commandBuilder.Clear();
             _coordinates.Add(new Coordinate(-1, 1));
             _coordinates.Add(new Coordinate(1, 1));
-            _commandBuilder.Append(new PointerStatement(robotDelegate, InstallJumpBadSector, _coordinates));
+            _commandBuilder.Append(new PointerStatement(robotDelegate, CreateJumpBadSector, _coordinates));
         }
     }
 }

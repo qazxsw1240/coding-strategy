@@ -1,10 +1,11 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 
 using CodingStrategy.Entities.Robot;
 using CodingStrategy.Entities.Runtime;
-using CodingStrategy.Entities.Runtime.CommandImpl;
+using CodingStrategy.Entities.Runtime.Command;
 
 using UnityEngine;
 
@@ -21,6 +22,14 @@ namespace CodingStrategy.Entities
 
         private string _id;
 
+        protected AbstractCommand(CommandProfile profile, int enhancedLevel, int energyPoint)
+        {
+            _id = profile.ID;
+            Info = new CommandInfoImpl(profile.Name, enhancedLevel, profile.Grade, profile.Description);
+            _energyPoint = energyPoint;
+            _commandBuilder = new CommandBuilder();
+        }
+
         /// <summary>
         ///     기본적인 명령어 정보를 생성합니다.
         /// </summary>
@@ -30,6 +39,7 @@ namespace CodingStrategy.Entities
         /// <param name="grade"></param>
         /// <param name="energyPoint">명령어 실행에 필요한 에너지입니다.</param>
         /// <param name="explanation"></param>
+        [Obsolete("Use CommandProfile instead", true)]
         protected AbstractCommand(
             string id,
             string name,
