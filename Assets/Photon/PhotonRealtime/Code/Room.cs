@@ -313,6 +313,7 @@ namespace Photon.Realtime
         /// <summary>Creates a Room (representation) with given name and properties and the "listing options" as provided by parameters.</summary>
         /// <param name="roomName">Name of the room (can be null until it's actually created on server).</param>
         /// <param name="options">Room options.</param>
+        /// <param name="isOffline">Signal if this room is only used locally.</param>
         public Room(string roomName, RoomOptions options, bool isOffline = false) : base(roomName, options != null ? options.CustomRoomProperties : null)
         {
             // base() sets name and (custom)properties. here we set "well known" properties
