@@ -14,6 +14,7 @@ namespace CodingStrategy.Entities.Runtime.Command
         public string Name { get; private set; }
 
         [field: SerializeField]
+        [field: TextArea]
         public string Description { get; private set; }
     }
 }
