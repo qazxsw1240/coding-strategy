@@ -6,23 +6,18 @@ using CodingStrategy.Entities.Runtime.Statement;
 
 namespace CodingStrategy.Entities.Runtime.Command
 {
-    public class AddStackCommand : AbstractCommand
+    public class StackAddCommand : AbstractCommand
     {
-        public AddStackCommand(
-            string id = "8",
-            string name = "스택 추가",
-            int enhancedLevel = 1,
-            int grade = 2,
-            string explanation = "자신의 캐릭터에게 스택 2만큼 부여합니다.")
-            : base(id, name, enhancedLevel, grade, 0, explanation)
+        public StackAddCommand(int enhancedLevel = 1)
+            : base(CommandLoader.Load(8), enhancedLevel, 0)
         {
         }
 
         public override ICommand Copy(bool keepStatus = true)
         {
             return keepStatus
-                ? new AddStackCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade)
-                : new AddStackCommand();
+                ? new StackAddCommand(Info.EnhancedLevel)
+                : new StackAddCommand();
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)

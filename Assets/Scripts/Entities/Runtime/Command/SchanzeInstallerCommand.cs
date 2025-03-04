@@ -9,12 +9,12 @@ using CodingStrategy.Entities.Runtime.Statement;
 
 namespace CodingStrategy.Entities.Runtime.Command
 {
-    public class InstallJumpBadSectorCommand : AbstractCommand
+    public class SchanzeInstallerCommand : AbstractCommand
     {
         public static int installNum;
         private readonly List<Coordinate> _coordinates = new List<Coordinate>();
 
-        public InstallJumpBadSectorCommand(
+        public SchanzeInstallerCommand(
             string id = "13",
             string name = "점프대 설치",
             int enhancedLevel = 1,
@@ -28,9 +28,9 @@ namespace CodingStrategy.Entities.Runtime.Command
         {
             if (!keepStatus)
             {
-                return new InstallJumpBadSectorCommand();
+                return new SchanzeInstallerCommand();
             }
-            return new InstallJumpBadSectorCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return new SchanzeInstallerCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
 
         public IBadSectorDelegate InstallJumpBadSector(IBoardDelegate boardDelegate, IRobotDelegate robotDelegate)

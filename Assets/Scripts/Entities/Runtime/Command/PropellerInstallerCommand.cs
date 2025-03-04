@@ -9,12 +9,12 @@ using CodingStrategy.Entities.Runtime.Statement;
 
 namespace CodingStrategy.Entities.Runtime.Command
 {
-    public class InstallPropellerBadSectorCommand : AbstractCommand
+    public class PropellerInstallerCommand : AbstractCommand
     {
         public static int installNum;
         private readonly List<Coordinate> _coordinates = new List<Coordinate>();
 
-        public InstallPropellerBadSectorCommand(
+        public PropellerInstallerCommand(
             string id = "14",
             string name = "추진체 설치",
             int enhancedLevel = 1,
@@ -28,9 +28,9 @@ namespace CodingStrategy.Entities.Runtime.Command
         {
             if (!keepStatus)
             {
-                return new InstallPropellerBadSectorCommand();
+                return new PropellerInstallerCommand();
             }
-            return new InstallPropellerBadSectorCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return new PropellerInstallerCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
 
         public IBadSectorDelegate InstallPropellerBadSector(IBoardDelegate boardDelegate, IRobotDelegate robotDelegate)

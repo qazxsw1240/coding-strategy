@@ -8,11 +8,11 @@ using CodingStrategy.Entities.Runtime.Statement;
 
 namespace CodingStrategy.Entities.Runtime.Command
 {
-    public class AttackBackCommand : AbstractCommand
+    public class BackwardAttackCommand : AbstractCommand
     {
         private readonly IList<Coordinate> _coordinates = new List<Coordinate>();
 
-        public AttackBackCommand(
+        public BackwardAttackCommand(
             string id = "16",
             string name = "뒷 공격",
             int enhancedLevel = 1,
@@ -26,9 +26,9 @@ namespace CodingStrategy.Entities.Runtime.Command
         {
             if (!keepStatus)
             {
-                return new AttackBackCommand();
+                return new BackwardAttackCommand();
             }
-            return new AttackBackCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return new BackwardAttackCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)

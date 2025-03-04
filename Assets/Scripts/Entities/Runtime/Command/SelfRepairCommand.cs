@@ -7,13 +7,8 @@ namespace CodingStrategy.Entities.Runtime.Command
 {
     public class SelfRepairCommand : AbstractCommand
     {
-        public SelfRepairCommand(
-            string id = "22",
-            string name = "자가 수리",
-            int enhancedLevel = 1,
-            int grade = 3,
-            string explanation = "사용시 사용한 로봇의 체력이 2 이하일 경우, 체력을 1 회복합니다. 에너지를 2 소모합니다.")
-            : base(id, name, enhancedLevel, grade, 2, explanation)
+        public SelfRepairCommand(int enhancedLevel = 1)
+            : base(CommandLoader.Load(22), enhancedLevel, 2)
         {
         }
 
@@ -23,7 +18,7 @@ namespace CodingStrategy.Entities.Runtime.Command
             {
                 return new SelfRepairCommand();
             }
-            return new SelfRepairCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return new SelfRepairCommand(Info.EnhancedLevel);
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)

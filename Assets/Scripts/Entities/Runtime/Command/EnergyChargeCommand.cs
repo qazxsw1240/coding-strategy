@@ -7,11 +7,11 @@ using CodingStrategy.Entities.Runtime.Statement;
 
 namespace CodingStrategy.Entities.Runtime.Command
 {
-    public class ChargeEnergyCommand : AbstractCommand
+    public class EnergyChargeCommand : AbstractCommand
     {
         private readonly IList<Coordinate> _coordinates = new List<Coordinate>();
 
-        public ChargeEnergyCommand(
+        public EnergyChargeCommand(
             string id = "17",
             string name = "에너지 충전",
             int enhancedLevel = 1,
@@ -25,9 +25,9 @@ namespace CodingStrategy.Entities.Runtime.Command
         {
             if (!keepStatus)
             {
-                return new ChargeEnergyCommand();
+                return new EnergyChargeCommand();
             }
-            return new ChargeEnergyCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return new EnergyChargeCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)

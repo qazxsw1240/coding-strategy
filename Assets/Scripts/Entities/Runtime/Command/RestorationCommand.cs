@@ -1,22 +1,18 @@
 #nullable enable
 
-using System.Collections.Generic;
-
 using CodingStrategy.Entities.Robot;
 using CodingStrategy.Entities.Runtime.Statement;
 
 namespace CodingStrategy.Entities.Runtime.Command
 {
-    public class ReinforceCommand : AbstractCommand
+    public class RestorationCommand : AbstractCommand
     {
-        private readonly IList<Coordinate> _coordinates = new List<Coordinate>();
-
-        public ReinforceCommand(
-            string id = "20",
-            string name = "보강",
+        public RestorationCommand(
+            string id = "24",
+            string name = "원상 복구",
             int enhancedLevel = 1,
-            int grade = 2,
-            string explanation = "현재 로봇의 방어력을 1만큼 이번 런타임동안 증가합니다.")
+            int grade = 5,
+            string explanation = "사용시 사용한 로봇의 체력이 4 미만일 경우, 체력을 4로 회복시킵니다. 에너지를 모두 소모합니다.")
             : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
@@ -25,14 +21,15 @@ namespace CodingStrategy.Entities.Runtime.Command
         {
             if (!keepStatus)
             {
-                return new ReinforceCommand();
+                return new RestorationCommand();
             }
-            return new ReinforceCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return new RestorationCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)
         {
-            _commandBuilder.Append(new AddArmorStatement(robotDelegate, Info.EnhancedLevel));
+            robotDelegate.EnergyPoint = 0;
+            _commandBuilder.Append(new AddHealthPointStatement(robotDelegate, 4, 4));
         }
 
         protected override void AddStatementOnLevel2(IRobotDelegate robotDelegate) {}

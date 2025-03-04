@@ -5,16 +5,14 @@ using CodingStrategy.Entities.Runtime.Statement;
 
 namespace CodingStrategy.Entities.Runtime.Command
 {
-    public class MoveForwardCommand : AbstractCommand
+    public class LeftRotationCommand : AbstractCommand
     {
-        private static readonly Coordinate _coordinate = new Coordinate(0, 1);
-
-        public MoveForwardCommand(
-            string id = "1",
-            string name = "앞으로 이동",
+        public LeftRotationCommand(
+            string id = "4",
+            string name = "좌회전",
             int enhancedLevel = 1,
             int grade = 1,
-            string explanation = "바라보는 기준에서 앞으로 1칸 이동합니다.")
+            string explanation = "바라보는 기준에서 왼쪽으로 90도 회전합니다.")
             : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
@@ -23,19 +21,19 @@ namespace CodingStrategy.Entities.Runtime.Command
         {
             if (!keepStatus)
             {
-                return new MoveForwardCommand();
+                return new LeftRotationCommand();
             }
-            return new MoveForwardCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
+            return new LeftRotationCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)
         {
-            _commandBuilder.Append(new MoveCoordinateStatement(robotDelegate, _coordinate));
+            _commandBuilder.Append(new RotateStatement(robotDelegate, -1));
         }
 
         protected override void AddStatementOnLevel2(IRobotDelegate robotDelegate)
         {
-            _commandBuilder.Append(new MoveCoordinateStatement(robotDelegate, _coordinate));
+            _commandBuilder.Append(new RotateStatement(robotDelegate, -1));
         }
 
         protected override void AddStatementOnLevel3(IRobotDelegate robotDelegate)

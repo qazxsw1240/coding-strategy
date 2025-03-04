@@ -1,5 +1,5 @@
 using CodingStrategy.Entities;
-using CodingStrategy.Entities.Runtime.CommandImpl;
+using CodingStrategy.Entities.Runtime.Command;
 using CodingStrategy.Network;
 
 namespace CodingStrategy
@@ -22,28 +22,28 @@ namespace CodingStrategy
 
         public static void Initialize()
         {
-            AddCommand(new MoveForwardCommand(), DefaultGrade1CommandStockCount);
-            AddCommand(new MoveLeftCommand(), DefaultGrade1CommandStockCount);
-            AddCommand(new MoveRightCommand(), DefaultGrade1CommandStockCount);
-            AddCommand(new RotateLeftCommand(), DefaultGrade1CommandStockCount);
-            AddCommand(new RotateRightCommand(), DefaultGrade1CommandStockCount);
-            AddCommand(new MoveLeftForwardCommand(), DefaultGrade2CommandStockCount);
-            AddCommand(new MoveRightForwardCommand(), DefaultGrade2CommandStockCount);
-            AddCommand(new AddStackCommand(), DefaultGrade2CommandStockCount);
-            AddCommand(new AddWormAllEnemyCommand(), DefaultGrade2CommandStockCount);
-            AddCommand(new InstallMalwareBadSectorCommand(), DefaultGrade3CommandStockCount);
+            AddCommand(new ForwardMoveCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new LeftMoveCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new RightRightCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new LeftRotationCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new RightRotationCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new LeftForwardMoveCommand(), DefaultGrade2CommandStockCount);
+            AddCommand(new RightForwardMoveCommand(), DefaultGrade2CommandStockCount);
+            AddCommand(new StackAddCommand(), DefaultGrade2CommandStockCount);
+            AddCommand(new GlobalWormAddCommand(), DefaultGrade2CommandStockCount);
+            AddCommand(new MalwareInstallerCommand(), DefaultGrade3CommandStockCount);
             AddCommand(new CoinMiningCommand(), DefaultGrade4CommandStockCount);
             AddCommand(new BotnetsCommand(), DefaultGrade5CommandStockCount);
-            AddCommand(new InstallJumpBadSectorCommand(), DefaultGrade1CommandStockCount);
-            AddCommand(new InstallPropellerBadSectorCommand(), DefaultGrade1CommandStockCount);
-            AddCommand(new AttackForwardCommand(), DefaultGrade1CommandStockCount);
-            AddCommand(new AttackBackCommand(), DefaultGrade1CommandStockCount);
-            AddCommand(new ChargeEnergyCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new SchanzeInstallerCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new PropellerInstallerCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new ForwardAttackCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new BackwardAttackCommand(), DefaultGrade1CommandStockCount);
+            AddCommand(new EnergyChargeCommand(), DefaultGrade1CommandStockCount);
             AddCommand(new DashCommand(), DefaultGrade2CommandStockCount);
-            AddCommand(new SecureEnergyStorageCommand(), DefaultGrade2CommandStockCount);
-            AddCommand(new ReinforceCommand(), DefaultGrade2CommandStockCount);
+            AddCommand(new EnergyStorageIncreaseCommand(), DefaultGrade2CommandStockCount);
+            AddCommand(new ReinforcementCommand(), DefaultGrade2CommandStockCount);
             AddCommand(new SelfRepairCommand(), DefaultGrade4CommandStockCount);
-            AddCommand(new RestoringCommand(), DefaultGrade5CommandStockCount);
+            AddCommand(new RestorationCommand(), DefaultGrade5CommandStockCount);
         }
     }
 }
