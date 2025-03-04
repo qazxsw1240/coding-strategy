@@ -37,6 +37,11 @@ namespace CodingStrategy.Entities.Runtime.Command
             }
             throw new CommandProfileNotFoundException(id);
         }
+
+        public static CommandProfile Load(int id)
+        {
+            return Load(id.ToString());
+        }
     }
 
     public class CommandProfileNotFoundException : Exception
