@@ -2,7 +2,7 @@
 
 using CodingStrategy.Entities.Robot;
 
-namespace CodingStrategy.Entities.Runtime.CommandImpl
+namespace CodingStrategy.Entities.Runtime.Command
 {
     public class EmptyCommand : AbstractCommand
     {

@@ -7,7 +7,7 @@ using CodingStrategy.Entities.Robot;
 using CodingStrategy.Entities.Runtime.Abnormality;
 using CodingStrategy.Entities.Runtime.Statement;
 
-namespace CodingStrategy.Entities.Runtime.CommandImpl
+namespace CodingStrategy.Entities.Runtime.Command
 {
     public class CoinMiningCommand : AbstractCommand
     {

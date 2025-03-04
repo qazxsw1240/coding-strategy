@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace CodingStrategy.Entities.Runtime.CommandImpl
+namespace CodingStrategy.Entities.Runtime.Command
 {
     public class CommandBuilder
     {

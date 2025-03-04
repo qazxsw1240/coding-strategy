@@ -6,7 +6,7 @@ using System.Linq;
 using CodingStrategy.Entities.Robot;
 using CodingStrategy.Entities.Runtime.Statement;
 
-namespace CodingStrategy.Entities.Runtime.CommandImpl
+namespace CodingStrategy.Entities.Runtime.Command
 {
     public class AttackForwardCommand : AbstractCommand
     {
