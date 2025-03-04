@@ -30,7 +30,7 @@ Shader "ExampleShader"
 
         _RimColor("Rim Color", Color) = (1,1,1,1)
         _RimAmount("Rim Amount", Range(0, 1)) = 0.716
-        _RimThreshold("Rim Threshold", Range(0, 1)) = 0.1	
+        _RimThreshold("Rim Threshold", Range(0, 1)) = 0.1
 
         _OcclusionStrength("Strength", Range(0.0, 1.0)) = 1.0
         _OcclusionMap("Occlusion", 2D) = "white" {}
@@ -78,7 +78,10 @@ Shader "ExampleShader"
         // Universal Pipeline tag is required. If Universal render pipeline is not set in the graphics settings
         // this Subshader will fail. One can add a subshader below or fallback to Standard built-in to make this
         // material work with both Universal Render Pipeline and Builtin Unity Pipeline
-        Tags{"RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="4.5"}
+        Tags
+        {
+            "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="4.5"
+        }
         LOD 300
 
         // ------------------------------------------------------------------
@@ -88,7 +91,10 @@ Shader "ExampleShader"
             // Lightmode matches the ShaderPassName set in UniversalRenderPipeline.cs. SRPDefaultUnlit and passes with
             // no LightMode tag are also rendered by Universal Render Pipeline
             Name "ForwardLit"
-            Tags{"LightMode" = "UniversalForward"}
+            Tags
+            {
+                "LightMode" = "UniversalForward"
+            }
 
             Blend[_SrcBlend][_DstBlend]
             ZWrite[_ZWrite]
@@ -145,8 +151,8 @@ Shader "ExampleShader"
             #pragma instancing_options renderinglayer
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitForwardPass.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
 
             #pragma vertex LitPassVertex
             //#pragma fragment LitPassFragment
@@ -155,8 +161,9 @@ Shader "ExampleShader"
             half4 _RimColor;
             half _RimAmount;
             half _RimThreshold;
-            half3 MyCalculateBlinnPhong(Light light, InputData inputData, SurfaceData surfaceData)
-            {
+
+
+            half3 MyCalculateBlinnPhong(Light light, InputData inputData, SurfaceData surfaceData) {
                 half3 N = inputData.normalWS;
                 half3 L = light.direction;
                 half3 V = inputData.viewDirectionWS;
@@ -164,8 +171,10 @@ Shader "ExampleShader"
                 half3 attenuatedLightColor = light.color * (light.distanceAttenuation * light.shadowAttenuation);
                 //half3 lightColor = LightingLambert(attenuatedLightColor, light.direction, inputData.normalWS);
                 //half3 lightColor = attenuatedLightColor * saturate(dot(inputData.normalWS, light.direction));
-                half3 lightColor = surfaceData.albedo * attenuatedLightColor * (smoothstep(0, 0.01, dot(N, L) > 0 ? 1 : 0));
-                lightColor += surfaceData.albedo * attenuatedLightColor * (smoothstep(0, 0.01, dot(N, L) > 0 ? 1 : 0)) * smoothstep(_RimAmount - 0.01, _RimAmount + 0.01, 1 - dot(V, N)) * _RimColor;
+                half3 lightColor = surfaceData.albedo * attenuatedLightColor * (smoothstep(
+                    0, 0.01, dot(N, L) > 0 ? 1 : 0));
+                lightColor += surfaceData.albedo * attenuatedLightColor * (smoothstep(0, 0.01, dot(N, L) > 0 ? 1 : 0)) *
+                    smoothstep(_RimAmount - 0.01, _RimAmount + 0.01, 1 - dot(V, N)) * _RimColor;
 
                 #if defined(_SPECGLOSSMAP) || defined(_SPECULAR_COLOR)
                 half smoothness = exp2(10 * surfaceData.smoothness + 1);
@@ -176,8 +185,8 @@ Shader "ExampleShader"
                 return lightColor;
             }
 
-            half4 MyUniversalFragmentBlinnPhong(InputData inputData, SurfaceData surfaceData)
-            {
+
+            half4 MyUniversalFragmentBlinnPhong(InputData inputData, SurfaceData surfaceData) {
                 #if defined(DEBUG_DISPLAY)
                 half4 debugColor;
 
@@ -187,7 +196,7 @@ Shader "ExampleShader"
                 }
                 #endif
 
-                uint meshRenderingLayers = GetMeshRenderingLightLayer();
+                uint mesh_rendering_layers = GetMeshRenderingLightLayer();
                 half4 shadowMask = CalculateShadowMask(inputData);
                 AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor(inputData, surfaceData);
                 Light mainLight = GetMainLight(inputData, shadowMask, aoFactor);
@@ -197,8 +206,7 @@ Shader "ExampleShader"
                 inputData.bakedGI *= surfaceData.albedo;
 
                 LightingData lightingData = CreateLightingData(inputData, surfaceData);
-                if (IsMatchingLightLayer(mainLight.layerMask, meshRenderingLayers))
-                {
+                if (IsMatchingLightLayer(mainLight.layerMask, mesh_rendering_layers)) {
                     lightingData.mainLightColor += MyCalculateBlinnPhong(mainLight, inputData, surfaceData);
                 }
 
@@ -232,31 +240,31 @@ Shader "ExampleShader"
                 return CalculateFinalColor(lightingData, surfaceData.alpha);
             }
 
-            half4 MyLitPassFragment(Varyings input) : SV_Target
-            {
+
+            half4 MyLitPassFragment(Varyings input) : SV_Target {
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-            #if defined(_PARALLAXMAP)
-            #if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
+                #if defined(_PARALLAXMAP)
+                #if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
                 half3 viewDirTS = input.viewDirTS;
-            #else
+                #else
                 half3 viewDirWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
                 half3 viewDirTS = GetViewDirectionTangentSpace(input.tangentWS, input.normalWS, viewDirWS);
-            #endif
+                #endif
                 ApplyPerPixelDisplacement(viewDirTS, input.uv);
-            #endif
+                #endif
 
                 SurfaceData surfaceData;
                 InitializeStandardLitSurfaceData(input.uv, surfaceData);
 
                 InputData inputData;
                 InitializeInputData(input, surfaceData.normalTS, inputData);
-                SETUP_DEBUG_TEXTURE_DATA(inputData, input.uv, _BaseMap);
+                SETUP_DEBUG_TEXTURE_DATA(inputData, input.uv);
 
-            #ifdef _DBUFFER
+                #ifdef _DBUFFER
                 ApplyDecalToSurfaceData(input.positionCS, surfaceData, inputData);
-            #endif
+                #endif
 
                 half4 color = MyUniversalFragmentBlinnPhong(inputData, surfaceData);
 
@@ -271,7 +279,10 @@ Shader "ExampleShader"
         Pass
         {
             Name "ShadowCaster"
-            Tags{"LightMode" = "ShadowCaster"}
+            Tags
+            {
+                "LightMode" = "ShadowCaster"
+            }
 
             ZWrite On
             ZTest LEqual
@@ -311,7 +322,10 @@ Shader "ExampleShader"
             // Lightmode matches the ShaderPassName set in UniversalRenderPipeline.cs. SRPDefaultUnlit and passes with
             // no LightMode tag are also rendered by Universal Render Pipeline
             Name "GBuffer"
-            Tags{"LightMode" = "UniversalGBuffer"}
+            Tags
+            {
+                "LightMode" = "UniversalGBuffer"
+            }
 
             ZWrite[_ZWrite]
             ZTest LEqual
@@ -368,7 +382,6 @@ Shader "ExampleShader"
             #pragma vertex LitGBufferPassVertex
             #pragma fragment LitGBufferPassFragment
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitGBufferPass.hlsl"
             ENDHLSL
         }
@@ -376,7 +389,10 @@ Shader "ExampleShader"
         Pass
         {
             Name "DepthOnly"
-            Tags{"LightMode" = "DepthOnly"}
+            Tags
+            {
+                "LightMode" = "DepthOnly"
+            }
 
             ZWrite On
             ColorMask 0
@@ -399,7 +415,6 @@ Shader "ExampleShader"
             #pragma multi_compile_instancing
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -408,7 +423,10 @@ Shader "ExampleShader"
         Pass
         {
             Name "DepthNormals"
-            Tags{"LightMode" = "DepthNormals"}
+            Tags
+            {
+                "LightMode" = "DepthNormals"
+            }
 
             ZWrite On
             Cull[_Cull]
@@ -433,7 +451,6 @@ Shader "ExampleShader"
             #pragma multi_compile_instancing
             #pragma multi_compile _ DOTS_INSTANCING_ON
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
             ENDHLSL
         }
@@ -444,7 +461,10 @@ Shader "ExampleShader"
         // Universal Pipeline tag is required. If Universal render pipeline is not set in the graphics settings
         // this Subshader will fail. One can add a subshader below or fallback to Standard built-in to make this
         // material work with both Universal Render Pipeline and Builtin Unity Pipeline
-        Tags{"RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="2.0"}
+        Tags
+        {
+            "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "True" "ShaderModel"="2.0"
+        }
         LOD 300
 
         // ------------------------------------------------------------------
@@ -454,7 +474,10 @@ Shader "ExampleShader"
             // Lightmode matches the ShaderPassName set in UniversalRenderPipeline.cs. SRPDefaultUnlit and passes with
             // no LightMode tag are also rendered by Universal Render Pipeline
             Name "ForwardLit"
-            Tags{"LightMode" = "UniversalForward"}
+            Tags
+            {
+                "LightMode" = "UniversalForward"
+            }
 
             Blend[_SrcBlend][_DstBlend]
             ZWrite[_ZWrite]
@@ -512,7 +535,6 @@ Shader "ExampleShader"
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFragment
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitForwardPass.hlsl"
             ENDHLSL
         }
@@ -520,7 +542,10 @@ Shader "ExampleShader"
         Pass
         {
             Name "ShadowCaster"
-            Tags{"LightMode" = "ShadowCaster"}
+            Tags
+            {
+                "LightMode" = "ShadowCaster"
+            }
 
             ZWrite On
             ZTest LEqual
@@ -549,7 +574,6 @@ Shader "ExampleShader"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
@@ -557,7 +581,10 @@ Shader "ExampleShader"
         Pass
         {
             Name "DepthOnly"
-            Tags{"LightMode" = "DepthOnly"}
+            Tags
+            {
+                "LightMode" = "DepthOnly"
+            }
 
             ZWrite On
             ColorMask 0
@@ -579,7 +606,6 @@ Shader "ExampleShader"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -588,7 +614,10 @@ Shader "ExampleShader"
         Pass
         {
             Name "DepthNormals"
-            Tags{"LightMode" = "DepthNormals"}
+            Tags
+            {
+                "LightMode" = "DepthNormals"
+            }
 
             ZWrite On
             Cull[_Cull]
@@ -612,7 +641,6 @@ Shader "ExampleShader"
             // GPU Instancing
             #pragma multi_compile_instancing
 
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
             ENDHLSL
         }

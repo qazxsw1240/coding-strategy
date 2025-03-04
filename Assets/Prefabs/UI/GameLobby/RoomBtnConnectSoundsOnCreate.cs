@@ -1,31 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+using CodingStrategy.Sound;
+
 using UnityEngine;
-using UnityEngine.UI;
 
-public class RoomBtnConnectSoundsOnCreate : MonoBehaviour
+namespace CodingStrategy.Prefabs.UI.GameLobby
 {
-    SoundManager soundmanager;
-    SceneChanger sceneChanger;
-
-    public GameObject CreatedBtn;
-
-    private void Awake()
+    public class RoomBtnConnectSoundsOnCreate : MonoBehaviour
     {
-        soundmanager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
-        sceneChanger = GameObject.Find("SoundManager").GetComponent<SceneChanger>();
-        //soundmanager.Init();
-    }
+        public GameObject createdBtn;
+        private SceneChanger _sceneChanger;
+        private ISoundManager _soundManager;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        CreatedBtn = gameObject;
+        private void Awake()
+        {
+            _soundManager = SoundManager.Instance;
+            _sceneChanger = GameObject.Find("SoundManager").GetComponent<SceneChanger>();
+        }
 
-        Button EnterBtn = CreatedBtn.GetComponent<Button>();
-
-        EnterBtn.onClick.AddListener(soundmanager.LobbyRoomButtonSound);
+        // Start is called before the first frame update
+        private void Start()
+        {
+            createdBtn = gameObject;
+        }
     }
 }
-
