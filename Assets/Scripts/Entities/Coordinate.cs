@@ -1,50 +1,72 @@
 #nullable enable
 
+using System;
 
 namespace CodingStrategy.Entities
 {
-    using System;
-
     public readonly struct Coordinate
+        : IEquatable<Coordinate>
     {
         public static readonly Coordinate Unit = new Coordinate(0, 0);
 
-        private readonly int _x;
-        private readonly int _y;
-
         public Coordinate(int x, int y)
         {
-            _x = x;
-            _y = y;
+            X = x;
+            Y = y;
         }
 
-        public int X => _x;
+        public int X { get; }
 
-        public int Y => _y;
+        public int Y { get; }
 
-        public override bool Equals(object? obj) =>
-            obj != null && obj is Coordinate coord && this == coord;
+        public override bool Equals(object? obj)
+        {
+            return obj != null && obj is Coordinate coord && this == coord;
+        }
 
-        public override int GetHashCode() => HashCode.Combine(_x, _y);
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y);
+        }
 
-        public override string ToString() => $"Coordinate({_x}, {_y})";
+        public override string ToString()
+        {
+            return $"Coordinate({X}, {Y})";
+        }
 
-        public static Coordinate operator +(Coordinate lhs, Coordinate rhs) =>
-            new Coordinate(lhs._x + rhs._x, lhs._y + rhs._y);
+        public static Coordinate operator +(Coordinate lhs, Coordinate rhs)
+        {
+            return new Coordinate(lhs.X + rhs.X, lhs.Y + rhs.Y);
+        }
 
-        public static Coordinate operator -(Coordinate lhs, Coordinate rhs) =>
-            new Coordinate(lhs._x - rhs._x, lhs._y - rhs._y);
+        public static Coordinate operator -(Coordinate lhs, Coordinate rhs)
+        {
+            return new Coordinate(lhs.X - rhs.X, lhs.Y - rhs.Y);
+        }
 
-        public static Coordinate operator *(int scala, Coordinate rhs) =>
-            new Coordinate(scala * rhs._x, scala * rhs._y);
+        public static Coordinate operator *(int scala, Coordinate rhs)
+        {
+            return new Coordinate(scala * rhs.X, scala * rhs.Y);
+        }
 
-        public static Coordinate operator *(Coordinate rhs, int scala) =>
-            new Coordinate(scala * rhs._x, scala * rhs._y);
+        public static Coordinate operator *(Coordinate rhs, int scala)
+        {
+            return new Coordinate(scala * rhs.X, scala * rhs.Y);
+        }
 
-        public static bool operator ==(Coordinate lhs, Coordinate rhs) =>
-            lhs.X == rhs.X && lhs.Y == rhs.Y;
+        public static bool operator ==(Coordinate lhs, Coordinate rhs)
+        {
+            return lhs.X == rhs.X && lhs.Y == rhs.Y;
+        }
 
-        public static bool operator !=(Coordinate lhs, Coordinate rhs) =>
-            lhs.X != rhs.X || lhs.Y != rhs.Y;
+        public static bool operator !=(Coordinate lhs, Coordinate rhs)
+        {
+            return lhs.X != rhs.X || lhs.Y != rhs.Y;
+        }
+
+        public bool Equals(Coordinate other)
+        {
+            return X == other.X && Y == other.Y;
+        }
     }
 }

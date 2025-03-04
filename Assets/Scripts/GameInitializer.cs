@@ -1,20 +1,16 @@
-#nullable enable
-
-
 using CodingStrategy.Entities;
 using CodingStrategy.Entities.Runtime.CommandImpl;
 using CodingStrategy.Network;
 
 namespace CodingStrategy
 {
-    public class GameInitializer
+    public static class GameInitializer
     {
         public const int DefaultGrade1CommandStockCount = 128;
         public const int DefaultGrade2CommandStockCount = 108;
         public const int DefaultGrade3CommandStockCount = 72;
         public const int DefaultGrade4CommandStockCount = 48;
         public const int DefaultGrade5CommandStockCount = 36;
-
 
         public static void AddCommand(ICommand command, int count)
         {

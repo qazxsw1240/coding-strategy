@@ -1,86 +1,77 @@
 using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
-public class GameRoomClickSound : MonoBehaviour
+namespace CodingStrategy.Sound
 {
-    private SoundManager soundManager;
-
-    // °ÔÀÓ·ë¾À¿¡¼­ ¸í·É¾î ¸®½ºÆ® ¹öÆ° Å¬¸¯ ¹× ¸í·É¾î Å¬¸¯ ½Ã ³ª¿À´Â »ç¿îµå
-    public void CommmandClicked()
+    public class GameRoomClickSound : MonoBehaviour
     {
-        StartCoroutine(CommandClickedSound(0));
+        [SerializeField]
+        private ISoundManager soundManager;
+
+        // ê²Œì„ë£¸ì”¬ì—ì„œ ëª…ë ¹ì–´ ë¦¬ìŠ¤íŠ¸ ë²„íŠ¼ í´ë¦­ ë° ëª…ë ¹ì–´ í´ë¦­ ì‹œ ë‚˜ì˜¤ëŠ” ì‚¬ìš´ë“œ
+        public void CommmandClicked()
+        {
+            StartCoroutine(CommandClickedSound(0));
+        }
+
+        public IEnumerator CommandClickedSound(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+
+            soundManager = SoundManager.Instance;
+
+            // íš¨ê³¼ìŒì„ ë¶ˆëŸ¬ì˜¤ê³  ì¬ìƒí•©ë‹ˆë‹¤.
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameRoom_CommnadClicked_Sound");
+            soundManager.Play(effectClip);
+            Debug.Log("Command sound is comming out!");
+        }
+
+        // ê²Œì„ë£¸ì”¬ì—ì„œ ì¤€ë¹„ ë²„íŠ¼ì„ ëˆ„ë¥¼ ì‹œ ë‚˜ì˜¤ëŠ” ì‚¬ìš´ë“œ
+        public void ReadyBtnClicked()
+        {
+            StartCoroutine(ReadyBtnClickedSound(0));
+        }
+
+        public IEnumerator ReadyBtnClickedSound(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+
+            soundManager = SoundManager.Instance;
+
+            // íš¨ê³¼ìŒì„ ë¶ˆëŸ¬ì˜¤ê³  ì¬ìƒí•©ë‹ˆë‹¤.
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameRoom_Ready");
+            soundManager.Play(effectClip);
+            Debug.Log("Ready button sound is comming out!");
+        }
+
+        // ê²Œì„ë£¸ì”¬ì—ì„œ ê²Œì„ ì‹œì‘ ë²„íŠ¼ì„ ëˆ„ë¥¼ ì‹œ ë‚˜ì˜¤ëŠ” ì‚¬ìš´ë“œ
+        public void GamestartBtnClicked()
+        {
+            StartCoroutine(GamestartBtnClickedSound(0));
+        }
+
+        public IEnumerator GamestartBtnClickedSound(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            soundManager = SoundManager.Instance;
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameRoom_GameStartSound");
+            soundManager.Play(effectClip, SoundType.Effect, 1.0f, 0.5f);
+        }
+
+        // ê²Œì„ë£¸ì”¬ì—ì„œ ë‚˜ê°€ê¸° ë²„íŠ¼ ëˆŒë €ì„ ë•Œ ë‚˜ì˜¤ëŠ” ì‚¬ìš´ë“œ
+        public void QuitBtnClicked()
+        {
+            StartCoroutine(QuitBtnClickedSound(0));
+        }
+
+        public IEnumerator QuitBtnClickedSound(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+
+            soundManager = SoundManager.Instance;
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameRoom_QuitBtn_Sound");
+            soundManager.Play(effectClip);
+        }
     }
-    public IEnumerator CommandClickedSound(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        soundManager = FindObjectOfType<SoundManager>();
-        soundManager.Init();
-
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
-        AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameRoom_CommnadClicked_Sound");
-        soundManager.Play(effectClip, Sound.Effect, 1.0f);
-        Debug.Log("Command sound is comming out!");
-    }
-
-    // °ÔÀÓ·ë¾À¿¡¼­ ÁØºñ ¹öÆ°À» ´©¸¦ ½Ã ³ª¿À´Â »ç¿îµå
-    public void ReadyBtnClicked()
-    {
-        StartCoroutine(ReadyBtnClickedSound(0));
-    }
-
-    public IEnumerator ReadyBtnClickedSound(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        soundManager = FindObjectOfType<SoundManager>();
-        soundManager.Init();
-
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
-        AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameRoom_Ready");
-        soundManager.Play(effectClip, Sound.Effect, 1.0f);
-        Debug.Log("Ready button sound is comming out!");
-    }
-
-    // °ÔÀÓ·ë¾À¿¡¼­ °ÔÀÓ ½ÃÀÛ ¹öÆ°À» ´©¸¦ ½Ã ³ª¿À´Â »ç¿îµå
-    public void GamestartBtnClicked()
-    {
-        StartCoroutine(GamestartBtnClickedSound(0));
-    }
-
-    public IEnumerator GamestartBtnClickedSound(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        soundManager = FindObjectOfType<SoundManager>();
-        soundManager.Init();
-
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
-        AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameRoom_GameStartSound");
-        soundManager.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
-        Debug.Log("GameStart button sound is comming out!");
-    }
-
-    // °ÔÀÓ·ë¾À¿¡¼­ ³ª°¡±â ¹öÆ° ´­·¶À» ¶§ ³ª¿À´Â »ç¿îµå
-    public void QuitBtnClicked()
-    {
-        StartCoroutine(QuitBtnClickedSound(0));
-    }
-
-    public IEnumerator QuitBtnClickedSound(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        soundManager = FindObjectOfType<SoundManager>();
-        soundManager.Init();
-
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
-        AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameRoom_QuitBtn_Sound");
-        soundManager.Play(effectClip, Sound.Effect, 1.0f);
-        Debug.Log("Game quit button sound is comming out!");
-    }
-
-
-
 }

@@ -1,10 +1,9 @@
 ﻿#nullable enable
 
+using CodingStrategy.Entities;
 
 namespace CodingStrategy.Factory
 {
-    using Entities;
-
     public interface IPlayerDelegateCreateStrategy
     {
         public abstract string Id { get; }

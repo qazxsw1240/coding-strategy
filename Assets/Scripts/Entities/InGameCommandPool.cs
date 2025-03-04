@@ -1,12 +1,9 @@
-#nullable enable
-
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CodingStrategy.Entities
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-
     /// <summary>
     /// 인게임에 필요한 명령어를 생성하는 명령어 풀입니다. 생성한 명령어는 0부터 시작하는 생성번호가 ID로 제공됩니다.
     /// </summary>

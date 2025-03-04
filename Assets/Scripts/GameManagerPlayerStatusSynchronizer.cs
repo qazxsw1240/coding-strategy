@@ -1,19 +1,20 @@
 #nullable enable
 
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using CodingStrategy.Entities;
 using CodingStrategy.Entities.CodingTime;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
 using CodingStrategy.Network;
+using CodingStrategy.UI.GameScene;
 using CodingStrategy.UI.InGame;
-using ExitGames.Client.Photon;
-using ExitGames.Client.Photon.StructWrapping;
+
 using Photon.Pun;
 using Photon.Realtime;
+
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -35,16 +36,6 @@ namespace CodingStrategy
 
         public GameMangerNetworkProcessor NetworkProcessor { get; set; } = null!;
 
-        private static int GetValidPlayerHp(int playerHp)
-        {
-            return Math.Max(0, Math.Min(5, playerHp));
-        }
-
-        private static int GetValidRobotHp(int robotHp)
-        {
-            return Math.Max(0, Math.Min(5, robotHp));
-        }
-
         public void Start()
         {
             GameManagerUtil = GameManager.util;
@@ -60,25 +51,30 @@ namespace CodingStrategy
                 }
 
                 AttachPlayerStatusSynchronizer(playerDelegate, playerStatusUI);
-                playerStatusUI.OnPlayerUIClickEvent.AddListener(() =>
-                {
-                    Player photonPlayer = PhotonNetwork.CurrentRoom.Players
-                        .Select(pair => pair.Value)
-                        .First(player => player.UserId == playerDelegate.Id);
-                    IRobotDelegate robotDelegate = playerDelegate.Robot;
-                    RobotStatusUI robotStatusUI = GameManager.inGameUI.statusUI.GetComponent<RobotStatusUI>();
-                    robotStatusUI.SetCameraTexture(GameManager.PlayerIndexMap[photonPlayer.UserId]);
-                    robotStatusUI.SetName(photonPlayer.NickName);
-                    robotStatusUI.SetDescription(robotDelegate.HealthPoint,
-                        robotDelegate.AttackPoint,
-                        robotDelegate.ArmorPoint,
-                        robotDelegate.EnergyPoint);
-                    robotStatusUI.SetState(string.Join(",  ", GameManager.GetAbnormalities()
-                        .Where(pair => pair.Key.StartsWith(playerDelegate.Id))
-                        .Select(pair => pair.Value)
-                        .Select(abnormality => abnormality.Name)));
-                    robotStatusUI.SetCommandList(playerDelegate.Algorithm.AsArray());
-                });
+                playerStatusUI.OnPlayerUIClickEvent.AddListener(
+                    () =>
+                    {
+                        Player photonPlayer = PhotonNetwork.CurrentRoom.Players
+                           .Select(pair => pair.Value)
+                           .First(player => player.UserId == playerDelegate.Id);
+                        IRobotDelegate robotDelegate = playerDelegate.Robot;
+                        RobotStatusUI robotStatusUI = GameManager.inGameUI.statusUI.GetComponent<RobotStatusUI>();
+                        robotStatusUI.SetCameraTexture(GameManager.PlayerIndexMap[photonPlayer.UserId]);
+                        robotStatusUI.SetName(photonPlayer.NickName);
+                        robotStatusUI.SetDescription(
+                            robotDelegate.HealthPoint,
+                            robotDelegate.AttackPoint,
+                            robotDelegate.ArmorPoint,
+                            robotDelegate.EnergyPoint);
+                        robotStatusUI.SetState(
+                            string.Join(
+                                ",  ",
+                                GameManager.GetAbnormalities()
+                                   .Where(pair => pair.Key.StartsWith(playerDelegate.Id))
+                                   .Select(pair => pair.Value)
+                                   .Select(abnormality => abnormality.Name)));
+                        robotStatusUI.SetCommandList(playerDelegate.Algorithm.AsArray());
+                    });
             }
 
             foreach (PlayerStatusUI playerStatusUI in GameManager.inGameUI.playerStatusUI)
@@ -92,14 +88,26 @@ namespace CodingStrategy
             IPlayerDelegate localPlayerDelegate = GameManagerUtil.LocalPhotonPlayerDelegate;
             IRobotDelegate localRobotDelegate = GameManagerUtil.LocalPhotonRobotDelegate;
 
-            CommandDetailEvent commandDetailEvent = GameManager.inGameUI.transform.GetComponentInChildren<CommandDetailEvent>();
-            commandDetailEvent.OnCommandClickEvent.AddListener(id =>
-            {
-                ICommand command =  PhotonPlayerCommandCache.GetCachedCommands()[id];
-                commandDetailEvent.setCommandDetail.SetCommandName(command.Info.Name);
-                commandDetailEvent.setCommandDetail.SetCommandAttackRange(command.Info.EnhancedLevel);
-                commandDetailEvent.setCommandDetail.SetCommandDescription(command.Info.Explanation);
-            });
+            CommandDetailEvent commandDetailEvent =
+                GameManager.inGameUI.transform.GetComponentInChildren<CommandDetailEvent>();
+            commandDetailEvent.OnCommandClickEvent.AddListener(
+                id =>
+                {
+                    ICommand command = PhotonPlayerCommandCache.GetCachedCommands()[id];
+                    commandDetailEvent.setCommandDetail.SetCommandName(command.Info.Name);
+                    commandDetailEvent.setCommandDetail.SetCommandAttackRange(command.Info.EnhancedLevel);
+                    commandDetailEvent.setCommandDetail.SetCommandDescription(command.Info.Explanation);
+                });
+        }
+
+        private static int GetValidPlayerHp(int playerHp)
+        {
+            return Math.Max(0, Math.Min(5, playerHp));
+        }
+
+        private static int GetValidRobotHp(int robotHp)
+        {
+            return Math.Max(0, Math.Min(5, robotHp));
         }
 
         private void AttachPlayerStatusSynchronizer(IPlayerDelegate playerDelegate, PlayerStatusUI statusUI)
@@ -147,7 +155,6 @@ namespace CodingStrategy
             };
         }
 
-
         private UnityAction<int, int> GetPlayerExpUpdater(IPlayerDelegate playerDelegate, PlayerStatusUI playerStatusUI)
         {
             return (previous, next) =>
@@ -173,7 +180,6 @@ namespace CodingStrategy
                 GameManager.inGameUI.shopUi.SetExp(next, RequiredExp[playerDelegate.Level]);
             };
         }
-
 
         private UnityAction<int, int> GetPlayerLevelUpdater(IPlayerDelegate playerDelegate)
         {

@@ -1,12 +1,14 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
+
+using DG.Tweening;
+
 using TMPro;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using DG.Tweening;
 
-namespace CodingStrategy.UI.InGame
+namespace CodingStrategy.UI.GameScene
 {
     public class GameResult : MonoBehaviour
     {
@@ -16,8 +18,6 @@ namespace CodingStrategy.UI.InGame
         public TextMeshProUGUI EndingMessage;
 
         public Button QuitRoomBtn;
-
-
 
         public void PlayerLeave()
         {
@@ -62,10 +62,9 @@ namespace CodingStrategy.UI.InGame
 
             Vector3 endPosition = EndCard.transform.position;
 
-            EndCard.transform.position = EndCard.transform.position + new Vector3(0, 1000, 0);
+            EndCard.transform.position += new Vector3(0, 1000, 0);
 
             sequence.Insert(0, EndCard.transform.DOMove(endPosition, 3).SetEase(Ease.OutCubic));
-
 
             yield return sequence.WaitForCompletion();
         }

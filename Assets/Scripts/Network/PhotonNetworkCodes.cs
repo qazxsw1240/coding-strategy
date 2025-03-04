@@ -1,6 +1,5 @@
 #nullable enable
 
-
 namespace CodingStrategy.Network
 {
     public enum PhotonNetworkCodes : byte

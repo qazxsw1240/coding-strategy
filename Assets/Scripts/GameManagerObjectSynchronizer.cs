@@ -1,41 +1,41 @@
 #nullable enable
 
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using CodingStrategy.Animation;
 using CodingStrategy.Entities;
 using CodingStrategy.Entities.Animations;
 using CodingStrategy.Entities.BadSector;
 using CodingStrategy.Entities.Placeable;
 using CodingStrategy.Entities.Robot;
-using CodingStrategy.UI.InGame;
+using CodingStrategy.Sound;
+using CodingStrategy.UI.GameScene;
+
 using Photon.Pun;
 using Photon.Realtime;
+
 using Unity.VisualScripting;
+
 using UnityEngine;
 
 namespace CodingStrategy
 {
     public class GameManagerObjectSynchronizer : MonoBehaviour
     {
-        public GameManager GameManager { get; set; } = null!;
-
-        private readonly IDictionary<IRobotDelegate, GameObject> _robotDelegateObjects =
-            new Dictionary<IRobotDelegate, GameObject>();
-
         private readonly IDictionary<IBadSectorDelegate, GameObject> _badSectorDelegateObjects =
             new Dictionary<IBadSectorDelegate, GameObject>();
+
+        private readonly IDictionary<Coordinate, GameObject> _cellObjects = new Dictionary<Coordinate, GameObject>();
 
         private readonly IDictionary<IPlaceable, GameObject> _placeableObjects =
             new Dictionary<IPlaceable, GameObject>();
 
-        private readonly IDictionary<Coordinate, GameObject> _cellObjects = new Dictionary<Coordinate, GameObject>();
+        private readonly IDictionary<IRobotDelegate, GameObject> _robotDelegateObjects =
+            new Dictionary<IRobotDelegate, GameObject>();
 
-        private static Vector3 ConvertToVector(Coordinate coordinate, float heightOffset)
-        {
-            return new Vector3(coordinate.X, heightOffset, coordinate.Y);
-        }
+        public GameManager GameManager { get; set; } = null!;
 
         public void Start()
         {
@@ -58,6 +58,11 @@ namespace CodingStrategy
             _placeableObjects.Clear();
         }
 
+        private static Vector3 ConvertToVector(Coordinate coordinate, float heightOffset)
+        {
+            return new Vector3(coordinate.X, heightOffset, coordinate.Y);
+        }
+
         public void InitializeCells()
         {
             for (int i = 0; i < GameManager.BoardDelegate.Width; i++)
@@ -66,7 +71,10 @@ namespace CodingStrategy
                 {
                     Coordinate coordinate = new Coordinate(i, j);
                     Vector3 position = ConvertToVector(coordinate, 0);
-                    _cellObjects[coordinate] = Instantiate(GameManager.boardCellPrefab, position, Quaternion.identity,
+                    _cellObjects[coordinate] = Instantiate(
+                        GameManager.boardCellPrefab,
+                        position,
+                        Quaternion.identity,
                         transform);
                 }
             }
@@ -96,49 +104,56 @@ namespace CodingStrategy
 
         public void AddRobotAttackListener(IRobotDelegate robotDelegate, GameObject robotObject)
         {
-            robotDelegate.OnRobotAttack.AddListener((_, positions) =>
-            {
-                LilbotAnimation lilbotAnimation = robotObject.GetOrAddComponent<LilbotAnimation>();
-                GameManager.AnimationCoroutineManager.AddAnimation(robotObject,
-                    lilbotAnimation.AttackLeftAnimationCoroutine());
-                foreach (Coordinate position in positions)
+            robotDelegate.OnRobotAttack.AddListener(
+                (_, positions) =>
                 {
-                    GameObject cellObject = _cellObjects[position];
-
-                    if (GameManager.AnimationCoroutineManager.HasAnimationQueue(cellObject))
+                    LilbotAnimation lilbotAnimation = robotObject.GetOrAddComponent<LilbotAnimation>();
+                    GameManager.AnimationCoroutineManager.AddAnimation(
+                        robotObject,
+                        lilbotAnimation.AttackLeftAnimationCoroutine());
+                    foreach (Coordinate position in positions)
                     {
-                        return;
+                        GameObject cellObject = _cellObjects[position];
+
+                        if (GameManager.AnimationCoroutineManager.HasAnimationQueue(cellObject))
+                        {
+                            return;
+                        }
+
+                        TileAttackAnimation tileAttackAnimation = cellObject.GetComponent<TileAttackAnimation>();
+                        GameManager.AnimationCoroutineManager.AddAnimation(
+                            cellObject,
+                            tileAttackAnimation.AttackArea(PlayerStatusUI.Red));
+                    }
+                });
+            robotDelegate.OnHealthPointChange.AddListener(
+                (_, previous, next) =>
+                {
+                    LilbotAnimation lilbotAnimation = robotObject.GetOrAddComponent<LilbotAnimation>();
+                    int different = next - previous;
+                    if (different < 0)
+                    {
+                        GameManager.AnimationCoroutineManager.AddAnimation(
+                            robotDelegate,
+                            lilbotAnimation.HitAnimationCoroutine());
+                    }
+                    else
+                    {
+                        if (next > 0)
+                        {
+                            GameManager.AnimationCoroutineManager.AddAnimation(
+                                robotDelegate,
+                                lilbotAnimation.SpawnAnimationCoroutine());
+                        }
                     }
 
-                    TileAttackAnimation tileAttackAnimation = cellObject.GetComponent<TileAttackAnimation>();
-                    GameManager.AnimationCoroutineManager.AddAnimation(cellObject,
-                        tileAttackAnimation.AttackArea(PlayerStatusUI.Red));
-                }
-            });
-            robotDelegate.OnHealthPointChange.AddListener((_, previous, next) =>
-            {
-                LilbotAnimation lilbotAnimation = robotObject.GetOrAddComponent<LilbotAnimation>();
-                int different = next - previous;
-                if (different < 0)
-                {
-                    GameManager.AnimationCoroutineManager.AddAnimation(robotDelegate,
-                        lilbotAnimation.HitAnimationCoroutine());
-                }
-                else
-                {
-                    if (next > 0)
+                    if (next <= 0)
                     {
-                        GameManager.AnimationCoroutineManager.AddAnimation(robotDelegate,
-                            lilbotAnimation.SpawnAnimationCoroutine());
+                        GameManager.AnimationCoroutineManager.AddAnimation(
+                            robotDelegate,
+                            lilbotAnimation.DeathAnimationCoroutine());
                     }
-                }
-
-                if (next <= 0)
-                {
-                    GameManager.AnimationCoroutineManager.AddAnimation(robotDelegate,
-                        lilbotAnimation.DeathAnimationCoroutine());
-                }
-            });
+                });
         }
 
         public void MoveRobotObject(IRobotDelegate robotDelegate, Coordinate previous, Coordinate next)
@@ -192,7 +207,7 @@ namespace CodingStrategy
         {
             IRobotDelegate robotDelegate = badSectorDelegate.Installer;
             int index = GameManager.PlayerIndexMap[robotDelegate.Id];
-            (_, _, Color color) = GameManager.StartPositions[index];
+            (RobotDirection _, Coordinate _, Color color) = GameManager.StartPositions[index];
             color = new Color(color.r, color.g, color.b, color.a * 0.75f);
             Coordinate position = badSectorDelegate.Position;
             Vector3 vectorPosition = ConvertToVector(position, 0.1f);
@@ -207,7 +222,10 @@ namespace CodingStrategy
             GameManager.AnimationCoroutineManager.AddAnimation(badSectorDelegate, badSectorAnimation.AnimateItem());
         }
 
-        private void EnableBadSectorPrefab(GameObject badSectorObject, IBadSectorDelegate badSectorDelegate, BadSectorAnimation badSectorAnimation)
+        private void EnableBadSectorPrefab(
+            GameObject badSectorObject,
+            IBadSectorDelegate badSectorDelegate,
+            BadSectorAnimation badSectorAnimation)
         {
             if (badSectorDelegate is MalwareBadSector)
             {
@@ -221,8 +239,9 @@ namespace CodingStrategy
             GameObject badSectorObject = FindBadSectorDelegateObject(badSectorDelegate)!;
             RemoveBadSectorDelegateObject(badSectorDelegate);
             BadSectorAnimation badSectorAnimation = badSectorObject.GetComponent<BadSectorAnimation>();
-            GameManager.AnimationCoroutineManager.AddAnimation(badSectorDelegate,
-                badSectorAnimation.ActivateBadsector());
+            GameManager.AnimationCoroutineManager.AddAnimation(
+                badSectorDelegate,
+                badSectorAnimation.ActivateBadSector());
         }
 
         private GameObject? FindBadSectorDelegateObject(IBadSectorDelegate badSectorDelegate)
@@ -246,12 +265,13 @@ namespace CodingStrategy
             Vector3 position = ConvertToVector(coordinate, 1.5f);
             GameObject bitGameObject =
                 Instantiate(GameManager.bitPrefab, position, Quaternion.Euler(90f, 0, 0), transform);
-            bitDelegate.OnRobotTakeInEvents.AddListener(_ =>
-            {
-                bitGameObject.SetActive(false);
-                InGameSoundManager soundManager = FindObjectOfType<InGameSoundManager>();
-                StartCoroutine(soundManager.GetCoinSound(0f));
-            });
+            bitDelegate.OnRobotTakeInEvents.AddListener(
+                _ =>
+                {
+                    bitGameObject.SetActive(false);
+                    InGameSoundManager soundManager = FindObjectOfType<InGameSoundManager>();
+                    StartCoroutine(soundManager.GetCoinSound(0f));
+                });
             bitDelegate.OnRobotTakeAwayEvents.AddListener(_ => bitGameObject.SetActive(true));
             _placeableObjects[placeable] = bitGameObject;
         }

@@ -1,87 +1,90 @@
-﻿using DG.Tweening;
-using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
+
+using DG.Tweening;
+
 using TMPro;
+
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RoomScene3DUI : MonoBehaviour
+namespace CodingStrategy.UI.GameRoom
 {
-    // Start is called before the first frame update
-    public GameObject[] lilrobot;
-    public TextMeshProUGUI[] nicknames;
-    public GameObject CommandView;
-    public Button button;
-
-    private string[] lastNicknames;
-
-    private void Start()
+    public class RoomScene3DUI : MonoBehaviour
     {
-        lastNicknames = new string[nicknames.Length];
-    }
+        // Start is called before the first frame update
+        public GameObject[] lilrobot;
+        public TextMeshProUGUI[] nicknames;
+        public GameObject CommandView;
+        public Button button;
 
-    // Update is called once per frame
-    void Update()
-    {
-        NickNamechanged();
-    }
+        private string[] lastNicknames;
 
-    public void NickNamechanged()
-    {
-        for (int i = 0; i < nicknames.Length; i++)
+        private void Start()
         {
-            if (nicknames[i].text != lastNicknames[i])
+            lastNicknames = new string[nicknames.Length];
+        }
+
+        // Update is called once per frame
+        private void Update()
+        {
+            NickNamechanged();
+        }
+
+        public void NickNamechanged()
+        {
+            for (int i = 0; i < nicknames.Length; i++)
             {
-                Nicknamecheck(i);
-                lastNicknames[i] = nicknames[i].text;
+                if (nicknames[i].text != lastNicknames[i])
+                {
+                    Nicknamecheck(i);
+                    lastNicknames[i] = nicknames[i].text;
+                }
             }
         }
-    }
 
-
-
-    public void Nicknamecheck(int i)
-    {
-        
-        if (nicknames[i].text != "(없음)")
+        public void Nicknamecheck(int i)
         {
-            //lilrobot[i].SetActive(true);
-            StartCoroutine(ActivateWithAnimation(lilrobot[i], 10.0f, 1.0f));
+            if (nicknames[i].text != "(없음)")
+            {
+                //lilrobot[i].SetActive(true);
+                StartCoroutine(ActivateWithAnimation(lilrobot[i], 10.0f, 1.0f));
+            }
+            else
+            {
+                lilrobot[i].SetActive(false);
+            }
         }
-        else
+
+        public IEnumerator ActivateWithAnimation(GameObject obj, float fallDistance, float fallDuration)
         {
-            lilrobot[i].SetActive(false);
+            obj.SetActive(true);
+
+            Sequence sequence = DOTween.Sequence();
+
+            Vector3 endPosition = obj.transform.position;
+
+            obj.transform.position = new Vector3(
+                obj.transform.position.x,
+                obj.transform.position.y + fallDistance,
+                obj.transform.position.z);
+
+            sequence.Insert(0, obj.transform.DOMove(endPosition, fallDuration).SetEase(Ease.OutCubic));
+
+            yield return sequence.WaitForCompletion();
         }
-    }
 
-    public IEnumerator ActivateWithAnimation(GameObject obj, float fallDistance, float fallDuration)
-    {
-        obj.SetActive(true);
+        public void OnScrollView()
+        {
+            CommandView.gameObject.SetActive(true);
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(OffScrollView); //인자가 있을 때 람다식 사용
+        }
 
-        Sequence sequence = DOTween.Sequence();
-
-        Vector3 endPosition = obj.transform.position;
-
-        obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y + fallDistance, obj.transform.position.z);
-        
-        sequence.Insert(0, obj.transform.DOMove(endPosition, fallDuration).SetEase(Ease.OutCubic));
-        
-        yield return sequence.WaitForCompletion();
-    }
-
-
-    public void OnScrollView()
-    {
-        CommandView.gameObject.SetActive(true);
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() => OffScrollView()); //인자가 있을 때 람다식 사용
-    }
-
-    public void OffScrollView()
-    {
-        CommandView.gameObject.SetActive(false);
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() => OnScrollView()); //인자가 있을 때 람다식 사용
+        public void OffScrollView()
+        {
+            CommandView.gameObject.SetActive(false);
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(OnScrollView); //인자가 있을 때 람다식 사용
+        }
     }
 }

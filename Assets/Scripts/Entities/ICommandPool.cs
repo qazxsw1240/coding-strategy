@@ -1,12 +1,9 @@
-#nullable enable
-
+using System.Collections.Generic;
 
 namespace CodingStrategy.Entities
 {
-    using System.Collections.Generic;
-
     /// <summary>
-    /// 게임 전체에 사용될 명령어를 관리하는 명령어 풀입니다. 모든 명령어는 상태가 유일하고, 
+    /// 게임 전체에 사용될 명령어를 관리하는 명령어 풀입니다. 모든 명령어는 상태가 유일하고,
     /// 각 게임마다 명령어를 생성하여 관리하도록 합니다.
     /// </summary>
     public interface ICommandPool : IReadOnlyDictionary<string, ICommand>

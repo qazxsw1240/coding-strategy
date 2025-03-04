@@ -1,31 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class GameLobbyEnterBtnSound : MonoBehaviour
+namespace CodingStrategy.Sound
 {
-    private void Start()
+    public class GameLobbyEnterBtnSound : MonoBehaviour
     {
-        // SoundManager ÃÊ±âÈ­´Â Manager.Instance°¡ Ã³¸®ÇÕ´Ï´Ù.
-        // ¿©±â¼­´Â º°µµ·Î ÃÊ±âÈ­ÇÒ ÇÊ¿ä°¡ ¾ø½À´Ï´Ù.
-        if (Manager.Sound == null)
+        private void Start()
         {
-            Debug.LogError("SoundManager°¡ ÃÊ±âÈ­µÇÁö ¾Ê¾Ò½À´Ï´Ù.");
-        }
-    }
-
-    public void GameLobbyEnterBtnClicked()
-    {
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
-        AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameRoom_GameStartSound");
-        if (effectClip != null)
-        {
-            Manager.Sound.Play(effectClip, Sound.Effect, 1.0f, 0.5f);
-            Debug.Log("¹æ Âü¿© ¹öÆ° È¿°úÀ½ÀÌ Àç»ıµË´Ï´Ù!");
-        }
-        else
-        {
-            Debug.LogWarning("È¿°úÀ½À» Ã£À» ¼ö ¾ø½À´Ï´Ù: Sound/GameRoom_GameStartSound");
+            if (SoundManager.Instance is null)
+            {
+                Debug.LogError("SoundManagerê°€ ì´ˆê¸°í™”ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
+            }
         }
     }
 }

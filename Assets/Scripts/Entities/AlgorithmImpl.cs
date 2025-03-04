@@ -1,14 +1,13 @@
 #nullable enable
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 using CodingStrategy.Entities.Runtime.CommandImpl;
 
 namespace CodingStrategy.Entities
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-
     public class AlgorithmImpl : IAlgorithm
     {
         private const int MaxCapacity = 10;
@@ -16,7 +15,6 @@ namespace CodingStrategy.Entities
         private static readonly ICommand DefaultCommand = new EmptyCommand();
 
         private readonly ICommand?[] _elements;
-        private int _capacity;
 
         public AlgorithmImpl(int capacity)
         {
@@ -25,7 +23,7 @@ namespace CodingStrategy.Entities
                 throw new ArgumentOutOfRangeException();
             }
 
-            _capacity = capacity;
+            Count = capacity;
             _elements = new ICommand?[MaxCapacity];
             for (int i = 0; i < MaxCapacity; i++)
             {
@@ -37,7 +35,7 @@ namespace CodingStrategy.Entities
         {
             get
             {
-                if (index < 0 || index >= _capacity)
+                if (index < 0 || index >= Count)
                 {
                     throw new IndexOutOfRangeException();
                 }
@@ -47,7 +45,7 @@ namespace CodingStrategy.Entities
 
             set
             {
-                if (index < 0 || index > _capacity)
+                if (index < 0 || index > Count)
                 {
                     throw new IndexOutOfRangeException();
                 }
@@ -56,13 +54,16 @@ namespace CodingStrategy.Entities
             }
         }
 
-        public int Count => _capacity;
+        public int Count { get; private set; }
 
-        public bool IsReadOnly => false;
+        public bool IsReadOnly
+        {
+            get { return false; }
+        }
 
         public int Capacity
         {
-            get => _capacity;
+            get { return Count; }
             set
             {
                 if (value < 0 || value > MaxCapacity)
@@ -70,11 +71,11 @@ namespace CodingStrategy.Entities
                     throw new ArgumentOutOfRangeException();
                 }
 
-                int previousCapacity = _capacity;
-                _capacity = value;
-                if (_capacity < previousCapacity)
+                int previousCapacity = Count;
+                Count = value;
+                if (Count < previousCapacity)
                 {
-                    for (int i = _capacity; i < previousCapacity; i++)
+                    for (int i = Count; i < previousCapacity; i++)
                     {
                         _elements[i] = DefaultCommand;
                     }
@@ -89,7 +90,7 @@ namespace CodingStrategy.Entities
 
         public void Insert(int index, ICommand item)
         {
-            for (int i = _capacity; i > index; i--)
+            for (int i = Count; i > index; i--)
             {
                 _elements[i] = _elements[i - 1];
             }
@@ -97,11 +98,14 @@ namespace CodingStrategy.Entities
             _elements[index] = item;
         }
 
-        public bool Contains(ICommand item) => IndexOf(item) != -1;
+        public bool Contains(ICommand item)
+        {
+            return IndexOf(item) != -1;
+        }
 
         public int IndexOf(ICommand item)
         {
-            for (int i = 0; i < _capacity; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (item.Equals(_elements[i]))
                 {
@@ -126,17 +130,17 @@ namespace CodingStrategy.Entities
 
         public void RemoveAt(int index)
         {
-            if (index < 0 || index >= _capacity)
+            if (index < 0 || index >= Count)
             {
                 throw new ArgumentOutOfRangeException();
             }
 
-            for (int i = index; i < _capacity - 1; i++)
+            for (int i = index; i < Count - 1; i++)
             {
                 _elements[i] = _elements[i + 1];
             }
 
-            _elements[_capacity] = DefaultCommand;
+            _elements[Count] = DefaultCommand;
         }
 
         public bool CopyTo(IAlgorithm algorithm)
@@ -144,12 +148,12 @@ namespace CodingStrategy.Entities
             if (algorithm is AlgorithmImpl al)
             {
                 _elements.CopyTo(al._elements, 0);
-                al._capacity = _capacity;
+                al.Count = Count;
             }
             else
             {
                 algorithm.Clear();
-                for (int i = 0; i < _capacity; i++)
+                for (int i = 0; i < Count; i++)
                 {
                     algorithm.Add(_elements[i]!);
                 }
@@ -160,9 +164,9 @@ namespace CodingStrategy.Entities
 
         public ICommand[] AsArray()
         {
-            ICommand[] commands = new ICommand[_capacity];
+            ICommand[] commands = new ICommand[Count];
 
-            for (int i = 0; i < _capacity; i++)
+            for (int i = 0; i < Count; i++)
             {
                 commands[i] = _elements[i]!;
             }
@@ -172,12 +176,12 @@ namespace CodingStrategy.Entities
 
         public void CopyTo(ICommand[] array, int arrayIndex)
         {
-            if (arrayIndex + _capacity > array.Length)
+            if (arrayIndex + Count > array.Length)
             {
                 throw new IndexOutOfRangeException();
             }
 
-            for (int i = 0; i < _capacity; i++)
+            for (int i = 0; i < Count; i++)
             {
                 array[arrayIndex + i] = _elements[i]!;
             }
@@ -185,7 +189,7 @@ namespace CodingStrategy.Entities
 
         public void Clear()
         {
-            for (int i = 0; i < _capacity; i++)
+            for (int i = 0; i < Count; i++)
             {
                 _elements[i] = null;
             }
@@ -193,14 +197,15 @@ namespace CodingStrategy.Entities
 
         public IEnumerator<ICommand> GetEnumerator()
         {
-            for (int i = 0; i < _capacity; i++)
+            for (int i = 0; i < Count; i++)
             {
                 yield return _elements[i]!;
             }
-
-            yield break;
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

@@ -1,6 +1,5 @@
 #nullable enable
 
-
 using CodingStrategy.Entities;
 
 namespace CodingStrategy.Network

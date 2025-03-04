@@ -1,8 +1,9 @@
+using System;
+
 namespace CodingStrategy.Entities.Shop
 {
-    using System;
     /// <summary>
-    /// 등급별 명령어 리스트입니다.
+    ///     등급별 명령어 리스트입니다.
     /// </summary>
     public class CommandListsByGrade
     {
@@ -12,6 +13,7 @@ namespace CodingStrategy.Entities.Shop
         private readonly CommandListImpl _commandListGrade3;
         private readonly CommandListImpl _commandListGrade4;
         private readonly CommandListImpl _commandListGrade5;
+
         public CommandListsByGrade()
         {
             _commandListGrade1 = new CommandListImpl();
@@ -20,8 +22,9 @@ namespace CodingStrategy.Entities.Shop
             _commandListGrade4 = new CommandListImpl();
             _commandListGrade5 = new CommandListImpl();
         }
+
         /// <summary>
-        /// 특정 등급의 명령어 리스트를 반환합니다.
+        ///     특정 등급의 명령어 리스트를 반환합니다.
         /// </summary>
         /// <param name="grade">반환 받을 리스트의 등급입니다.</param>
         /// <returns>명령어 리스트를 반환합니다.</returns>
@@ -30,13 +33,13 @@ namespace CodingStrategy.Entities.Shop
         {
             get
             {
-                switch(grade)
+                switch (grade)
                 {
                     case 1:
                         return _commandListGrade1;
                     case 2:
                         return _commandListGrade2;
-                    case 3: 
+                    case 3:
                         return _commandListGrade3;
                     case 4:
                         return _commandListGrade4;

@@ -1,22 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class GameSceneSound : MonoBehaviour
+namespace CodingStrategy.Sound
 {
-
-    SceneChanger sceneChanger;
-
-    private void Awake()
+    public class GameSceneSound : MonoBehaviour
     {
-        sceneChanger = GameObject.Find("SoundManager").GetComponent<SceneChanger>();
-        //soundmanager.Init();
-    }
+        [SerializeField] private SceneChanger sceneChanger;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        StartCoroutine(sceneChanger.SoundsVolumesUp("Sound/GameScene_Bgm"));
+        private void Awake()
+        {
+            sceneChanger = GameObject.Find("SoundManager").GetComponent<SceneChanger>();
+        }
+
+        private void Start()
+        {
+            StartCoroutine(sceneChanger.SoundsVolumesUp("Sound/GameScene_Bgm"));
+        }
     }
 }

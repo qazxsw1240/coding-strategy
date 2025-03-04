@@ -1,105 +1,113 @@
-using System;
-using UnityEngine;
+using CodingStrategy.Sound;
+
 using Photon.Pun;
 using Photon.Realtime;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+
 using TMPro;
+
+using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class LoginManager : MonoBehaviourPunCallbacks
+namespace CodingStrategy.Photon
 {
-    [SerializeField] private Button startButton;
-    [SerializeField] private TextMeshProUGUI clientStateLabel;
-
-    [SerializeField] private TMP_InputField nicknameInputField;
-    [SerializeField] private TMP_Text warningMessageLabel;
-    [SerializeField] private TMP_Text loadingMessageLabel;
-
-    [SerializeField] private UnityEvent onInvalidNicknameProvide;
-    [SerializeField] private UnityEvent onValidConnectionCreate;
-
-    private string Nickname => nicknameInputField.text;
-
-    private string ClientStateMessage
+    public class LoginManager : MonoBehaviourPunCallbacks
     {
-        get => clientStateLabel.text;
-        set => clientStateLabel.text = value;
-    }
+        [SerializeField]
+        private TextMeshProUGUI clientStateLabel;
 
-    public void Awake()
-    {
-        PhotonNetwork.NetworkingClient.StateChanged += UpdateState;
-    }
+        [SerializeField]
+        private TMP_Text warningMessageLabel;
 
-    public void Update()
-    {
-        clientStateLabel.text = PhotonNetwork.NetworkClientState.ToString();
-    }
+        [SerializeField]
+        private TMP_Text loadingMessageLabel;
 
-    public void OnDestroy()
-    {
-        PhotonNetwork.NetworkingClient.StateChanged -= UpdateState;
-    }
+        [SerializeField]
+        private UnityEvent onInvalidNicknameProvide;
 
-    public override void OnConnectedToMaster()
-    {
-        TypedLobby lobby = new TypedLobby("coding-strategy", LobbyType.SqlLobby);
-        PhotonNetwork.JoinLobby(lobby);
-        SceneManager.LoadScene("GameLobby");
-    }
+        [SerializeField]
+        private UnityEvent onValidConnectionCreate;
 
-    public void CreateConnection()
-    {
-        if (PhotonNetwork.NetworkingClient.State != ClientState.PeerCreated)
+        [SerializeField]
+        private TMP_InputField nicknameInputField;
+
+        [SerializeField]
+        private Button connectionButton;
+
+        private string Nickname
         {
-            return;
+            get => nicknameInputField.text;
         }
 
-        if (string.IsNullOrWhiteSpace(Nickname))
+        private string ClientStateMessage
         {
-            onInvalidNicknameProvide.Invoke();
-            return;
+            get => clientStateLabel.text;
+            set => clientStateLabel.text = value;
         }
 
-        PhotonNetwork.LocalPlayer.NickName = Nickname;
-        PhotonNetwork.AutomaticallySyncScene = true;
-        PhotonNetwork.PhotonServerSettings.AppSettings.EnableLobbyStatistics = false;
-        PhotonNetwork.NetworkingClient.EnableLobbyStatistics = false;
-        PhotonNetwork.IsMessageQueueRunning = true;
-        PhotonNetwork.ConnectUsingSettings();
-
-        onValidConnectionCreate.Invoke();
-    }
-
-    private void UpdateState(ClientState previous, ClientState next)
-    {
-        ClientStateMessage = next.ToString();
-    }
-
-    [Obsolete]
-    public void OnStartButtonClick()
-    {
-        if (PhotonNetwork.NetworkingClient.State != ClientState.PeerCreated)
+        public void Awake()
         {
-            return;
+            SoundManager.Initialize();
+            PhotonNetwork.NetworkingClient.StateChanged += UpdateState;
+
+            AudioClip bgmClip = Resources.Load<AudioClip>("Sound/Game_Play_Ost");
+            AudioClip typingSoundClip = Resources.Load<AudioClip>("Sound/Keyboard_Click_Sound");
+            AudioClip buttonPressClip = Resources.Load<AudioClip>("Sound/Shop_Experience_Up");
+            SoundManager.Instance.Play(bgmClip, SoundType.Bgm, 1.0f, 0.1f);
+            nicknameInputField.onValueChanged.AddListener(
+                _ =>
+                    SoundManager.Instance.Play(typingSoundClip, SoundType.Effect, 3.0f, 0.6f));
+            connectionButton.onClick.AddListener(
+                () =>
+                    SoundManager.Instance.Play(buttonPressClip));
         }
 
-        if (string.IsNullOrEmpty(nicknameInputField.text))
+        public void Update()
         {
-            warningMessageLabel.gameObject.SetActive(true);
-            return;
+            // clientStateLabel.text = PhotonNetwork.NetworkClientState.ToString();
         }
 
-        PhotonNetwork.LocalPlayer.NickName = nicknameInputField.text;
-        PhotonNetwork.AutomaticallySyncScene = true;
-        PhotonNetwork.PhotonServerSettings.AppSettings.EnableLobbyStatistics = false;
-        PhotonNetwork.NetworkingClient.EnableLobbyStatistics = false;
-        PhotonNetwork.IsMessageQueueRunning = true;
-        PhotonNetwork.ConnectUsingSettings();
+        public void OnDestroy()
+        {
+            PhotonNetwork.NetworkingClient.StateChanged -= UpdateState;
+            nicknameInputField.onValueChanged.RemoveAllListeners();
+            connectionButton.onClick.RemoveAllListeners();
+        }
 
-        startButton.gameObject.SetActive(false);
-        nicknameInputField.gameObject.SetActive(false);
-        loadingMessageLabel.gameObject.SetActive(true);
+        public override void OnConnectedToMaster()
+        {
+            TypedLobby lobby = new TypedLobby("coding-strategy", LobbyType.SqlLobby);
+            PhotonNetwork.JoinLobby(lobby);
+            SceneManager.LoadScene("GameLobby");
+        }
+
+        public void CreateConnection()
+        {
+            if (PhotonNetwork.NetworkingClient.State != ClientState.PeerCreated)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Nickname))
+            {
+                onInvalidNicknameProvide.Invoke();
+                return;
+            }
+
+            PhotonNetwork.LocalPlayer.NickName = Nickname;
+            PhotonNetwork.AutomaticallySyncScene = true;
+            PhotonNetwork.PhotonServerSettings.AppSettings.EnableLobbyStatistics = false;
+            PhotonNetwork.NetworkingClient.EnableLobbyStatistics = false;
+            PhotonNetwork.IsMessageQueueRunning = true;
+            PhotonNetwork.ConnectUsingSettings();
+
+            onValidConnectionCreate.Invoke();
+        }
+
+        private void UpdateState(ClientState previous, ClientState next)
+        {
+            ClientStateMessage = next.ToString();
+        }
     }
 }

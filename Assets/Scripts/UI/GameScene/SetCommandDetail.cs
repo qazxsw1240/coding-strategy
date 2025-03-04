@@ -1,18 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
+
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodingStrategy.UI.InGame
+namespace CodingStrategy.UI.GameScene
 {
     public class SetCommandDetail : MonoBehaviour
     {
-        public TMP_Text _commandName;
-        public TMP_Text _commandDescription;
-        public Image _attackRange;
-        public Sprite[] spriteList;
-
         public enum AttackArea
         {
             None,
@@ -28,7 +22,12 @@ namespace CodingStrategy.UI.InGame
             Malware2,
             Malware3,
             Around
-        };
+        }
+
+        public TMP_Text _commandName;
+        public TMP_Text _commandDescription;
+        public Image _attackRange;
+        public Sprite[] spriteList;
 
         public string Id;
 
@@ -78,8 +77,8 @@ namespace CodingStrategy.UI.InGame
                     break;
                 case 10:
                     _attackRange.sprite = spriteList[(int) (enhancedLevel == 1 ? AttackArea.Forward2 :
-                        enhancedLevel == 2 ? AttackArea.Malware2 :
-                        enhancedLevel == 3 ? AttackArea.Malware3 : AttackArea.None)];
+                                                         enhancedLevel == 2 ? AttackArea.Malware2 :
+                                                         enhancedLevel == 3 ? AttackArea.Malware3 : AttackArea.None)];
                     break;
                 case 11:
                     _attackRange.sprite = spriteList[(int) AttackArea.None];
@@ -89,39 +88,31 @@ namespace CodingStrategy.UI.InGame
                     break;
                 case 13:
                     _attackRange.sprite = spriteList[(int) (enhancedLevel == 1 || enhancedLevel == 2
-                        ?
-                        AttackArea.Forward
-                        :
-                        enhancedLevel == 3
-                            ? AttackArea.Forward3
-                            : AttackArea.None)];
+                                                         ? AttackArea.Forward
+                                                         : enhancedLevel == 3
+                                                             ? AttackArea.Forward3
+                                                             : AttackArea.None)];
                     break;
                 case 14:
                     _attackRange.sprite = spriteList[(int) (enhancedLevel == 1 || enhancedLevel == 2
-                        ?
-                        AttackArea.Backward
-                        :
-                        enhancedLevel == 3
-                            ? AttackArea.Backward3
-                            : AttackArea.None)];
+                                                         ? AttackArea.Backward
+                                                         : enhancedLevel == 3
+                                                             ? AttackArea.Backward3
+                                                             : AttackArea.None)];
                     break;
                 case 15:
                     _attackRange.sprite = spriteList[(int) (enhancedLevel == 1 || enhancedLevel == 2
-                        ?
-                        AttackArea.Forward
-                        :
-                        enhancedLevel == 3
-                            ? AttackArea.Forward3
-                            : AttackArea.None)];
+                                                         ? AttackArea.Forward
+                                                         : enhancedLevel == 3
+                                                             ? AttackArea.Forward3
+                                                             : AttackArea.None)];
                     break;
                 case 16:
                     _attackRange.sprite = spriteList[(int) (enhancedLevel == 1 || enhancedLevel == 2
-                        ?
-                        AttackArea.Backward
-                        :
-                        enhancedLevel == 3
-                            ? AttackArea.Backward3
-                            : AttackArea.None)];
+                                                         ? AttackArea.Backward
+                                                         : enhancedLevel == 3
+                                                             ? AttackArea.Backward3
+                                                             : AttackArea.None)];
                     break;
                 case 17:
                     _attackRange.sprite = spriteList[(int) AttackArea.None];
@@ -155,11 +146,5 @@ namespace CodingStrategy.UI.InGame
                     break;
             }
         }
-
-        // Start is called before the first frame update
-        void Start() {}
-
-        // Update is called once per frame
-        void Update() {}
     }
 }

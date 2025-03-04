@@ -1,72 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ChatSoundManager : MonoBehaviour
+namespace CodingStrategy.Sound
 {
-    private SoundManager soundManager;
-    public InputField ChatInputField;
-
-    //public void ChatSound()
-    //{
-    //    soundManager = FindObjectOfType<SoundManager>();
-    //    soundManager.Init();
-    //    // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
-    //    AudioClip effectClip = Resources.Load<AudioClip>("Sound/Keyboard_Click_Sound");
-    //    soundManager.Play(effectClip, Sound.Effect, 1.0f);
-    //    Debug.Log("Chatting sound is comming out!");
-    //}
-
-    //public void SendMsgBtnClickSound()
-    //{
-    //    soundManager = FindObjectOfType<SoundManager>();
-    //    soundManager.Init();
-    //    // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
-    //    AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameLobby_UI_ClickSound");
-    //    soundManager.Play(effectClip, Sound.Effect, 1.0f);
-    //    Debug.Log("Send button sound is comming out!");
-    //}
-
-    //public void ChatSound()
-    //{
-    //    // Manager¸¦ ÅëÇØ SoundManager¿¡ Á¢±Ù
-    //    SoundManager soundManager = Manager.Sound;
-
-    //    // SoundManager°¡ ÃÊ±âÈ­µÇÁö ¾Ê¾ÒÀ» °æ¿ì¸¦ ´ëºñÇÑ ¿¹¿Ü Ã³¸®
-    //    if (soundManager == null)
-    //    {
-    //        Debug.LogError("SoundManager°¡ ÃÊ±âÈ­µÇÁö ¾Ê¾Ò½À´Ï´Ù.");
-    //        return;
-    //    }
-
-    //    // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
-    //    AudioClip effectClip = Resources.Load<AudioClip>("Sound/Keyboard_Click_Sound");
-
-    //    if (effectClip != null)
-    //    {
-    //        soundManager.Play(effectClip, Sound.Effect, 1.0f);
-    //        Debug.Log("Chatting sound is coming out!");
-    //    }
-    //    else
-    //    {
-    //        Debug.LogWarning("È¿°úÀ½À» Ã£À» ¼ö ¾ø½À´Ï´Ù: Sound/Keyboard_Click_Sound");
-    //    }
-    //}
-
-
-    public void Start()
+    public class ChatSoundManager : MonoBehaviour
     {
-        // ´Ğ³×ÀÓ ÀÔ·Â ÇÊµåÀÇ ÀÌº¥Æ®¿¡ ¸®½º³Ê Ãß°¡
-        ChatInputField.onValueChanged.AddListener(OnChatChanged);
+        public InputField ChatInputField;
+        private SoundManager soundManager;
+
+        public void Start()
+        {
+            // ë‹‰ë„¤ì„ ì…ë ¥ í•„ë“œì˜ ì´ë²¤íŠ¸ì— ë¦¬ìŠ¤ë„ˆ ì¶”ê°€
+            ChatInputField.onValueChanged.AddListener(OnChatChanged);
+        }
+
+        public void OnChatChanged(string chat)
+        {
+            AudioClip typingSoundClip = Resources.Load<AudioClip>("Sound/Keyboard_Click_Sound");
+            soundManager.Play(typingSoundClip, SoundType.Effect, 3.0f, 0.6f);
+        }
     }
-
-    public void OnChatChanged(string Chat)
-    {
-        // Ã¤ÆÃÀÌ ÀÔ·ÂµÉ ¶§¸¶´Ù È¿°úÀ½ Àç»ı
-        AudioClip typingSoundClip = Resources.Load<AudioClip>("Sound/Keyboard_Click_Sound");
-        soundManager.Play(typingSoundClip, Sound.Effect, 3.0f, 0.6f);
-    }
-
-
 }

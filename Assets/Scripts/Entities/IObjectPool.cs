@@ -1,11 +1,8 @@
-#nullable enable
-
+using System;
+using System.Collections.Generic;
 
 namespace CodingStrategy.Entities
 {
-    using System;
-    using System.Collections.Generic;
-
     public interface IObjectPool<TEntity> : IEnumerable<TEntity> where TEntity : IGameEntity
     {
         public abstract TEntity this[string id] { get; set; }

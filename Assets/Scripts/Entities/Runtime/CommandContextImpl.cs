@@ -6,16 +6,6 @@ namespace CodingStrategy.Entities.Runtime
 {
     public class CommandContextImpl : ICommandContext
     {
-        public IBoardDelegate BoardDelegate { get; }
-
-        public IRobotDelegatePool RobotDelegatePool { get; }
-
-        public IPlayerPool PlayerPool { get; }
-
-        public IRobotDelegate RobotDelegate { get; }
-
-        public IPlayerDelegate PlayerDelegate { get; }
-
         public CommandContextImpl(
             IBoardDelegate boardDelegate,
             IRobotDelegatePool robotDelegatePool,
@@ -29,5 +19,15 @@ namespace CodingStrategy.Entities.Runtime
             RobotDelegate = robotDelegate;
             PlayerDelegate = playerDelegate;
         }
+
+        public IBoardDelegate BoardDelegate { get; }
+
+        public IRobotDelegatePool RobotDelegatePool { get; }
+
+        public IPlayerPool PlayerPool { get; }
+
+        public IRobotDelegate RobotDelegate { get; }
+
+        public IPlayerDelegate PlayerDelegate { get; }
     }
 }

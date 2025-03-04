@@ -1,22 +1,23 @@
 #nullable enable
 
-
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+
+using CodingStrategy.Entities.Board;
+using CodingStrategy.Entities.Player;
+using CodingStrategy.Entities.Robot;
+using CodingStrategy.Entities.Runtime.Abnormality;
 using CodingStrategy.Entities.Runtime.Statement;
 using CodingStrategy.Entities.Runtime.Validator;
+
 using Unity.VisualScripting;
+
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace CodingStrategy.Entities.Runtime
 {
-    using UnityEngine;
-    using System.Collections;
-    using System.Collections.Generic;
-    using Board;
-    using Player;
-    using Robot;
-    using Abnormality;
-
     public class RuntimeExecutor : LifeCycleMonoBehaviourBase, ILifeCycle
     {
         private readonly int _countdown = 20;
@@ -32,8 +33,6 @@ namespace CodingStrategy.Entities.Runtime
         };
 
         private int _currentCountdown;
-
-        private ICommandContext _commandContext = null!;
 
         public GameManager GameManager { private get; set; } = null!;
 
@@ -156,7 +155,8 @@ namespace CodingStrategy.Entities.Runtime
                 RobotStatementExecutor robotStatementExecutor = gameObject.GetOrAddComponent<RobotStatementExecutor>();
                 robotStatementExecutor.GameManager = GameManager;
                 robotStatementExecutor.Validator = validator;
-                robotStatementExecutor.Context = new RuntimeExecutorContext(BoardDelegate,
+                robotStatementExecutor.Context = new RuntimeExecutorContext(
+                    BoardDelegate,
                     PlayerPool,
                     RobotDelegatePool,
                     _executionQueuePool,
@@ -174,7 +174,9 @@ namespace CodingStrategy.Entities.Runtime
                 BitDispenser.ClearTakenBits();
             }
 
-            yield return GameManager.statusSynchronizer.AwaitAllPlayersStatus("turn" + _currentCountdown, "ready",
+            yield return GameManager.statusSynchronizer.AwaitAllPlayersStatus(
+                "turn" + _currentCountdown,
+                "ready",
                 "turn" + (_currentCountdown + 1));
         }
 
@@ -198,7 +200,8 @@ namespace CodingStrategy.Entities.Runtime
         private ICommandContext BuildCommandContext(IRobotDelegate robotDelegate)
         {
             IPlayerDelegate playerDelegate = PlayerPool[robotDelegate.Id];
-            return new CommandContextImpl(BoardDelegate,
+            return new CommandContextImpl(
+                BoardDelegate,
                 RobotDelegatePool,
                 PlayerPool,
                 robotDelegate,

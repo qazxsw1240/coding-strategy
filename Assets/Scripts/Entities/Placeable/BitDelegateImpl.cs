@@ -1,25 +1,21 @@
-#nullable enable
-
-
 using System;
+
 using CodingStrategy.Entities.Board;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
+
 using UnityEngine.Events;
 
 namespace CodingStrategy.Entities.Placeable
 {
     public class BitDelegateImpl : IBitDelegate
     {
-        private readonly IPlayerPool _playerPool;
         private readonly IBoardDelegate _boardDelegate;
+        private readonly IPlayerPool _playerPool;
 
-        private IRobotDelegate? _taker;
+        private IRobotDelegate _taker;
 
-        public BitDelegateImpl(
-            IPlayerPool playerPool,
-            IBoardDelegate boardDelegate,
-            int amount)
+        public BitDelegateImpl(IPlayerPool playerPool, IBoardDelegate boardDelegate, int amount)
         {
             _playerPool = playerPool;
             _boardDelegate = boardDelegate;
@@ -30,11 +26,17 @@ namespace CodingStrategy.Entities.Placeable
             _boardDelegate.OnRobotChangePosition.AddListener(InvokeRobotTakeBitEvents);
         }
 
-        public Coordinate Position => _boardDelegate.GetPosition(this);
+        public Coordinate Position
+        {
+            get => _boardDelegate.GetPosition(this);
+        }
 
         public int Amount { get; }
 
-        public bool IsTaken => _taker != null;
+        public bool IsTaken
+        {
+            get => _taker != null;
+        }
 
         public UnityEvent<IRobotDelegate> OnRobotTakeInEvents { get; }
 

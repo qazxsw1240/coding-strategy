@@ -1,36 +1,47 @@
 #nullable enable
 
-
+using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using CodingStrategy.Entities.BadSector;
+
+using CodingStrategy.Entities;
+using CodingStrategy.Entities.Board;
 using CodingStrategy.Entities.CodingTime;
+using CodingStrategy.Entities.Player;
+using CodingStrategy.Entities.Robot;
+using CodingStrategy.Entities.Runtime;
+using CodingStrategy.Entities.Runtime.Abnormality;
 using CodingStrategy.Factory;
 using CodingStrategy.Network;
+using CodingStrategy.UI.GameScene;
 using CodingStrategy.UI.InGame;
 using CodingStrategy.Utility;
+
 using ExitGames.Client.Photon;
+
 using Photon.Pun;
 using Photon.Realtime;
-using Task = System.Threading.Tasks.Task;
+
+using Unity.VisualScripting;
+
+using UnityEngine;
+
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 namespace CodingStrategy
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using Entities.Runtime.Abnormality;
-    using Entities;
-    using Entities.Board;
-    using Entities.Player;
-    using Entities.Robot;
-    using Entities.Runtime;
-    using Unity.VisualScripting;
-    using UnityEngine;
-
     public class GameManager : MonoBehaviourPunCallbacks, IOnEventCallback
     {
+        private const string ReadyStatus = "ready";
+        private const string PlaceablePlaceStatus = "placeable-place";
+        private const string CodingTimeStatus = "coding-time";
+        private const string RuntimeStatus = "runtime";
+
+        private const byte BitPlaceRequestCode = 128;
+        private const byte BitPlaceResponseCode = 129;
+
         public static readonly (RobotDirection, Coordinate, Color)[] StartPositions =
         {
             (RobotDirection.North, new Coordinate(4, 0), PlayerStatusUI.Red),
@@ -42,35 +53,7 @@ namespace CodingStrategy
         private static readonly IDictionary<string, IAbnormality> AbnormalityDictionary =
             new Dictionary<string, IAbnormality>();
 
-        public static IDictionary<string, IAbnormality> GetAbnormalities()
-        {
-            return AbnormalityDictionary;
-        }
-
-        public static void SetAbnormalityValue(string key, IAbnormality abnormality)
-        {
-            AbnormalityDictionary[key] = abnormality;
-        }
-
-        public static IAbnormality? GetAbnormalityValue(string key)
-        {
-            if (AbnormalityDictionary.TryGetValue(key, out IAbnormality value))
-            {
-                return value;
-            }
-
-            return null;
-        }
-
-        private const string ReadyStatus = "ready";
-        private const string RobotPlaceStatus = "robot-place";
-        private const string PlaceablePlaceStatus = "placeable-place";
-        private const string CodingTimeStatus = "coding-time";
-        private const string CodingTimeEndStatus = "coding-time-end";
-        private const string RuntimeStatus = "runtime";
-        private const string RuntimeEndStatus = "runtime-end";
-
-        public int currentRound = 0;
+        public int currentRound;
         public int round = 3;
         public int boardWidth = 9;
         public int boardHeight = 9;
@@ -86,40 +69,33 @@ namespace CodingStrategy
 
         public InGameStatusSynchronizer statusSynchronizer = null!;
 
-        public bool awaitLobby = false;
+        public bool awaitLobby;
+
+        private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
+
+        private readonly HashSet<Player> _responsePlayers = new HashSet<Player>();
+
+        public readonly IDictionary<string, int> PlayerIndexMap = new Dictionary<string, int>();
+        private string? _actualStatus;
+
+        private BitDispenser _bitDispenser = null!;
+        private IPlayerCommandCache _commandCache = null!;
+
+        private Coroutine? _coroutine;
+
+        private string? _expectedStatus;
+        private int _expectedStatusTimestamp;
+
+        private CustomYieldInstruction? _lastStatusSync;
+        private IPlayerCommandNetworkDelegate _networkDelegate = null!;
+
+        private GameManagerObjectSynchronizer _objectSynchronizer = null!;
 
         public IBoardDelegate BoardDelegate { get; private set; } = null!;
 
         public IRobotDelegatePool RobotDelegatePool { get; private set; } = null!;
 
-        // public IPlayerPool PlayerPool { get; private set; } = null!;
         public AnimationCoroutineManager AnimationCoroutineManager { get; private set; } = null!;
-
-        private BitDispenser _bitDispenser = null!;
-        private IPlayerCommandNetworkDelegate _networkDelegate = null!;
-        private IPlayerCommandCache _commandCache = null!;
-
-        private GameManagerObjectSynchronizer _objectSynchronizer = null!;
-        private GameManagerPlayerStatusSynchronizer _playerStatusSynchronizer = null!;
-
-        public readonly IDictionary<string, int> PlayerIndexMap = new Dictionary<string, int>();
-
-        private Coroutine? _coroutine;
-
-        public static IPlayerDelegate BuildPlayerDelegate(string id)
-        {
-            IPlayerDelegateCreateStrategy strategy = new PlayerDelegateCreateStrategy(id);
-            IPlayerDelegateCreateFactory factory = new PlayerDelegateCreateFactory(strategy);
-            return factory.Build();
-        }
-
-        public static IRobotDelegate BuildRobotDelegate(IBoardDelegate boardDelegate, IPlayerDelegate playerDelegate)
-        {
-            IRobotDelegateCreateStrategy strategy = new RobotDelegateCreateStrategy();
-            IRobotDelegateCreateFactory factory =
-                new RobotDelegateCreateFactory(strategy, boardDelegate, playerDelegate);
-            return factory.Build();
-        }
 
         public void Awake()
         {
@@ -155,36 +131,117 @@ namespace CodingStrategy
 
             _coroutine = StartCoroutine(StartGameManagerCoroutine());
 
-            quitButtonManager.OnQuitButtonClick.AddListener(() =>
-            {
-                Debug.Log("button click in");
-                awaitLobby = true;
-                PhotonNetwork.LeaveRoom();
-            });
+            quitButtonManager.OnQuitButtonClick.AddListener(
+                () =>
+                {
+                    Debug.Log("button click in");
+                    awaitLobby = true;
+                    PhotonNetwork.LeaveRoom();
+                });
         }
-
-        private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
 
         public void Update()
         {
-            if (_actions.TryDequeue(out Action action))
+            if (!_actions.TryDequeue(out Action action))
             {
-                if (!PhotonNetwork.InRoom)
-                {
-                    return;
-                }
-
-                action();
+                return;
             }
 
-            // if (_expectedStatus != null)
-            // {
-            //     int elapsedTime = unchecked(PhotonNetwork.ServerTimestamp - _expectedStatusTimestamp);
-            //     if (elapsedTime > 3000)
-            //     {
-            //         statusSynchronizer.AwaitAllPlayersStatus(_expectedStatus, retry: true);
-            //     }
-            // }
+            if (!PhotonNetwork.InRoom)
+            {
+                return;
+            }
+
+            action();
+        }
+
+        public void OnEvent(EventData photonEvent)
+        {
+            byte eventCode = photonEvent.Code;
+
+            if (eventCode == BitPlaceResponseCode)
+            {
+                _actions.Enqueue(
+                    () =>
+                    {
+                        Debug.Assert(PhotonNetwork.IsMasterClient);
+                        Player photonPlayer = PhotonNetwork.CurrentRoom.Players[photonEvent.Sender];
+                        _responsePlayers.Add(photonPlayer);
+
+                        if (_responsePlayers.Count >= PhotonNetwork.CurrentRoom.PlayerCount)
+                        {
+                            return;
+                        }
+
+                        Debug.Log("All player has placed all bits");
+                        _responsePlayers.Clear();
+                        PhotonNetwork.LocalPlayer.SetCustomProperties(
+                            new Hashtable
+                            {
+                                { "status", PlaceablePlaceStatus }
+                            });
+                    });
+                return;
+            }
+
+            if (eventCode != BitPlaceRequestCode)
+            {
+                return;
+            }
+
+            _actions.Enqueue(
+                () =>
+                {
+                    object[][] data = (object[][]) photonEvent.CustomData;
+                    foreach (object[] position in data)
+                    {
+                        int x = (int) position[0];
+                        int y = (int) position[1];
+                        Coordinate coordinate = new Coordinate(x, y);
+                        _bitDispenser.Dispense(coordinate);
+                    }
+
+                    PhotonNetwork.RaiseEvent(
+                        BitPlaceResponseCode,
+                        true,
+                        new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient },
+                        SendOptions.SendReliable);
+                });
+        }
+
+        public static IDictionary<string, IAbnormality> GetAbnormalities()
+        {
+            return AbnormalityDictionary;
+        }
+
+        public static void SetAbnormalityValue(string key, IAbnormality abnormality)
+        {
+            AbnormalityDictionary[key] = abnormality;
+        }
+
+        public static IAbnormality? GetAbnormalityValue(string key)
+        {
+            if (AbnormalityDictionary.TryGetValue(key, out IAbnormality value))
+            {
+                return value;
+            }
+
+            return null;
+        }
+
+        public static IPlayerDelegate BuildPlayerDelegate(string id)
+        {
+            IPlayerDelegateCreateStrategy strategy = new PlayerDelegateCreateStrategy(id);
+            IPlayerDelegateCreateFactory factory = new PlayerDelegateCreateFactory(strategy);
+            return factory.Build();
+        }
+
+        public static IRobotDelegate BuildRobotDelegate(IBoardDelegate boardDelegate, IPlayerDelegate playerDelegate)
+        {
+            IRobotDelegateCreateStrategy strategy = new RobotDelegateCreateStrategy();
+            IRobotDelegateCreateFactory factory =
+                new RobotDelegateCreateFactory(strategy, boardDelegate, playerDelegate);
+            return factory.Build();
         }
 
         public override void OnConnectedToMaster()
@@ -203,17 +260,19 @@ namespace CodingStrategy
             Debug.LogFormat("Connected to Master {0}", PhotonNetwork.CurrentLobby);
             // PhotonNetwork.GetCustomRoomList(PhotonNetwork.CurrentLobby, "C0='coding-strategy'");
             PhotonNetwork.NickName = "asdf";
-            PhotonNetwork.CreateRoom("debug", roomOptions: new RoomOptions
-            {
-                MaxPlayers = 4,
-                IsVisible = false,
-                PublishUserId = true,
-                CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
+            PhotonNetwork.CreateRoom(
+                "debug",
+                new RoomOptions
                 {
-                    { "C0", "coding-strategy-debug" }
-                },
-                CustomRoomPropertiesForLobby = new string[] { "C0" }
-            });
+                    MaxPlayers = 4,
+                    IsVisible = false,
+                    PublishUserId = true,
+                    CustomRoomProperties = new Hashtable
+                    {
+                        { "C0", "coding-strategy-debug" }
+                    },
+                    CustomRoomPropertiesForLobby = new[] { "C0" }
+                });
         }
 
         public override void OnJoinedRoom()
@@ -235,40 +294,6 @@ namespace CodingStrategy
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
             DetachPlayerUI(otherPlayer);
-            // util.RemovePlayerDelegate(otherPlayer);
-        }
-
-        public override void OnPlayerPropertiesUpdate(
-            Player targetPlayer,
-            ExitGames.Client.Photon.Hashtable changedProps)
-        {
-            // _actions.Enqueue(() =>
-            // {
-            //     if (!PhotonNetwork.IsMasterClient)
-            //     {
-            //         return;
-            //     }
-            //
-            //     HashSet<string> status = new HashSet<string>();
-            //     int count = 0;
-            //     foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
-            //     {
-            //         if (player.CustomProperties.ContainsKey("status"))
-            //         {
-            //             string statusValue = (string) player.CustomProperties["status"];
-            //             Debug.LogWarningFormat("Player {1} try to move to status: {0}", statusValue,
-            //                 targetPlayer.UserId);
-            //             count++;
-            //             status.Add(statusValue);
-            //         }
-            //     }
-            //
-            //     if (count == PhotonNetwork.CurrentRoom.PlayerCount && status.Count == 1)
-            //     {
-            //         PhotonNetwork.RaiseEvent(StateSynchronizationResponseCode, null,
-            //             new RaiseEventOptions { Receivers = ReceiverGroup.All }, SendOptions.SendReliable);
-            //     }
-            // });
         }
 
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -291,15 +316,12 @@ namespace CodingStrategy
             return objectSynchronizer;
         }
 
-        private GameManagerPlayerStatusSynchronizer SetUpPlayerStatusSynchronizer()
+        private void SetUpPlayerStatusSynchronizer()
         {
             GameManagerPlayerStatusSynchronizer playerStatusSynchronizer =
                 gameObject.GetOrAddComponent<GameManagerPlayerStatusSynchronizer>();
             playerStatusSynchronizer.GameManager = this;
-            return playerStatusSynchronizer;
         }
-
-        private bool _isStatusSynchronized = false;
 
         private IEnumerator StartGameManagerCoroutine()
         {
@@ -327,18 +349,17 @@ namespace CodingStrategy
 
             _objectSynchronizer.InitializeCells();
 
-            _playerStatusSynchronizer = SetUpPlayerStatusSynchronizer();
+            SetUpPlayerStatusSynchronizer();
 
             yield return null;
 
-            #region ITERATION
+#region ITERATION
 
             currentRound = 0;
 
             while (currentRound < round)
             {
                 Debug.LogErrorFormat("round: {0} of {1}", currentRound, round);
-                ;
 
                 if (currentRound++ == round)
                 {
@@ -347,21 +368,21 @@ namespace CodingStrategy
 
                 yield return StartCoroutine(statusSynchronizer.AwaitAllPlayersStatus(ReadyStatus, CodingTimeStatus));
 
-                #region INITIALIZATION
+#region INITIALIZATION
 
                 inGameUI.gameturn.SetTurn(20);
 
                 _networkDelegate.RequestRefresh();
 
-                #region CHECK_DISCONNECTED_PLAYERS
+#region CHECK_DISCONNECTED_PLAYERS
 
                 System.Collections.Generic.ISet<IPlayerDelegate> disconnectedPlayers = new HashSet<IPlayerDelegate>();
 
                 foreach (IPlayerDelegate playerDelegate in util.PlayerDelegatePool)
                 {
                     if (PhotonNetwork.CurrentRoom.Players
-                        .Select(pair => pair.Value)
-                        .Any(player => player.UserId == playerDelegate.Id))
+                       .Select(pair => pair.Value)
+                       .Any(player => player.UserId == playerDelegate.Id))
                     {
                         continue;
                     }
@@ -375,7 +396,7 @@ namespace CodingStrategy
                     util.PlayerDelegatePool.Remove(disconnectedPlayer.Id);
                 }
 
-                #endregion
+#endregion
 
                 inGameUI.SetCameraPosition(PlayerIndexMap[PhotonNetwork.LocalPlayer.UserId]);
 
@@ -398,11 +419,9 @@ namespace CodingStrategy
 
                 NotifyDispatchBits();
 
-                // yield return StartCoroutine(AwaitAllPlayerPlaceablePlaceEventSynchronization());
+#endregion
 
-                #endregion
-
-                #region CODING_TIME
+#region CODING_TIME
 
                 yield return StartCoroutine(statusSynchronizer.AwaitAllPlayersStatus(CodingTimeStatus, RuntimeStatus));
 
@@ -414,11 +433,9 @@ namespace CodingStrategy
 
                 yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
 
-                // yield return StartCoroutine(statusSynchronizer.AwaitAllPlayersStatus(CodingTimeEndStatus));
+#endregion
 
-                #endregion
-
-                #region RUNTIME
+#region RUNTIME
 
                 yield return StartCoroutine(statusSynchronizer.AwaitAllPlayersStatus(RuntimeStatus, "turn1"));
                 yield return new WaitForSeconds(1.0f);
@@ -431,9 +448,7 @@ namespace CodingStrategy
 
                 _bitDispenser.Clear();
 
-                // yield return StartCoroutine(statusSynchronizer.AwaitAllPlayersStatus(RuntimeEndStatus));
-
-                #endregion
+#endregion
 
                 if (util.LocalPhotonPlayerDelegate.HealthPoint > 0)
                 {
@@ -446,7 +461,6 @@ namespace CodingStrategy
 
             yield return null;
 
-
             Debug.LogFormat("Runtime terminated");
             PhotonNetwork.LeaveRoom();
 
@@ -455,97 +469,7 @@ namespace CodingStrategy
                 StopCoroutine(_coroutine);
             }
 
-            #endregion
-        }
-
-        private string? _expectedStatus;
-        private int _expectedStatusTimestamp;
-        private string? _actualStatus;
-
-
-        private CustomYieldInstruction? _lastStatusSync;
-
-        [Obsolete]
-        public IEnumerator AwaitAllPlayersStatus(string status, bool includingMasterClient = true, bool retry = false)
-        {
-            Debug.LogFormat("expect status {0}", status);
-            _expectedStatus = status;
-            _expectedStatusTimestamp = PhotonNetwork.ServerTimestamp;
-            int currentExpectedStatusTimestamp = _expectedStatusTimestamp;
-            if (retry)
-            {
-                Debug.LogWarningFormat("Retry to synchronize state {0}", _expectedStatus);
-            }
-
-            if (PhotonNetwork.IsMasterClient)
-            {
-                // _currentStatusRequest = status;
-            }
-
-            if (includingMasterClient)
-            {
-                _actions.Enqueue(() =>
-                {
-                    Debug.LogFormat("Request synchronization for status {0}", _expectedStatus);
-                    PhotonNetwork.RaiseEvent(StateSynchronizationRequestCode, _expectedStatus,
-                        new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, SendOptions.SendReliable);
-                });
-            }
-            else
-            {
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    _actions.Enqueue(() =>
-                    {
-                        Debug.LogFormat("Request synchronization for status {0} as Master client", _expectedStatus);
-                        PhotonNetwork.RaiseEvent(StateSynchronizationRequestCode, _expectedStatus,
-                            new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, SendOptions.SendReliable);
-                    });
-                }
-            }
-            // if (includingMasterClient)
-            // {
-            //     _actions.Enqueue(() =>
-            //     {
-            //         Debug.LogWarningFormat("Local Player try to move to status: {0}", status);
-            //         PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
-            //         {
-            //             { "status", status }
-            //         });
-            //     });
-            // }
-            // else
-            // {
-            //     if (PhotonNetwork.IsMasterClient)
-            //     {
-            //         _actions.Enqueue(() =>
-            //         {
-            //             Debug.LogWarningFormat("Local Player try to move to status: {0}", status);
-            //             PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
-            //             {
-            //                 { "status", status }
-            //             });
-            //         });
-            //     }
-            // }
-
-            if (!retry)
-            {
-                yield return new WaitUntil(() =>
-                {
-                    if (_expectedStatus == null || _actualStatus == null)
-                    {
-                        return false;
-                    }
-
-                    _isStatusSynchronized = _expectedStatus == _actualStatus;
-                    Debug.LogFormat("Synchronized for {0}:  {1}", _expectedStatus, _isStatusSynchronized);
-                    return _isStatusSynchronized;
-                });
-                _expectedStatus = null;
-                _actualStatus = null;
-                _isStatusSynchronized = false;
-            }
+#endregion
         }
 
         private void PreparePlayerUI(Player photonPlayer, PlayerStatusUI playerStatusUI, Color color)
@@ -577,7 +501,6 @@ namespace CodingStrategy
             codingTimeExecutor.Util = util;
             codingTimeExecutor.InGameUI = inGameUI;
             codingTimeExecutor.PlayerPool = util.PlayerDelegatePool;
-            codingTimeExecutor.NetworkDelegate = _networkDelegate;
             codingTimeExecutor.NetworkProcessor = networkProcessor;
             codingTimeExecutor.CommandCache = _commandCache;
         }
@@ -595,15 +518,8 @@ namespace CodingStrategy
 
         public PlayerStatusUI? FindPlayerStatusUI(IPlayerDelegate playerDelegate)
         {
-            foreach (PlayerStatusUI playerStatusUI in inGameUI.playerStatusUI)
-            {
-                if (playerStatusUI.GetUserID() == playerDelegate.Id)
-                {
-                    return playerStatusUI;
-                }
-            }
-
-            return null;
+            return inGameUI.playerStatusUI.FirstOrDefault(
+                playerStatusUI => playerStatusUI.GetUserID() == playerDelegate.Id);
         }
 
         public void UpdatePlayerRanks()
@@ -633,105 +549,6 @@ namespace CodingStrategy
             }
         }
 
-        private const byte BitPlaceRequestCode = 128;
-        private const byte BitPlaceResponseCode = 129;
-
-        private const byte StateSynchronizationRequestCode = 100;
-        private const byte StateSynchronizationResponseCode = 101;
-
-        private readonly HashSet<Player> _responsePlayers = new HashSet<Player>();
-
-        public void OnEvent(EventData photonEvent)
-        {
-            byte eventCode = photonEvent.Code;
-
-            // if (eventCode == StateSynchronizationRequestCode)
-            // {
-            //     _actions.Enqueue(() =>
-            //     {
-            //         if (_currentStatusRequest == null)
-            //         {
-            //             Debug.Log("unknown status while await player synchronization");
-            //             return;
-            //         }
-            //
-            //         string expectedStatus = (string) photonEvent.CustomData;
-            //         if (_expectedStatus == expectedStatus)
-            //         {
-            //             Player player = PhotonNetwork.CurrentRoom.Players[photonEvent.Sender];
-            //             Debug.LogFormat("Player {0} has synchronized to status {1}", player.UserId, expectedStatus);
-            //             _synchronizedStatusRequests.Add(photonEvent.Sender);
-            //         }
-            //
-            //         if (_synchronizedStatusRequests.Count == PhotonNetwork.CurrentRoom.PlayerCount)
-            //         {
-            //             _synchronizedStatusRequests.Clear();
-            //             PhotonNetwork.RaiseEvent(StateSynchronizationResponseCode, _currentStatusRequest,
-            //                 new RaiseEventOptions
-            //                 {
-            //                     Receivers = ReceiverGroup.All
-            //                 }, SendOptions.SendReliable);
-            //         }
-            //     });
-            //     return;
-            // }
-            //
-            // if (eventCode == StateSynchronizationResponseCode)
-            // {
-            //     _actions.Enqueue(() =>
-            //     {
-            //         _actualStatus = (string) photonEvent.CustomData;
-            //         Debug.LogFormat("Expected status {0} received", _actualStatus);
-            //     });
-            //     return;
-            // }
-
-            if (eventCode == BitPlaceResponseCode)
-            {
-                _actions.Enqueue(() =>
-                {
-                    Debug.Assert(PhotonNetwork.IsMasterClient);
-                    Player photonPlayer = PhotonNetwork.CurrentRoom.Players[photonEvent.Sender];
-                    _responsePlayers.Add(photonPlayer);
-
-                    if (_responsePlayers.Count >= PhotonNetwork.CurrentRoom.PlayerCount)
-                    {
-                        return;
-                    }
-
-                    Debug.Log("All player has placed all bits");
-                    _responsePlayers.Clear();
-                    PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
-                    {
-                        { "status", PlaceablePlaceStatus }
-                    });
-                });
-                return;
-            }
-
-            if (eventCode != BitPlaceRequestCode)
-            {
-                return;
-            }
-
-            _actions.Enqueue(() =>
-            {
-                object[][] data = (object[][]) photonEvent.CustomData;
-                foreach (object[] position in data)
-                {
-                    int x = (int) position[0];
-                    int y = (int) position[1];
-                    Coordinate coordinate = new Coordinate(x, y);
-                    _bitDispenser.Dispense(coordinate);
-                }
-
-                PhotonNetwork.RaiseEvent(BitPlaceResponseCode,
-                    true,
-                    new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient },
-                    SendOptions.SendReliable);
-            });
-        }
-
         public void NotifyDispatchBits()
         {
             if (!PhotonNetwork.IsMasterClient)
@@ -739,30 +556,27 @@ namespace CodingStrategy
                 return;
             }
 
-            _actions.Enqueue(() =>
-            {
-                IList<Coordinate> positions = _bitDispenser.GetBitPositions(PhotonNetwork.CurrentRoom.PlayerCount * 2);
-                object[][] serializedPositions = new object[positions.Count][];
-
-                foreach ((int i, Coordinate position) in positions.ToIndexed())
+            _actions.Enqueue(
+                () =>
                 {
-                    serializedPositions[i] = new object[] { position.X, position.Y };
-                }
+                    IList<Coordinate> positions =
+                        _bitDispenser.GetBitPositions(PhotonNetwork.CurrentRoom.PlayerCount * 2);
+                    object[][] serializedPositions = new object[positions.Count][];
 
-                PhotonNetwork.RaiseEvent(BitPlaceRequestCode,
-                    serializedPositions,
-                    new RaiseEventOptions
+                    foreach ((int i, Coordinate position) in positions.ToIndexed())
                     {
-                        Receivers = ReceiverGroup.All
-                    },
-                    SendOptions.SendReliable);
-            });
-        }
+                        serializedPositions[i] = new object[] { position.X, position.Y };
+                    }
 
-        public IEnumerator AwaitAllPlayerPlaceablePlaceEventSynchronization()
-        {
-            // yield return StartCoroutine(statusSynchronizer.AwaitAllPlayersStatus(PlaceablePlaceStatus));
-            yield break;
+                    PhotonNetwork.RaiseEvent(
+                        BitPlaceRequestCode,
+                        serializedPositions,
+                        new RaiseEventOptions
+                        {
+                            Receivers = ReceiverGroup.All
+                        },
+                        SendOptions.SendReliable);
+                });
         }
     }
 }

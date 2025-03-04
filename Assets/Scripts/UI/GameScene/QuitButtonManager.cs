@@ -1,38 +1,38 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
-public class QuitButtonManager : MonoBehaviour
+namespace CodingStrategy.UI.GameScene
 {
-    public Button gameTurnButton; // Gameturn Button
-    public Button gameRoomQuitButton; // GameroomQuit Button
-    public UnityEvent OnQuitButtonClick;
-
-	void Start()
+    public class QuitButtonManager : MonoBehaviour
     {
-        // 초기에는 GameroomQuit Button이 보이지 않도록 합니다.
-        gameRoomQuitButton.gameObject.SetActive(false);
+        public Button gameTurnButton; // Gameturn Button
+        public Button gameRoomQuitButton; // GameroomQuit Button
+        public UnityEvent OnQuitButtonClick;
 
-        // Gameturn Button을 눌렀을 때의 동작을 설정합니다.
-        gameTurnButton.onClick.AddListener(() =>
+        private void Start()
         {
-            // GameroomQuit Button을 활성화합니다.
-            gameRoomQuitButton.gameObject.SetActive(true);
-        });
-
-        // [태명씨에게 전달] GameroomQuit Button을 눌렀을 때의 동작을 설정합니다.
-        gameRoomQuitButton.onClick.AddListener(() =>
-        {
-			// TODO: GameroomQuit Button의 기능을 구현합니다.
-			OnQuitButtonClick.Invoke();
-
-            // GameroomQuit Button을 비활성화합니다.
+            // 초기에는 GameroomQuit Button이 보이지 않도록 합니다.
             gameRoomQuitButton.gameObject.SetActive(false);
-        });
-    }
 
-    void Update()
-    {
+            // Gameturn Button을 눌렀을 때의 동작을 설정합니다.
+            gameTurnButton.onClick.AddListener(
+                () =>
+                {
+                    // GameroomQuit Button을 활성화합니다.
+                    gameRoomQuitButton.gameObject.SetActive(true);
+                });
 
+            // [태명씨에게 전달] GameroomQuit Button을 눌렀을 때의 동작을 설정합니다.
+            gameRoomQuitButton.onClick.AddListener(
+                () =>
+                {
+                    // TODO: GameroomQuit Button의 기능을 구현합니다.
+                    OnQuitButtonClick.Invoke();
+
+                    // GameroomQuit Button을 비활성화합니다.
+                    gameRoomQuitButton.gameObject.SetActive(false);
+                });
+        }
     }
 }

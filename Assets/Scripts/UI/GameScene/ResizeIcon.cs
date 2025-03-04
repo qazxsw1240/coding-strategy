@@ -1,21 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodingStrategy.UI.InGame
+namespace CodingStrategy.UI.GameScene
 {
     public class ResizeIcon : MonoBehaviour
     {
         // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
-            foreach (Transform child in transform) {
-                child.GetComponent<RectTransform>().sizeDelta *= transform.parent.GetComponent<GridLayoutGroup>().cellSize / new Vector2(200.0f, 200.0f);
-			}
+            foreach (Transform child in transform)
+            {
+                child.GetComponent<RectTransform>().sizeDelta *=
+                    transform.parent.GetComponent<GridLayoutGroup>().cellSize / new Vector2(200.0f, 200.0f);
+            }
         }
-
-        // Update is called once per frame
-        void Update() { }
     }
 }

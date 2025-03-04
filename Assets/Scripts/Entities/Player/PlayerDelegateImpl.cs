@@ -1,15 +1,17 @@
+using System;
+
+using CodingStrategy.Entities.Robot;
+
+using UnityEngine.Events;
+
 namespace CodingStrategy.Entities.Player
 {
-    using System;
-    using UnityEngine.Events;
-    using Robot;
-
     public class PlayerDelegateImpl : IPlayerDelegate
     {
+        private int _currency;
+        private int _exp;
         private int _healthPoint;
         private int _level;
-        private int _exp;
-        private int _currency;
         private IRobotDelegate _robot;
 
         public PlayerDelegateImpl(

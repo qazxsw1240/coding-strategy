@@ -1,12 +1,11 @@
 ﻿#nullable enable
 
+using CodingStrategy.Entities.Board;
+using CodingStrategy.Entities.Player;
+using CodingStrategy.Entities.Robot;
 
 namespace CodingStrategy.Factory
 {
-    using Entities.Board;
-    using Entities.Player;
-    using Entities.Robot;
-
     public class RobotDelegateCreateFactory : IRobotDelegateCreateFactory
     {
         private readonly IBoardDelegate _boardDelegate;
@@ -26,13 +25,14 @@ namespace CodingStrategy.Factory
 
         public IRobotDelegate Build()
         {
-            IRobotDelegate robotDelegate = new RobotDelegateImpl(_playerDelegate.Id,
+            IRobotDelegate robotDelegate = new RobotDelegateImpl(
+                _playerDelegate.Id,
                 _boardDelegate,
                 _playerDelegate.Algorithm,
-                healthPoint: Strategy.HealthPoint,
-                energyPoint: Strategy.EnergyPoint,
-                armorPoint: Strategy.ArmorPoint,
-                attackPoint: Strategy.AttackPoint);
+                Strategy.HealthPoint,
+                Strategy.EnergyPoint,
+                Strategy.ArmorPoint,
+                Strategy.AttackPoint);
             _playerDelegate.Robot = robotDelegate;
             return robotDelegate;
         }

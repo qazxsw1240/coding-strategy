@@ -1,15 +1,15 @@
-#nullable enable
-
-
 using System;
-using System.Linq;
+
 using CodingStrategy.Entities;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
 using CodingStrategy.Factory;
+
 using ExitGames.Client.Photon;
+
 using Photon.Pun;
 using Photon.Realtime;
+
 using UnityEngine.Events;
 
 namespace CodingStrategy
@@ -18,12 +18,48 @@ namespace CodingStrategy
     {
         public readonly IPlayerPool PlayerDelegatePool = new PlayerPoolImpl();
 
-        private IPlayerDelegate? _localPlayerDelegate = null;
-        private IRobotDelegate? _localRobotDelegate = null;
+        private IPlayerDelegate _localPlayerDelegate;
+        private IRobotDelegate _localRobotDelegate;
 
-        public void Awake()
+        public IPlayerDelegate LocalPhotonPlayerDelegate
         {
-            // DontDestroyOnLoad(this);
+            get
+            {
+                if (_localPlayerDelegate == null)
+                {
+                    Player photonPlayer = PhotonNetwork.LocalPlayer;
+                    IPlayerDelegate playerDelegate = new LocalPlayerDelegate(
+                        PlayerDelegatePool[photonPlayer.UserId],
+                        photonPlayer);
+                    _localPlayerDelegate = playerDelegate;
+                    PlayerDelegatePool[photonPlayer.UserId] = _localPlayerDelegate;
+                }
+
+                return _localPlayerDelegate;
+            }
+        }
+
+        public IRobotDelegate LocalPhotonRobotDelegate
+        {
+            get
+            {
+                if (_localRobotDelegate == null)
+                {
+                    _localRobotDelegate = LocalPhotonPlayerDelegate.Robot;
+                    _localRobotDelegate.OnHealthPointChange.AddListener(
+                        (_, _, next) =>
+                        {
+                            int validNext = Math.Max(0, Math.Min(5, next));
+                            PhotonNetwork.LocalPlayer.SetCustomProperties(
+                                new Hashtable
+                                {
+                                    { GameMangerNetworkProcessor.RobotHpKey, validNext }
+                                });
+                        });
+                }
+
+                return _localRobotDelegate;
+            }
         }
 
         public void InitializePlayersByPhoton()
@@ -54,44 +90,6 @@ namespace CodingStrategy
             }
 
             PlayerDelegatePool.Clear();
-        }
-
-        public IPlayerDelegate LocalPhotonPlayerDelegate
-        {
-            get
-            {
-                if (_localPlayerDelegate == null)
-                {
-                    Player photonPlayer = PhotonNetwork.LocalPlayer;
-                    IPlayerDelegate playerDelegate = new LocalPlayerDelegate(PlayerDelegatePool[photonPlayer.UserId],
-                        photonPlayer);
-                    _localPlayerDelegate = playerDelegate;
-                    PlayerDelegatePool[photonPlayer.UserId] = _localPlayerDelegate;
-                }
-
-                return _localPlayerDelegate;
-            }
-        }
-
-        public IRobotDelegate LocalPhotonRobotDelegate
-        {
-            get
-            {
-                if (_localRobotDelegate == null)
-                {
-                    _localRobotDelegate = LocalPhotonPlayerDelegate.Robot;
-                    _localRobotDelegate.OnHealthPointChange.AddListener((_, _, next) =>
-                    {
-                        int validNext = Math.Max(0, Math.Min(5, next));
-                        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
-                        {
-                            { GameMangerNetworkProcessor.RobotHpKey, validNext }
-                        });
-                    });
-                }
-
-                return _localRobotDelegate;
-            }
         }
 
         public bool HasRobotDelegate(string id)
@@ -132,8 +130,8 @@ namespace CodingStrategy
 
         private class LocalPlayerDelegate : IPlayerDelegate
         {
-            private readonly IPlayerDelegate _playerDelegate;
             private readonly Player _photonPlayer;
+            private readonly IPlayerDelegate _playerDelegate;
 
             public LocalPlayerDelegate(IPlayerDelegate playerDelegate, Player photonPlayer)
             {
@@ -141,75 +139,97 @@ namespace CodingStrategy
                 _photonPlayer = photonPlayer;
             }
 
-            public string Id => _playerDelegate.Id;
+            public string Id
+            {
+                get { return _playerDelegate.Id; }
+            }
 
             public int HealthPoint
             {
-                get => _playerDelegate.HealthPoint;
+                get { return _playerDelegate.HealthPoint; }
                 set
                 {
                     _playerDelegate.HealthPoint = value;
-                    _photonPlayer.SetCustomProperties(new Hashtable
-                    {
-                        { GameMangerNetworkProcessor.PlayerHpKey, value }
-                    });
+                    _photonPlayer.SetCustomProperties(
+                        new Hashtable
+                        {
+                            { GameMangerNetworkProcessor.PlayerHpKey, value }
+                        });
                 }
             }
 
             public int Level
             {
-                get => _playerDelegate.Level;
+                get { return _playerDelegate.Level; }
                 set
                 {
                     _playerDelegate.Level = value;
-                    _photonPlayer.SetCustomProperties(new Hashtable
-                    {
-                        { GameMangerNetworkProcessor.LevelKey, value }
-                    });
+                    _photonPlayer.SetCustomProperties(
+                        new Hashtable
+                        {
+                            { GameMangerNetworkProcessor.LevelKey, value }
+                        });
                 }
             }
 
             public int Exp
             {
-                get => _playerDelegate.Exp;
+                get { return _playerDelegate.Exp; }
                 set
                 {
                     _playerDelegate.Exp = value;
-                    _photonPlayer.SetCustomProperties(new Hashtable
-                    {
-                        { GameMangerNetworkProcessor.ExpKey, value }
-                    });
+                    _photonPlayer.SetCustomProperties(
+                        new Hashtable
+                        {
+                            { GameMangerNetworkProcessor.ExpKey, value }
+                        });
                 }
             }
 
             public int Currency
             {
-                get => _playerDelegate.Currency;
+                get { return _playerDelegate.Currency; }
                 set
                 {
                     _playerDelegate.Currency = value;
-                    _photonPlayer.SetCustomProperties(new Hashtable
-                    {
-                        { GameMangerNetworkProcessor.CurrencyKey, value }
-                    });
+                    _photonPlayer.SetCustomProperties(
+                        new Hashtable
+                        {
+                            { GameMangerNetworkProcessor.CurrencyKey, value }
+                        });
                 }
             }
 
             public IRobotDelegate Robot
             {
-                get => _playerDelegate.Robot;
-                set => _playerDelegate.Robot = value;
+                get { return _playerDelegate.Robot; }
+                set { _playerDelegate.Robot = value; }
             }
 
-            public IAlgorithm Algorithm => _playerDelegate.Algorithm;
+            public IAlgorithm Algorithm
+            {
+                get { return _playerDelegate.Algorithm; }
+            }
 
-            public UnityEvent<int, int> OnHealthPointChange => _playerDelegate.OnHealthPointChange;
+            public UnityEvent<int, int> OnHealthPointChange
+            {
+                get { return _playerDelegate.OnHealthPointChange; }
+            }
 
-            public UnityEvent<int, int> OnLevelChange => _playerDelegate.OnLevelChange;
+            public UnityEvent<int, int> OnLevelChange
+            {
+                get { return _playerDelegate.OnLevelChange; }
+            }
 
-            public UnityEvent<int, int> OnExpChange => _playerDelegate.OnExpChange;
+            public UnityEvent<int, int> OnExpChange
+            {
+                get { return _playerDelegate.OnExpChange; }
+            }
 
-            public UnityEvent<int, int> OnCurrencyChange => _playerDelegate.OnCurrencyChange;
+            public UnityEvent<int, int> OnCurrencyChange
+            {
+                get { return _playerDelegate.OnCurrencyChange; }
+            }
 
             public int CompareTo(IGameEntity other)
             {

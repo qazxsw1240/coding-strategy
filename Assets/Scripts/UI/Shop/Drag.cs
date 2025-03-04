@@ -1,74 +1,75 @@
+using CodingStrategy.Sound;
+
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace CodingStrategy.UI.Shop
 {
     public class Drag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
-        [SerializeField] private Image _image;
-        private Transform _oldParent;
+        [SerializeField]
+        private Image _image;
+
+        private Transform _alwaysOntop;
+
         private int _oldIndex;
-        private Transform alwaysOntop;
+        private Transform _oldParent;
+
+        private ISoundManager _soundManager; // soundManager
         private Transform _tmpObject;
 
-        private SoundManager soundManager; // soundManager
-
-        public int GetIndex()
-        {
-            return _oldIndex;
-        }
-
-        public string getParent()
-        {
-            return _oldParent.name;
-        }
-
         // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
             if (transform.parent.name != "MyCommandList" && transform.parent.name != "ShopCommandList")
             {
                 Destroy(gameObject.GetComponent<Drag>());
                 return;
             }
-            _image = GetComponent<Image>();
-            alwaysOntop = GameObject.Find("AlwaysOnTop").transform;
-		}
 
-        // Update is called once per frame
-        void Update() { }
+            _image = GetComponent<Image>();
+            _alwaysOntop = GameObject.Find("AlwaysOnTop").transform;
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            // Begin drag sound
+            _soundManager = SoundManager.Instance;
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_CommandClick_Sound");
+            _soundManager.Play(effectClip);
+            Debug.Log("Command clicked sound is comming out!");
+
+            _image.raycastTarget = false;
+            _oldParent = transform.parent;
+            _oldIndex = transform.GetSiblingIndex();
+            SetTmp();
+            transform.SetParent(_alwaysOntop);
+        }
 
         public void OnDrag(PointerEventData eventData)
         {
             transform.position = eventData.position;
         }
 
-        public void OnBeginDrag(PointerEventData eventData)
-        {
-            // Begin drag sound
-            soundManager = FindObjectOfType<SoundManager>();
-            soundManager.Init();
-            AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_CommandClick_Sound");
-            soundManager.Play(effectClip, Sound.Effect, 1.0f);
-            Debug.Log("Command clicked sound is comming out!");
-
-            _image.raycastTarget = false;
-			_oldParent = transform.parent;
-			_oldIndex = transform.GetSiblingIndex();
-			SetTmp();
-            transform.SetParent(alwaysOntop);
-        }
-
         public void OnEndDrag(PointerEventData eventData)
         {
             ResetPosition();
             // End drag sound
-            soundManager = FindObjectOfType<SoundManager>();
-            soundManager.Init();
+            _soundManager = SoundManager.Instance;
             AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_CommandPutdown_Sound");
-            soundManager.Play(effectClip, Sound.Effect, 1.0f);
+            _soundManager.Play(effectClip);
             Debug.Log("Commnad put down sound is comming out!");
+        }
+
+        public int GetIndex()
+        {
+            return _oldIndex;
+        }
+
+        public string GetParent()
+        {
+            return _oldParent.name;
         }
 
         public void ResetPosition()
@@ -77,6 +78,7 @@ namespace CodingStrategy.UI.Shop
             {
                 Destroy(_tmpObject.gameObject);
             }
+
             GetComponent<Image>().raycastTarget = true;
             transform.SetParent(_oldParent);
             transform.SetSiblingIndex(_oldIndex);

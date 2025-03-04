@@ -1,12 +1,11 @@
 ﻿#nullable enable
 
+using CodingStrategy.Entities.Board;
+using CodingStrategy.Entities.Player;
+using CodingStrategy.Entities.Robot;
 
 namespace CodingStrategy.Entities.Runtime
 {
-    using Player;
-    using Robot;
-    using Board;
-
     public class RuntimeExecutorContext
     {
         public RuntimeExecutorContext(

@@ -1,18 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+
 using UnityEngine;
 
 public class LookAtCamera : MonoBehaviour
 {
-    private RectTransform _canvas;
+    [SerializeField] private RectTransform canvas;
+    [SerializeField] private Camera mainCamera;
 
-    private void Awake()
+    public void Awake()
     {
-        _canvas = GetComponent<RectTransform>();
+        if (Camera.main is null)
+        {
+            throw new NullReferenceException("main camera is null.");
+        }
+        mainCamera = Camera.main;
+        canvas = GetComponent<RectTransform>();
     }
 
-    private void Update()
+    public void Update()
     {
-        _canvas.LookAt(Camera.main.transform);
+        canvas.LookAt(mainCamera.transform);
     }
 }

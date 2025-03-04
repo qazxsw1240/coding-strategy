@@ -1,15 +1,16 @@
 #nullable enable
 
-
 using System.Collections.Generic;
+
 using CodingStrategy.Entities;
+
 using UnityEngine;
 
 namespace CodingStrategy.Network
 {
     public class PhotonPlayerCommandCache : IPlayerCommandCache
     {
-        private static readonly int[] SellAmounts = new int[] { 1, 3, 9 };
+        private static readonly int[] SellAmounts = { 1, 3, 9 };
 
         private static readonly IDictionary<string, ICommand> CommandCache = new Dictionary<string, ICommand>();
 
@@ -21,32 +22,6 @@ namespace CodingStrategy.Network
         {
             _networkDelegate = networkDelegate;
             _networkDelegate.RequestRefresh();
-        }
-
-        public static IDictionary<string, ICommand> GetCachedCommands()
-        {
-            return CommandCache;
-        }
-
-        public static void AttachCommand(ICommand command)
-        {
-            CommandCache[command.Id] = command;
-        }
-
-        public static void AttachCommands(IDictionary<string, ICommand> commands)
-        {
-            foreach ((string key, ICommand value) in commands)
-            {
-                CommandCache[key] = value;
-            }
-        }
-
-        public static void AttachCommands(IEnumerable<ICommand> commands)
-        {
-            foreach (ICommand command in commands)
-            {
-                CommandCache[command.Id] = command;
-            }
         }
 
         public ICommand? Buy(string id, int count)
@@ -77,6 +52,32 @@ namespace CodingStrategy.Network
             Debug.LogFormat("Sell {0} of Command {1}", sellAmount, id);
             _networkDelegate.ModifyCommandCount(id, currentCount + sellAmount);
             return true;
+        }
+
+        public static IDictionary<string, ICommand> GetCachedCommands()
+        {
+            return CommandCache;
+        }
+
+        public static void AttachCommand(ICommand command)
+        {
+            CommandCache[command.Id] = command;
+        }
+
+        public static void AttachCommands(IDictionary<string, ICommand> commands)
+        {
+            foreach ((string key, ICommand value) in commands)
+            {
+                CommandCache[key] = value;
+            }
+        }
+
+        public static void AttachCommands(IEnumerable<ICommand> commands)
+        {
+            foreach (ICommand command in commands)
+            {
+                CommandCache[command.Id] = command;
+            }
         }
     }
 }

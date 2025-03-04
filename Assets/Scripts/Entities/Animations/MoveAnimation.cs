@@ -1,22 +1,18 @@
-﻿#nullable enable
+﻿using System.Collections;
 
-
-using System.Numerics;
+using UnityEngine;
 
 namespace CodingStrategy.Entities.Animations
 {
-    using System.Collections;
-    using UnityEngine;
-
     public class MoveAnimation : IEnumerator
     {
         private const float DefaultTimeResolution = 0.01f;
+        private readonly Vector3 _end;
 
         private readonly GameObject _gameObject;
         private readonly Vector3 _start;
-        private readonly Vector3 _end;
-        private readonly float _time;
         private readonly int _steps;
+        private readonly float _time;
 
         private int _currentStep;
 

@@ -10,10 +10,30 @@ namespace CodingStrategy.Factory
         }
 
         public string Id { get; }
-        public IAlgorithm Algorithm => new AlgorithmImpl(1);
-        public int HealthPoint => 3;
-        public int Level => 1;
-        public int Exp => 0;
-        public int Currency => 0;
+
+        public IAlgorithm Algorithm
+        {
+            get { return new AlgorithmImpl(1); }
+        }
+
+        public int HealthPoint
+        {
+            get { return 3; }
+        }
+
+        public int Level
+        {
+            get { return 1; }
+        }
+
+        public int Exp
+        {
+            get { return 0; }
+        }
+
+        public int Currency
+        {
+            get { return 0; }
+        }
     }
 }

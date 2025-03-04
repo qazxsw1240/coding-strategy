@@ -1,120 +1,73 @@
 using System.Collections;
+
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class SceneChanger : MonoBehaviour
+namespace CodingStrategy.Sound
 {
-    private SoundManager soundManager;
-
-    void Start()
+    public class SceneChanger : MonoBehaviour
     {
-        soundManager = FindObjectOfType<SoundManager>();
-        if (soundManager == null)
+        [SerializeField] private SoundManager soundManager;
+
+        public void Start()
         {
-            Debug.LogError("SoundManager is not found!");
-        }
-        DontDestroyOnLoad(gameObject); // SceneChanger ø¿∫Í¡ß∆Æ∏¶ æ¿ ¿¸»Ø Ω√ø°µµ ¿Ø¡ˆ
-    }
+            soundManager = FindObjectOfType<SoundManager>();
+            if (soundManager == null)
+            {
+                Debug.LogError("SoundManager is not found!");
+            }
 
-    //public void ChangeScene(string sceneName, string newBgmPath)
-    //{
-    //    StartCoroutine(FadeOutBgmAndLoadScene(sceneName, newBgmPath));
-    //}
-    //
-    public void LobbyScene()
-    {
-        StartCoroutine(SoundsVolumesDown());
-    }
-
-    public IEnumerator SoundsVolumesDown()
-    {
-        AudioSource bgmSource = soundManager.GetBgmSource();
-        float startVolume = bgmSource.volume;
-
-        // ∆‰¿ÃµÂ æ∆øÙ
-        for (float t = 0; t < 1; t += Time.deltaTime)
-        {
-            bgmSource.volume = Mathf.Lerp(startVolume, 0, t / 1f);
-            yield return null;
+            DontDestroyOnLoad(gameObject); // SceneChanger Ïò§Î∏åÏ†ùÌä∏Î•º Ïî¨ Ï†ÑÌôò ÏãúÏóêÎèÑ Ïú†ÏßÄ
         }
 
-        bgmSource.volume = 0;
-        bgmSource.Stop();
-    }
-
-    public void GameScene()
-    {
-        StartCoroutine(SoundsVolumesDown());
-    }
-
-    public IEnumerator SoundsVolumesUp(string newBgmPath)
-    {
-        AudioSource bgmSource = soundManager.GetBgmSource();
-        AudioClip newBgmClip = Resources.Load<AudioClip>(newBgmPath);
-        if (newBgmClip != null)
+        public void LobbyScene()
         {
-            bgmSource.clip = newBgmClip;
-            bgmSource.volume = 0;
-            bgmSource.Play();
+            StartCoroutine(SoundsVolumesDown());
+        }
 
-            // ∆‰¿ÃµÂ ¿Œ
+        public IEnumerator SoundsVolumesDown()
+        {
+            AudioSource bgmSource = soundManager.GetBgmSource();
+            float startVolume = bgmSource.volume;
+
+            // ÌéòÏù¥Îìú ÏïÑÏõÉ
             for (float t = 0; t < 1; t += Time.deltaTime)
             {
-                bgmSource.volume = Mathf.Lerp(0, 0.2f, t / 1f);
+                bgmSource.volume = Mathf.Lerp(startVolume, 0, t / 1f);
                 yield return null;
             }
 
-            bgmSource.volume = 0.2f;
+            bgmSource.volume = 0;
+            bgmSource.Stop();
         }
-        else
+
+        public void GameScene()
         {
-            Debug.LogWarning($"AudioClip not found at path: {newBgmPath}");
+            StartCoroutine(SoundsVolumesDown());
+        }
+
+        public IEnumerator SoundsVolumesUp(string newBgmPath)
+        {
+            AudioSource bgmSource = soundManager.GetBgmSource();
+            AudioClip newBgmClip = Resources.Load<AudioClip>(newBgmPath);
+            if (newBgmClip != null)
+            {
+                bgmSource.clip = newBgmClip;
+                bgmSource.volume = 0;
+                bgmSource.Play();
+
+                // ÌéòÏù¥Îìú Ïù∏
+                for (float t = 0; t < 1; t += Time.deltaTime)
+                {
+                    bgmSource.volume = Mathf.Lerp(0, 0.2f, t / 1f);
+                    yield return null;
+                }
+
+                bgmSource.volume = 0.2f;
+            }
+            else
+            {
+                Debug.LogWarning($"AudioClip not found at path: {newBgmPath}");
+            }
         }
     }
-    /*
-    private IEnumerator FadeOutBgmAndLoadScene(string sceneName, string newBgmPath)
-    {
-        AudioSource bgmSource = soundManager.GetBgmSource();
-        float startVolume = bgmSource.volume;
-
-        // ∆‰¿ÃµÂ æ∆øÙ
-        for (float t = 0; t < 1; t += Time.deltaTime)
-        {
-            bgmSource.volume = Mathf.Lerp(startVolume, 0, t / 1f);
-            yield return null;
-        }
-
-        bgmSource.volume = 0;
-        bgmSource.Stop();
-
-        // æ¿ ∑ŒµÂ
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-        while (!asyncLoad.isDone)
-        {
-            yield return null;
-        }
-
-        // ªı∑ŒøÓ BGM ∑ŒµÂ π◊ ¿Áª˝
-        AudioClip newBgmClip = Resources.Load<AudioClip>(newBgmPath);
-        if (newBgmClip != null)
-        {
-            bgmSource.clip = newBgmClip;
-            bgmSource.volume = 0;
-            bgmSource.Play();
-
-            // ∆‰¿ÃµÂ ¿Œ
-            for (float t = 0; t < 1; t += Time.deltaTime)
-            {
-                bgmSource.volume = Mathf.Lerp(0, 1.0f, t / 1f);
-                yield return null;
-            }
-
-            bgmSource.volume = 1.0f;
-        }
-        else
-        {
-            Debug.LogWarning($"AudioClip not found at path: {newBgmPath}");
-        }
-    */
-    
 }

@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
+
 using CodingStrategy.Entities;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Runtime.CommandImpl;
 using CodingStrategy.Network;
+
 using ExitGames.Client.Photon;
+
 using Photon.Pun;
 using Photon.Realtime;
 
@@ -88,12 +91,14 @@ namespace CodingStrategy
         {
             IPlayerDelegate playerDelegate = GameManagerUtil.LocalPhotonPlayerDelegate;
             IAlgorithm algorithm = playerDelegate.Algorithm;
-            string algorithmRequest = string.Join(',',
+            string algorithmRequest = string.Join(
+                ',',
                 algorithm.Select(command => $"{command.Id}-{command.Info.EnhancedLevel}"));
-            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
-            {
-                { AlgorithmUpdateKey, new object[] { playerDelegate.Id, algorithmRequest } }
-            });
+            PhotonNetwork.LocalPlayer.SetCustomProperties(
+                new Hashtable
+                {
+                    { AlgorithmUpdateKey, new object[] { playerDelegate.Id, algorithmRequest } }
+                });
         }
 
         private static ICommand[] ParseCommands(string algorithmResponse)
@@ -111,6 +116,7 @@ namespace CodingStrategy
                     commands[i] = new EmptyCommand();
                     continue;
                 }
+
                 ICommand command = PhotonPlayerCommandCache.GetCachedCommands()[id].Copy();
                 command.Info.EnhancedLevel = enhancedLevel;
                 commands[i] = command;

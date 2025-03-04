@@ -1,16 +1,11 @@
-#nullable enable
-
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace CodingStrategy.Entities.Runtime
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-
     public class ExecutionQueueImpl : IExecutionQueue
     {
-        private static readonly IComparer<IStatement> StatementComparer = new StatementComparer();
-
         private readonly IList<IStatement> _statements;
 
         public ExecutionQueueImpl()
@@ -19,7 +14,7 @@ namespace CodingStrategy.Entities.Runtime
             IsProtected = false;
         }
 
-        public ExecutionQueueImpl(IEnumerable<IStatement> statements): this()
+        public ExecutionQueueImpl(IEnumerable<IStatement> statements) : this()
         {
             foreach (IStatement statement in statements)
             {
@@ -27,9 +22,15 @@ namespace CodingStrategy.Entities.Runtime
             }
         }
 
-        public int Count => _statements.Count;
+        public int Count
+        {
+            get => _statements.Count;
+        }
 
-        public bool IsReadOnly => false;
+        public bool IsReadOnly
+        {
+            get => false;
+        }
 
         public void Add(IStatement item)
         {
@@ -54,7 +55,7 @@ namespace CodingStrategy.Entities.Runtime
 
         public IStatement Dequeue()
         {
-            if (!TryDequeue(out IStatement? statement))
+            if (!TryDequeue(out IStatement statement))
             {
                 throw new Exception();
             }
@@ -76,7 +77,7 @@ namespace CodingStrategy.Entities.Runtime
             return _statements.Remove(item);
         }
 
-        public bool TryDequeue(out IStatement? statement)
+        public bool TryDequeue(out IStatement statement)
         {
             if (_statements.Count == 0)
             {
@@ -123,17 +124,6 @@ namespace CodingStrategy.Entities.Runtime
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-    }
-
-    public class StatementComparer : IComparer<IStatement>
-    {
-        public int Compare(IStatement x, IStatement y)
-        {
-            if (ReferenceEquals(x, y)) return 0;
-            if (ReferenceEquals(null, y)) return 1;
-            if (ReferenceEquals(null, x)) return -1;
-            return x.Phase.CompareTo(y.Phase);
         }
     }
 }

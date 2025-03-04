@@ -1,42 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
+using CodingStrategy.Sound;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace CodingStrategy.UI.Shop
 {
-	public class ShopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
-	{
-		private ScrollRect scrollRect;
-		public bool isScrolling = false;
-		private SoundManager soundManager; // soundManager
+    public class ShopScroll : MonoBehaviour, IBeginDragHandler, IEndDragHandler
+    {
+        [SerializeField]
+        private bool _isScrolling;
 
-		public void OnBeginDrag(PointerEventData eventData)
-		{
-			// Begin drag sound
-			soundManager = FindObjectOfType<SoundManager>();
-			soundManager.Init();
-			AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_DragBtnClick_Sound");
-			soundManager.Play(effectClip, Sound.Effect, 1.0f);
-			isScrolling = true;
-		}
+        private ScrollRect scrollRect;
 
-		public void OnEndDrag(PointerEventData eventData)
-		{
-			isScrolling = false;
-		}
+        public bool Scrolling => _isScrolling;
 
-		// Start is called before the first frame update
-		void Start()
-		{
-			scrollRect = GetComponent<ScrollRect>();
-		}
+        private void Start()
+        {
+            scrollRect = GetComponent<ScrollRect>();
+        }
 
-		// Update is called once per frame
-		void Update()
-		{
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            ISoundManager soundManager = SoundManager.Instance;
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_DragBtnClick_Sound");
+            soundManager.Play(effectClip);
+            _isScrolling = true;
+        }
 
-		}
-	}
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            _isScrolling = false;
+        }
+    }
 }

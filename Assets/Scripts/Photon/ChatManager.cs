@@ -1,50 +1,69 @@
+using CodingStrategy.Entities.Runtime;
+
 using ExitGames.Client.Photon;
+
 using Photon.Chat;
 using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+
 using TMPro;
 
-namespace CodingStrategy.Photon.Chat
+using UnityEngine;
+
+namespace CodingStrategy.Photon
 {
     public class ChatManager : MonoBehaviour, IChatClientListener
     {
-        #region Setup
+        private const string _announceChannel = "Announce";
+        private static readonly string _roomChannel = "Room";
 
-        ChatClient chatClient;
-        bool isConnected;
+        [SerializeField]
+        public TMP_InputField chatField;
 
-        #endregion Setup
+        [SerializeField]
+        public TMP_Text chatDisplay;
 
-        #region General
+        [SerializeField]
+        private string currentAnnounceChannel;
 
-        string privateReceiver = "";
-        string currentChat;
-        [SerializeField] TMP_InputField chatField;
-        [SerializeField] TMP_Text chatDisplay;
-        public static string announceChannel = "Announce";
-        public static string roomChannel = "Room";
+        [SerializeField]
+        private string currentRoomChannel;
 
-        // Start is called before the first frame update
-        void Start()
+        [SerializeField]
+        private string[] currentChannels;
+
+        private readonly string privateReceiver = "";
+
+        private ChatClient _chatClient;
+        private bool _isConnected;
+        private string currentChat;
+
+        public void Awake()
         {
-            isConnected = true;
-            chatClient = new ChatClient(this);
-            chatClient.ChatRegion = "kr";
-            chatClient.Connect(PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat, PhotonNetwork.AppVersion, new AuthenticationValues(PhotonNetwork.NickName));
-            announceChannel += PhotonNetwork.CurrentRoom.Name;
-            roomChannel += PhotonNetwork.CurrentRoom.Name;
-            Debug.Log("Connecting");
+            if (!PhotonNetwork.NetworkingClient.InRoom)
+            {
+                throw new RuntimeException("Client must be in a room.");
+            }
+
+            _chatClient = new ChatClient(this) { ChatRegion = "kr" };
+            currentAnnounceChannel = _announceChannel + PhotonNetwork.NetworkingClient.CurrentRoom;
+            currentRoomChannel = _roomChannel + PhotonNetwork.NetworkingClient.CurrentRoom;
+            currentChannels = new[] { currentAnnounceChannel, currentRoomChannel };
         }
 
-        // Update is called once per frame
-        void Update()
+        public void Start()
         {
-            if (isConnected)
+            string appIdChat = PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat;
+            string appVersion = PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion;
+            AuthenticationValues authenticationValues =
+                new AuthenticationValues(PhotonNetwork.NetworkingClient.NickName);
+            _chatClient.Connect(appIdChat, appVersion, authenticationValues);
+        }
+
+        public void Update()
+        {
+            if (_isConnected)
             {
-                chatClient.Service();
+                _chatClient.Service();
             }
 
             if (chatField.text != "" && Input.GetKey(KeyCode.Return))
@@ -53,24 +72,61 @@ namespace CodingStrategy.Photon.Chat
             }
         }
 
-        #endregion General
+        public void DebugReturn(DebugLevel level, string message) {}
 
-        #region Announce
+        public void OnChatStateChange(ChatState state)
+        {
+            if (state == ChatState.Uninitialized)
+            {
+                _isConnected = false;
+            }
+        }
+
+        public void OnConnected()
+        {
+            Debug.Log("Connected");
+            _isConnected = true;
+            _chatClient.Subscribe(currentChannels);
+        }
+
+        public void OnDisconnected()
+        {
+            _isConnected = false;
+            _chatClient.Unsubscribe(currentChannels);
+        }
+
+        public void OnGetMessages(string channelName, string[] senders, object[] messages)
+        {
+            for (int i = 0; i < senders.Length; i++)
+            {
+                string msgs = $"{(channelName == _announceChannel ? "시스템" : senders[i])}: {messages[i]}";
+                chatDisplay.text += "\n" + msgs;
+                Debug.Log(msgs);
+            }
+        }
+
+        public void OnPrivateMessage(string sender, object message, string channelName) {}
+
+        public void OnStatusUpdate(string user, int status, bool gotMessage, object message) {}
+
+        public void OnSubscribed(string[] channels, bool[] results) {}
+
+        public void OnUnsubscribed(string[] channels) {}
+
+        public void OnUserSubscribed(string channel, string user) {}
+
+        public void OnUserUnsubscribed(string channel, string user) {}
 
         public void Announce(string message)
         {
-            chatClient.PublishMessage(announceChannel, message);
+            _chatClient.PublishMessage(_announceChannel, message);
         }
-
-        #endregion Announce
-
-        #region PublicChat
 
         public void SubmitPublicChatOnClick()
         {
             if (privateReceiver == "")
             {
-                chatClient.PublishMessage(roomChannel, currentChat);
+                _chatClient.PublishMessage(_roomChannel, currentChat);
                 chatField.text = "";
                 currentChat = "";
             }
@@ -80,100 +136,5 @@ namespace CodingStrategy.Photon.Chat
         {
             currentChat = valueIn;
         }
-
-        #endregion PublicChat
-
-        #region PrivateChat
-        public void ReceiverOnValueChange(string valueIn)
-        {
-            privateReceiver = valueIn;
-        }
-        public void SubmitPrivateChatOnClick()
-        {
-            if (privateReceiver != "")
-            {
-                chatClient.SendPrivateMessage(privateReceiver, currentChat);
-                chatField.text = "";
-                currentChat = "";
-            }
-        }
-        #endregion PrivateChat
-
-        #region Callbacks
-
-        public void DebugReturn(DebugLevel level, string message)
-        {
-            //throw new System.NotImplementedException();
-        }
-
-        public void OnChatStateChange(ChatState state)
-        {
-            if (state == ChatState.Uninitialized)
-            {
-                isConnected = false;
-            }
-        }
-
-        public void OnConnected()
-        {
-            Debug.Log("Connected");
-            chatClient.Subscribe(new string[] { roomChannel, announceChannel });
-        }
-
-        public void OnDisconnected()
-        {
-            isConnected = false;
-        }
-
-        public void OnGetMessages(string channelName, string[] senders, object[] messages)
-        {
-            string msgs = "";
-            for (int i = 0; i < senders.Length; i++)
-            {
-                msgs = string.Format("{0}: {1}", channelName == announceChannel ? "시스템" : senders[i], messages[i]);
-                chatDisplay.text += "\n" + msgs;
-
-                Debug.Log(msgs);
-            }
-        }
-
-        public void OnPrivateMessage(string sender, object message, string channelName)
-        {
-            string msgs = "";
-
-            msgs = string.Format("(Private) {0}: {1}", sender, message);
-
-            chatDisplay.text += "\n " + msgs;
-
-            Debug.Log(msgs);
-
-        }
-
-        public void OnStatusUpdate(string user, int status, bool gotMessage, object message)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnSubscribed(string[] channels, bool[] results)
-        {
-
-        }
-
-        public void OnUnsubscribed(string[] channels)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnUserSubscribed(string channel, string user)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void OnUserUnsubscribed(string channel, string user)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        #endregion Callbacks
     }
 }

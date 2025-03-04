@@ -1,37 +1,31 @@
 #nullable enable
 
+using CodingStrategy.Entities.Robot;
+using CodingStrategy.Entities.Runtime.Statement;
 
 namespace CodingStrategy.Entities.Runtime.CommandImpl
 {
-    using CodingStrategy.Entities.Robot;
-    using Statement;
-
     public class MoveForwardCommand : AbstractCommand
     {
-        private static readonly Coordinate _coordinate=new(0,1);
+        private static readonly Coordinate _coordinate = new Coordinate(0, 1);
 
-        public MoveForwardCommand(string id="1", string name="앞으로 이동", int enhancedLevel=1, int grade=1,
-        string explanation="바라보는 기준에서 앞으로 1칸 이동합니다.")
-        : base(id, name, enhancedLevel, grade, 0, explanation)
+        public MoveForwardCommand(
+            string id = "1",
+            string name = "앞으로 이동",
+            int enhancedLevel = 1,
+            int grade = 1,
+            string explanation = "바라보는 기준에서 앞으로 1칸 이동합니다.")
+            : base(id, name, enhancedLevel, grade, 0, explanation)
         {
         }
 
         public override ICommand Copy(bool keepStatus = true)
         {
-            if(!keepStatus)
+            if (!keepStatus)
             {
                 return new MoveForwardCommand();
             }
             return new MoveForwardCommand(Id, Info.Name, Info.EnhancedLevel, Info.Grade);
-        }
-        public override bool Invoke(params object[] args)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override bool Revoke(params object[] args)
-        {
-            throw new System.NotImplementedException();
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)

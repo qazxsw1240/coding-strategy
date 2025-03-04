@@ -1,30 +1,29 @@
 #nullable enable
 
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
-using System;
 using CodingStrategy.Entities.BadSector;
-using CodingStrategy.Entities.Board;
 using CodingStrategy.Entities.Player;
+using CodingStrategy.Entities.Robot;
+
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace CodingStrategy.Entities.Runtime
 {
-    using System.Linq;
-    using System.Collections;
-    using System.Collections.Generic;
-    using Robot;
-
     public class RobotStatementExecutor : LifeCycleMonoBehaviourBase, ILifeCycle
     {
+        private readonly ISet<IRobotDelegate> _problematicRobots = new HashSet<IRobotDelegate>();
+
         private readonly IDictionary<IRobotDelegate, Stack<IStatement>> _statements =
             new Dictionary<IRobotDelegate, Stack<IStatement>>();
-
-        private readonly ISet<IRobotDelegate> _problematicRobots = new HashSet<IRobotDelegate>();
 
         public IExecutionValidator Validator { get; set; } = null!;
 
         public GameManager GameManager { get; set; } = null!;
+
         public RuntimeExecutorContext Context { get; set; } = null!;
 
         public UnityEvent<IRobotDelegate, IPlayerDelegate, IStatement> OnStatementExecuteEvents { get; } =
@@ -37,7 +36,6 @@ namespace CodingStrategy.Entities.Runtime
 
         public void Initialize()
         {
-            // CheckExecutionQueueValidity();
             InitializeStacks();
         }
 
@@ -54,14 +52,11 @@ namespace CodingStrategy.Entities.Runtime
                 {
                     continue;
                 }
-
                 if (!_statements.ContainsKey(robotDelegate))
                 {
                     _statements[robotDelegate] = new Stack<IStatement>();
                 }
-
                 Stack<IStatement> statements = _statements[robotDelegate];
-
                 try
                 {
                     statements.Push(statement!);
@@ -75,62 +70,47 @@ namespace CodingStrategy.Entities.Runtime
                     _problematicRobots.Add(robotDelegate);
                 }
             }
-
             IList<IRobotDelegate> invalidRobots = Validator.GetInvalidRobots(Context.BoardDelegate);
-
-            // if (invalidRobots.Count == 0)
-            // {
-            //     return true;
-            // }
-
             foreach ((IRobotDelegate robotDelegate, IExecutionQueue executionQueue) in Context.ExecutionQueuePool)
             {
                 if (invalidRobots.Contains(robotDelegate))
                 {
                     continue;
                 }
-
                 // BadSector Check
-
                 Stack<IStatement> statements = _statements[robotDelegate];
                 IBadSectorDelegate? badSectorDelegate =
                     Context.BoardDelegate.GetBadSectorDelegate(robotDelegate.Position);
-
-                Debug.LogErrorFormat("badsector {0} found", badSectorDelegate?.Id);
-
+                Debug.LogErrorFormat("bad sector {0} found", badSectorDelegate?.Id);
                 if (!ReferenceEquals(badSectorDelegate, null) && badSectorDelegate.Installer.Id != robotDelegate.Id)
                 {
                     if (executionQueue.IsProtected)
                     {
                         continue;
                     }
-
                     badSectorDelegate.Remove();
                     statements.Clear();
                     executionQueue.Clear();
-
                     IList<IStatement> badSectorStatements = badSectorDelegate.Execute(robotDelegate);
-
                     foreach (IStatement s in badSectorStatements.Reverse())
                     {
                         executionQueue.EnqueueFirst(s);
                     }
                 }
-
-
-                if (robotDelegate.HealthPoint <= 0)
+                if (robotDelegate.HealthPoint > 0)
                 {
-                    statements.Clear();
-                    executionQueue.Clear();
-                    Context.AnimationCoroutineManager.ClearAnimationQueue(robotDelegate);
-                    if (robotDelegate.Id == GameManager.util.LocalPhotonPlayerDelegate.Id)
-                    {
-                        GameManager.util.LocalPhotonPlayerDelegate.HealthPoint -= 1;
-                    }
-                    else
-                    {
-                        robotDelegate.HealthPoint -= 1;
-                    }
+                    continue;
+                }
+                statements.Clear();
+                executionQueue.Clear();
+                Context.AnimationCoroutineManager.ClearAnimationQueue(robotDelegate);
+                if (robotDelegate.Id == GameManager.util.LocalPhotonPlayerDelegate.Id)
+                {
+                    GameManager.util.LocalPhotonPlayerDelegate.HealthPoint -= 1;
+                }
+                else
+                {
+                    robotDelegate.HealthPoint -= 1;
                 }
             }
 
@@ -147,12 +127,13 @@ namespace CodingStrategy.Entities.Runtime
 
             foreach (IRobotDelegate robotDelegate in _problematicRobots)
             {
-                if (Context.ExecutionQueuePool.TryGetValue(robotDelegate, out IExecutionQueue executionQueue))
+                if (!Context.ExecutionQueuePool.TryGetValue(robotDelegate, out IExecutionQueue executionQueue))
                 {
-                    if (executionQueue.Count == 0)
-                    {
-                        Context.ExecutionQueuePool.Remove(robotDelegate);
-                    }
+                    continue;
+                }
+                if (executionQueue.Count == 0)
+                {
+                    Context.ExecutionQueuePool.Remove(robotDelegate);
                 }
             }
 

@@ -1,42 +1,51 @@
 #nullable enable
 
+using CodingStrategy.Entities.Player;
+using CodingStrategy.Entities.Robot;
+using CodingStrategy.Entities.Runtime.Abnormality;
 
 namespace CodingStrategy.Entities.Runtime.Statement
 {
-    using CodingStrategy.Entities.Player;
-    using CodingStrategy.Entities.Runtime.Abnormality;
-    using Robot;
-
     public class AddCurrencyTargetPlayerStatement : AbstractStatement
     {
-        private readonly IPlayerDelegate[] _target;
-        private readonly int _coefficient;
         private readonly string _abnormalityName;
+        private readonly int _coefficient;
+        private readonly IPlayerDelegate[] _target;
 
-        public AddCurrencyTargetPlayerStatement(IRobotDelegate robotDelegate, IPlayerDelegate[] target, int coefficient, string abnormalityName)
-        :base(robotDelegate)
+        public AddCurrencyTargetPlayerStatement(IRobotDelegate robotDelegate, IPlayerDelegate[] target, int coefficient,
+            string abnormalityName)
+            : base(robotDelegate)
         {
             _target = target;
             _coefficient = coefficient;
             _abnormalityName = abnormalityName;
         }
 
-        public override void Execute(RuntimeExecutorContext context)
+        public override StatementPhase Phase
         {
-            foreach(IPlayerDelegate playerDelegate in _target)
+            get { return StatementPhase.Static; }
+        }
+
+        public override IStatement Reverse
+        {
+            get
             {
-                IAbnormality? abnormality=GameManager.GetAbnormalityValue(playerDelegate.Id+"-"+_abnormalityName);
-                if(abnormality==null)
-                {
-                    return;
-                }
-                int addNum=abnormality.Value*_coefficient;
-                playerDelegate.Currency+=addNum;
+                return new AddCurrencyTargetPlayerStatement(_robotDelegate, _target, -_coefficient, _abnormalityName);
             }
         }
 
-        public override StatementPhase Phase => StatementPhase.Static;
-
-        public override IStatement Reverse => new AddCurrencyTargetPlayerStatement(_robotDelegate, _target, -_coefficient, _abnormalityName);
+        public override void Execute(RuntimeExecutorContext context)
+        {
+            foreach (IPlayerDelegate playerDelegate in _target)
+            {
+                IAbnormality? abnormality = GameManager.GetAbnormalityValue(playerDelegate.Id + "-" + _abnormalityName);
+                if (abnormality == null)
+                {
+                    return;
+                }
+                int addNum = abnormality.Value * _coefficient;
+                playerDelegate.Currency += addNum;
+            }
+        }
     }
 }

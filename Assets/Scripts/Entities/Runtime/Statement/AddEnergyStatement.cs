@@ -1,27 +1,32 @@
 #nullable enable
 
+using CodingStrategy.Entities.Robot;
 
 namespace CodingStrategy.Entities.Runtime.Statement
 {
-    using Robot;
-
     public class AddEnergyStatement : AbstractStatement
     {
         private readonly int _energyPoint;
 
         public AddEnergyStatement(IRobotDelegate robotDelegate, int energyPoint)
-        : base(robotDelegate)
+            : base(robotDelegate)
         {
             _energyPoint = energyPoint;
         }
 
-        public override void Execute(RuntimeExecutorContext context)
+        public override StatementPhase Phase
         {
-            _robotDelegate.EnergyPoint+=_energyPoint;
+            get { return StatementPhase.Static; }
         }
 
-        public override StatementPhase Phase => StatementPhase.Static;
+        public override IStatement Reverse
+        {
+            get { return new AddEnergyStatement(_robotDelegate, -_energyPoint); }
+        }
 
-        public override IStatement Reverse => new AddEnergyStatement(_robotDelegate, -_energyPoint);
+        public override void Execute(RuntimeExecutorContext context)
+        {
+            _robotDelegate.EnergyPoint += _energyPoint;
+        }
     }
 }

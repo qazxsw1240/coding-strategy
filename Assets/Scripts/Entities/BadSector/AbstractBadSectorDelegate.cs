@@ -1,19 +1,16 @@
-﻿#nullable enable
+#nullable enable
 
-
+using System;
 using System.Collections.Generic;
+
+using CodingStrategy.Entities.Board;
+using CodingStrategy.Entities.Robot;
 using CodingStrategy.Entities.Runtime;
 
 namespace CodingStrategy.Entities.BadSector
 {
-    using System;
-    using Board;
-    using Runtime.CommandImpl;
-    using Robot;
-
-    public　abstract class AbstractBadSectorDelegate : IBadSectorDelegate
+    public abstract class AbstractBadSectorDelegate : IBadSectorDelegate
     {
-        protected readonly CommandBuilder _commandBuilder;
         private readonly IBoardDelegate _boardDelegate;
 
         protected AbstractBadSectorDelegate(string id, IBoardDelegate boardDelegate, IRobotDelegate installer)
@@ -21,14 +18,16 @@ namespace CodingStrategy.Entities.BadSector
             Id = id;
             Installer = installer;
             _boardDelegate = boardDelegate;
-            _commandBuilder = new();
         }
 
         public string Id { get; }
 
         public IRobotDelegate Installer { get; }
 
-        public Coordinate Position => _boardDelegate.GetPosition(this);
+        public Coordinate Position
+        {
+            get => _boardDelegate.GetPosition(this);
+        }
 
         public abstract string Explanation { get; }
 

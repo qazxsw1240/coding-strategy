@@ -1,83 +1,57 @@
 using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
-public class ShopSoundManager : MonoBehaviour
+namespace CodingStrategy.Sound
 {
-
-    private SoundManager soundManager;
-
-    // »óÁ¡ »ï°¢Çü ¹öÆ° Å¬¸¯ ÇÒ ¶§ »ç¿îµå
-    public void ShopDragBtnClicked()
+    public class ShopSoundManager : MonoBehaviour
     {
-        StartCoroutine(ShopDragBtnClickedSound(0));
+        [SerializeReference]
+        private ISoundManager _soundManager;
+
+        // ìƒì  ì‚¼ê°í˜• ë²„íŠ¼ í´ë¦­ í•  ë•Œ ì‚¬ìš´ë“œ
+        public void ShopDragBtnClicked()
+        {
+            StartCoroutine(ShopDragBtnClickedSound(0));
+        }
+
+        public IEnumerator ShopDragBtnClickedSound(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            _soundManager = SoundManager.Instance;
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_DragBtnClick_Sound");
+            _soundManager.Play(effectClip);
+        }
+
+        // ìƒì ì—ì„œ ë¦¬ë¡¤ ì‚¬ìš´ë“œ
+        public void RerollBtnClicked()
+        {
+            StartCoroutine(RerollBtnClickedSound(0));
+        }
+
+        public IEnumerator RerollBtnClickedSound(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+
+            _soundManager = SoundManager.Instance;
+
+            // íš¨ê³¼ìŒì„ ë¶ˆëŸ¬ì˜¤ê³  ì¬ìƒí•©ë‹ˆë‹¤.
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_Reroll_Sound");
+            _soundManager.Play(effectClip);
+        }
+
+        // ìƒì ì—ì„œ ë ˆë²¨ì—… ì‚¬ìš´ë“œ
+        public void LevelUpClicked()
+        {
+            StartCoroutine(LevelUpButtonClickedSound(0));
+        }
+
+        public IEnumerator LevelUpButtonClickedSound(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            _soundManager = SoundManager.Instance;
+            AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_Levelup_Sound");
+            _soundManager.Play(effectClip);
+        }
     }
-    public IEnumerator ShopDragBtnClickedSound(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        soundManager = FindObjectOfType<SoundManager>();
-        soundManager.Init();
-
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
-        AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_DragBtnClick_Sound");
-        soundManager.Play(effectClip, Sound.Effect, 1.0f);
-        Debug.Log("Drag sound is comming out!");
-    }
-
-    // »óÁ¡¿¡¼­ ¸®·Ñ »ç¿îµå
-    public void RerollBtnClicked()
-    {
-        StartCoroutine(RerollBtnClickedSound(0));
-    }
-    public IEnumerator RerollBtnClickedSound(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        soundManager = FindObjectOfType<SoundManager>();
-        soundManager.Init();
-
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
-        AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_Reroll_Sound");
-        soundManager.Play(effectClip, Sound.Effect, 1.0f);
-        Debug.Log("Reroll sound is comming out!");
-    }
-
-    // »óÁ¡¿¡¼­ ·¹º§¾÷ »ç¿îµå
-    public void LevelupClicked()
-    {
-        StartCoroutine(LevelupBtnClickedSound(0));
-    }
-    public IEnumerator LevelupBtnClickedSound(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        soundManager = FindObjectOfType<SoundManager>();
-        soundManager.Init();
-
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
-        AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_Levelup_Sound");
-        soundManager.Play(effectClip, Sound.Effect, 1.0f);
-        Debug.Log("Levelup sound is comming out!");
-    }
-
-    /*
-    // »óÁ¡¿¡¼­ Ä¿¸àµå ¿Å±â±â À§ÇØ Å¬¸¯ÇÒ ¶§ »ç¿îµå
-    public void CommandClicked()
-    {
-        StartCoroutine(CommandClickedSound(0));
-    }
-    public IEnumerator CommandClickedSound(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        soundManager = FindObjectOfType<SoundManager>();
-        soundManager.Init();
-
-        // È¿°úÀ½À» ºÒ·¯¿À°í Àç»ıÇÕ´Ï´Ù.
-        AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_CommandClick_Sound");
-        soundManager.Play(effectClip, Sound.Effect, 1.0f);
-        Debug.Log("CommnadClickedSound is comming out!");
-    }*/
-
 }

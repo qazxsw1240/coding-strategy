@@ -1,22 +1,24 @@
 #nullable enable
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using CodingStrategy.Entities.Board;
 using CodingStrategy.Entities.Placeable;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
+
 using UnityEngine;
+
 using Random = System.Random;
 
 namespace CodingStrategy.Entities
 {
     public class BitDispenser
     {
+        private readonly ISet<IBitDelegate> _bits;
         private readonly IBoardDelegate _boardDelegate;
         private readonly IPlayerPool _playerPool;
-        private readonly ISet<IBitDelegate> _bits;
 
         public BitDispenser(IBoardDelegate boardDelegate, IPlayerPool playerPool)
         {
