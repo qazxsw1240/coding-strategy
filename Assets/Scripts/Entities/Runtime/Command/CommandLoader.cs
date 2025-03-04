@@ -8,7 +8,7 @@ namespace CodingStrategy.Entities.Runtime.Command
     public static class CommandLoader
     {
         private static readonly IDictionary<string, CommandProfile> CommandProfiles =
-            new Dictionary<string, CommandProfile>();
+            new SortedDictionary<string, CommandProfile>();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         private static void RegisterCommandProfiles()
@@ -22,7 +22,10 @@ namespace CodingStrategy.Entities.Runtime.Command
             foreach (CommandProfile commandProfile in commandProfiles)
             {
                 CommandProfiles.Add(commandProfile.ID, commandProfile);
-                Debug.LogFormat("Command Profile {0}: \"{1}\" is loaded", commandProfile.ID, commandProfile.Name);
+            }
+            foreach (CommandProfile commandProfile in CommandProfiles.Values)
+            {
+                Debug.LogFormat("Command {0}: \"{1}\" is registered.", commandProfile.ID, commandProfile.Name);
             }
         }
 

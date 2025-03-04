@@ -16,5 +16,12 @@ namespace CodingStrategy.Entities.Runtime.Command
         [field: SerializeField]
         [field: TextArea]
         public string Description { get; private set; }
+
+        [field: Range(1, 5)]
+        [field: SerializeField]
+        public int Grade { get; private set; }
+
+        [field: SerializeField]
+        public Sprite Icon { get; private set; }
     }
 }
