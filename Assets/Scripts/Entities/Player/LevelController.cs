@@ -1,8 +1,11 @@
+using System;
+
 namespace CodingStrategy.Entities.Player
 {
     /// <summary>
     ///     플레이어의 레벨과 경험치를 관리하는 레벨 제어기입니다.
     /// </summary>
+    [Obsolete]
     public class LevelController
     {
         /// <summary>
