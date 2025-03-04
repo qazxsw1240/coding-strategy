@@ -10,22 +10,20 @@ namespace CodingStrategy.Entities.Runtime.Statement
         private readonly IAbnormality _abnormality;
         private readonly int _value;
 
-        public AddAbnormalityAllEnemyStatement(IRobotDelegate robotDelegate, IAbnormality abnormality, int value)
+        public AddAbnormalityAllEnemyStatement(
+            IRobotDelegate robotDelegate,
+            IAbnormality abnormality,
+            int value)
             : base(robotDelegate)
         {
             _abnormality = abnormality;
             _value = value;
         }
 
-        public override StatementPhase Phase
-        {
-            get { return StatementPhase.Static; }
-        }
+        public override StatementPhase Phase => StatementPhase.Static;
 
-        public override IStatement Reverse
-        {
-            get { return new AddAbnormalityAllEnemyStatement(_robotDelegate, _abnormality, -_value); }
-        }
+        public override IStatement Reverse =>
+            new AddAbnormalityAllEnemyStatement(_robotDelegate, _abnormality, -_value);
 
         public override void Execute(RuntimeExecutorContext context)
         {

@@ -12,7 +12,10 @@ namespace CodingStrategy.Entities.Runtime.Statement
         private readonly int _coefficient;
         private readonly IPlayerDelegate[] _target;
 
-        public AddCurrencyTargetPlayerStatement(IRobotDelegate robotDelegate, IPlayerDelegate[] target, int coefficient,
+        public AddCurrencyTargetPlayerStatement(
+            IRobotDelegate robotDelegate,
+            IPlayerDelegate[] target,
+            int coefficient,
             string abnormalityName)
             : base(robotDelegate)
         {
@@ -21,24 +24,16 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _abnormalityName = abnormalityName;
         }
 
-        public override StatementPhase Phase
-        {
-            get { return StatementPhase.Static; }
-        }
+        public override StatementPhase Phase => StatementPhase.Static;
 
-        public override IStatement Reverse
-        {
-            get
-            {
-                return new AddCurrencyTargetPlayerStatement(_robotDelegate, _target, -_coefficient, _abnormalityName);
-            }
-        }
+        public override IStatement Reverse =>
+            new AddCurrencyTargetPlayerStatement(_robotDelegate, _target, -_coefficient, _abnormalityName);
 
         public override void Execute(RuntimeExecutorContext context)
         {
             foreach (IPlayerDelegate playerDelegate in _target)
             {
-                IAbnormality? abnormality = GameManager.GetAbnormalityValue(playerDelegate.Id + "-" + _abnormalityName);
+                IAbnormality? abnormality = GameManager.GetAbnormalityValue($"{playerDelegate.Id}-{_abnormalityName}");
                 if (abnormality == null)
                 {
                     return;

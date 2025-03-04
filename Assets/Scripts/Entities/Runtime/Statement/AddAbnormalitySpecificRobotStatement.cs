@@ -10,22 +10,20 @@ namespace CodingStrategy.Entities.Runtime.Statement
         private readonly IAbnormality _abnormality;
         private readonly int _value;
 
-        public AddAbnormalitySpecificRobotStatement(IRobotDelegate robotDelegate, IAbnormality abnormality, int value)
+        public AddAbnormalitySpecificRobotStatement(
+            IRobotDelegate robotDelegate,
+            IAbnormality abnormality,
+            int value)
             : base(robotDelegate)
         {
             _abnormality = abnormality;
             _value = value;
         }
 
-        public override StatementPhase Phase
-        {
-            get { return StatementPhase.Static; }
-        }
+        public override StatementPhase Phase => StatementPhase.Static;
 
-        public override IStatement Reverse
-        {
-            get { return new AddAbnormalitySpecificRobotStatement(_robotDelegate, _abnormality, -_value); }
-        }
+        public override IStatement Reverse =>
+            new AddAbnormalitySpecificRobotStatement(_robotDelegate, _abnormality, -_value);
 
         public override void Execute(RuntimeExecutorContext context)
         {
@@ -33,7 +31,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
             if (abnormality == null)
             {
                 GameManager.SetAbnormalityValue(
-                    _robotDelegate.Id + "-" + _abnormality.Name,
+                    $"{_robotDelegate.Id}-{_abnormality.Name}",
                     _abnormality.Copy(_robotDelegate));
                 _abnormality.PlayerDelegate = context.PlayerPool[_robotDelegate.Id];
                 _abnormality.Value = _value;

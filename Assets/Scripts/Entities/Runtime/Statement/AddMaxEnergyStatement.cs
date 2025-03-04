@@ -12,7 +12,10 @@ namespace CodingStrategy.Entities.Runtime.Statement
         private readonly int _value;
         private int _previousEnergyPoint;
 
-        public AddMaxEnergyStatement(IRobotDelegate robotDelegate, int value, int previousEnergyPoint = 0,
+        public AddMaxEnergyStatement(
+            IRobotDelegate robotDelegate,
+            int value,
+            int previousEnergyPoint = 0,
             bool isReverse = false)
             : base(robotDelegate)
         {
@@ -21,15 +24,10 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _isReverse = isReverse;
         }
 
-        public override StatementPhase Phase
-        {
-            get { return StatementPhase.Static; }
-        }
+        public override StatementPhase Phase => StatementPhase.Static;
 
-        public override IStatement Reverse
-        {
-            get { return new AddMaxEnergyStatement(_robotDelegate, -_value, _previousEnergyPoint, true); }
-        }
+        public override IStatement Reverse =>
+            new AddMaxEnergyStatement(_robotDelegate, -_value, _previousEnergyPoint, true);
 
         public override void Execute(RuntimeExecutorContext context)
         {

@@ -14,15 +14,9 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _isSuper = isSuper;
         }
 
-        public override StatementPhase Phase
-        {
-            get { return StatementPhase.Move; }
-        }
+        public override StatementPhase Phase => StatementPhase.Move;
 
-        public override IStatement Reverse
-        {
-            get { return new SuperStatement(_robotDelegate, !_isSuper); }
-        }
+        public override IStatement Reverse => new SuperStatement(_robotDelegate, !_isSuper);
 
         public override void Execute(RuntimeExecutorContext context)
         {

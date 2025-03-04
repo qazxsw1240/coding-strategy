@@ -21,15 +21,10 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _coordinates = coordinates;
         }
 
-        public override StatementPhase Phase
-        {
-            get { return StatementPhase.Attack; }
-        }
+        public override StatementPhase Phase => StatementPhase.Attack;
 
-        public override IStatement Reverse
-        {
-            get { return new AttackStatement(_robotDelegate, new RobotAttackReverseStrategy(_strategy), _coordinates); }
-        }
+        public override IStatement Reverse =>
+            new AttackStatement(_robotDelegate, new RobotAttackReverseStrategy(_strategy), _coordinates);
 
         public override void Execute(RuntimeExecutorContext context)
         {

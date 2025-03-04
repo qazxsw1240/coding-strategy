@@ -10,7 +10,10 @@ namespace CodingStrategy.Entities.Runtime.Statement
         private readonly bool _isReverse;
         private readonly int _value;
 
-        public AddHealthPointStatement(IRobotDelegate robotDelegate, int value, int healthPointThreshold,
+        public AddHealthPointStatement(
+            IRobotDelegate robotDelegate,
+            int value,
+            int healthPointThreshold,
             bool isReverse = false)
             : base(robotDelegate)
         {
@@ -19,15 +22,10 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _isReverse = isReverse;
         }
 
-        public override StatementPhase Phase
-        {
-            get { return StatementPhase.Static; }
-        }
+        public override StatementPhase Phase => StatementPhase.Static;
 
-        public override IStatement Reverse
-        {
-            get { return new AddHealthPointStatement(_robotDelegate, -_value, _healthPointThreshold, true); }
-        }
+        public override IStatement Reverse =>
+            new AddHealthPointStatement(_robotDelegate, -_value, _healthPointThreshold, true);
 
         public override void Execute(RuntimeExecutorContext context)
         {

@@ -20,15 +20,9 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _direction = direction;
         }
 
-        public override StatementPhase Phase
-        {
-            get { return StatementPhase.Move; }
-        }
+        public override StatementPhase Phase => StatementPhase.Move;
 
-        public override IStatement Reverse
-        {
-            get { return new RotateStatement(_robotDelegate, -_direction); }
-        }
+        public override IStatement Reverse => new RotateStatement(_robotDelegate, -_direction);
 
         public override void Execute(RuntimeExecutorContext context)
         {

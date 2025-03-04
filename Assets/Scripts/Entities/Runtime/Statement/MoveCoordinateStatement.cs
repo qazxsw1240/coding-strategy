@@ -18,27 +18,18 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _isEdge = isEdge;
         }
 
-        public override StatementPhase Phase
-        {
-            get { return StatementPhase.Move; }
-        }
+        public override StatementPhase Phase => StatementPhase.Move;
 
-        public override IStatement Reverse
-        {
-            get
-            {
-                return _isEdge
-                    ? new MoveCoordinateStatement(_robotDelegate, Coordinate.Unit, _isEdge)
-                    : new MoveCoordinateStatement(_robotDelegate, -1 * _coordinate, _isEdge);
-            }
-        }
+        public override IStatement Reverse => _isEdge
+            ? new MoveCoordinateStatement(_robotDelegate, Coordinate.Unit, _isEdge)
+            : new MoveCoordinateStatement(_robotDelegate, -1 * _coordinate, _isEdge);
 
         public override void Execute(RuntimeExecutorContext context)
         {
             Debug.LogFormat("Robot {1} Tries to move to {0}", _coordinate.X + "," + _coordinate.Y, _robotDelegate.Id);
 
-            Coordinate destination = _robotDelegate.Position +
-                                     RotateMatrix.Rotate((int) _robotDelegate.Direction) * _coordinate;
+            Coordinate destination = _robotDelegate.Position
+                                   + RotateMatrix.Rotate((int) _robotDelegate.Direction) * _coordinate;
             _isEdge = !_robotDelegate.Move(destination);
             if (_isEdge)
             {

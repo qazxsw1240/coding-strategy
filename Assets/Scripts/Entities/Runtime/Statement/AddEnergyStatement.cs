@@ -14,15 +14,9 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _energyPoint = energyPoint;
         }
 
-        public override StatementPhase Phase
-        {
-            get { return StatementPhase.Static; }
-        }
+        public override StatementPhase Phase => StatementPhase.Static;
 
-        public override IStatement Reverse
-        {
-            get { return new AddEnergyStatement(_robotDelegate, -_energyPoint); }
-        }
+        public override IStatement Reverse => new AddEnergyStatement(_robotDelegate, -_energyPoint);
 
         public override void Execute(RuntimeExecutorContext context)
         {

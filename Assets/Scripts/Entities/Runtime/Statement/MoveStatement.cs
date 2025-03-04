@@ -20,17 +20,11 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _isEdge = isEdge;
         }
 
-        public override StatementPhase Phase
-        {
-            get => StatementPhase.Move;
-        }
+        public override StatementPhase Phase => StatementPhase.Move;
 
-        public override IStatement Reverse
-        {
-            get => _isEdge
-                ? new MoveStatement(_robotDelegate, 0)
-                : new MoveStatement(_robotDelegate, -_direction, _isEdge);
-        }
+        public override IStatement Reverse => _isEdge
+            ? new MoveStatement(_robotDelegate, 0)
+            : new MoveStatement(_robotDelegate, -_direction, _isEdge);
 
         public override void Execute(RuntimeExecutorContext context)
         {

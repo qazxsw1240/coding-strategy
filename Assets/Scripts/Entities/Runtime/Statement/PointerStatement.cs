@@ -27,15 +27,9 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _coordinates = coordinates;
         }
 
-        public override StatementPhase Phase
-        {
-            get => StatementPhase.Pointer;
-        }
+        public override StatementPhase Phase => StatementPhase.Pointer;
 
-        public override IStatement Reverse
-        {
-            get => new PointerRollbackStatement(this);
-        }
+        public override IStatement Reverse => new PointerRollbackStatement(this);
 
         public override void Execute(RuntimeExecutorContext context)
         {
@@ -70,15 +64,9 @@ namespace CodingStrategy.Entities.Runtime.Statement
                 }
             }
 
-            public StatementPhase Phase
-            {
-                get => StatementPhase.Pointer;
-            }
+            public StatementPhase Phase => StatementPhase.Pointer;
 
-            public IStatement Reverse
-            {
-                get => _statement;
-            }
+            public IStatement Reverse => _statement;
         }
     }
 }

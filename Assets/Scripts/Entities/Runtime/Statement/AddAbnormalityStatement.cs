@@ -17,15 +17,10 @@ namespace CodingStrategy.Entities.Runtime.Statement
             _value = value;
         }
 
-        public override StatementPhase Phase
-        {
-            get { return StatementPhase.Static; }
-        }
+        public override StatementPhase Phase => StatementPhase.Static;
 
-        public override IStatement Reverse
-        {
-            get { return new AddAbnormalityAllRobotStatement(_robotDelegate, _abnormality, -_value); }
-        }
+        public override IStatement Reverse =>
+            new AddAbnormalityAllRobotStatement(_robotDelegate, _abnormality, -_value);
 
         public override void Execute(RuntimeExecutorContext context)
         {
@@ -35,7 +30,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
                 if (abnormality == null)
                 {
                     GameManager.SetAbnormalityValue(
-                        robotDelegate.Id + "-" + _abnormality.Name,
+                        $"{robotDelegate.Id}-{_abnormality.Name}",
                         _abnormality.Copy(robotDelegate));
                     _abnormality.PlayerDelegate = context.PlayerPool[_robotDelegate.Id];
                     _abnormality.Value = _value;
