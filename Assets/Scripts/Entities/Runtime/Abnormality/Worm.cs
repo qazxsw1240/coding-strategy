@@ -8,11 +8,14 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
     {
         public new const string Name = "웜";
 
-        public Worm(IRobotDelegate robotDelegate, int value = 0) : base(Name, robotDelegate, value) {}
+        public Worm(IRobotDelegate robotDelegate, int value = 0)
+            : base(AbnormalityLoader.Load("Worm"), robotDelegate, value)
+        {
+        }
 
         public override int Value
         {
-            get { return _value; }
+            get => _value;
             set
             {
                 _value = value;

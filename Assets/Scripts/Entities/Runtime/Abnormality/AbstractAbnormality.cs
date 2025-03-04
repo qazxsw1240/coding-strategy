@@ -7,20 +7,19 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
 {
     public abstract class AbstractAbnormality : IAbnormality
     {
+        protected readonly AbnormalityProfile _profile;
         protected readonly IRobotDelegate _robotDelegate;
         protected int _value;
 
-        protected AbstractAbnormality(string name, IRobotDelegate robotDelegate, int value)
+        protected AbstractAbnormality(AbnormalityProfile profile, IRobotDelegate robotDelegate, int value)
         {
-            Name = name;
             _robotDelegate = robotDelegate;
             PlayerDelegate = null;
             _value = value;
+            _profile = profile;
         }
 
-#region IAbnormality Members
-
-        public virtual string Name { get; }
+        public virtual string Name => _profile.Name;
 
         public IRobotDelegate RobotDelegate => _robotDelegate;
 
@@ -32,7 +31,5 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
         public abstract void Execute();
 
         public abstract IAbnormality Copy(IRobotDelegate robotDelegate, bool keepStatus = false);
-
-#endregion
     }
 }

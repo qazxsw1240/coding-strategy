@@ -6,10 +6,8 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
 {
     public class Stack : AbstractAbnormality
     {
-        public new const string Name = "스택";
-
         public Stack(IRobotDelegate robotDelegate, int value = 0)
-            : base(Name, robotDelegate, value)
+            : base(AbnormalityLoader.Load("Stack"), robotDelegate, value)
         {
         }
 

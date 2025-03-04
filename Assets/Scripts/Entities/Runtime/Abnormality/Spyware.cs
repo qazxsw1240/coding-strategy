@@ -6,14 +6,14 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
 {
     public class Spyware : AbstractAbnormality
     {
-        public new static readonly string Name = "스파이웨어";
-
         public Spyware(IRobotDelegate robotDelegate, int value = 0)
-            : base(Name, robotDelegate, value) {}
+            : base(AbnormalityLoader.Load("Spyware"), robotDelegate, value)
+        {
+        }
 
         public override int Value
         {
-            get { return _value; }
+            get => _value;
             set
             {
                 _value = value;
@@ -36,7 +36,9 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
 
         public override void Execute()
         {
-            if (_value <= 0) {}
+            if (_value <= 0)
+            {
+            }
         }
     }
 }

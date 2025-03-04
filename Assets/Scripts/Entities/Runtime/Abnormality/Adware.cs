@@ -4,14 +4,14 @@ namespace CodingStrategy.Entities.Runtime.Abnormality
 {
     public class Adware : AbstractAbnormality
     {
-        private new const string Name = "애드웨어";
-
         public Adware(IRobotDelegate robotDelegate, int value = 0)
-            : base(Name, robotDelegate, value) {}
+            : base(AbnormalityLoader.Load("Adware"), robotDelegate, value)
+        {
+        }
 
         public override int Value
         {
-            get { return _value; }
+            get => _value;
             set
             {
                 _value = value;
