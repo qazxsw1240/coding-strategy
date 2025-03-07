@@ -1,21 +1,20 @@
-#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
+using CodingStrategy.Entities.BadSector;
+using CodingStrategy.Entities.Robot;
+
+using UnityEngine.Events;
 
 namespace CodingStrategy.Entities.Board
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using BadSector;
-    using Robot;
-    using UnityEngine.Events;
-
     public class BoardDelegateImpl : IBoardDelegate
     {
-        private readonly IDictionary<IRobotDelegate, RobotPosition> _robotPositions;
+        private readonly UnityEvent<IBadSectorDelegate, Coordinate, Coordinate> _badSectorChangePositionEvents;
         private readonly IDictionary<IBadSectorDelegate, BadSectorPosition> _badSectorPositions;
         private readonly IDictionary<IPlaceable, PlaceablePosition> _placeablePositions;
-        private readonly UnityEvent<IBadSectorDelegate, Coordinate, Coordinate> _badSectorChangePositionEvents;
+        private readonly IDictionary<IRobotDelegate, RobotPosition> _robotPositions;
 
         public BoardDelegateImpl(int width, int height)
         {
@@ -79,16 +78,14 @@ namespace CodingStrategy.Entities.Board
                         cellDelegate.Placeables.Add(robotDelegate);
                     }
                 }
-
-                foreach ((IBadSectorDelegate badSectorDelegate, BadSectorPosition badSectorPosition) in
-                         _badSectorPositions)
+                foreach ((IBadSectorDelegate badSectorDelegate, BadSectorPosition badSectorPosition)
+                         in _badSectorPositions)
                 {
                     if (badSectorPosition.Position == coordinate)
                     {
                         cellDelegate.Placeables.Add(badSectorDelegate);
                     }
                 }
-
                 return cellDelegate;
             }
         }
@@ -99,12 +96,10 @@ namespace CodingStrategy.Entities.Board
             {
                 return false;
             }
-
             if (!IsPositionValid(position))
             {
                 return false;
             }
-
             RobotPosition robotPosition = new RobotPosition(position, direction);
             _robotPositions[robotDelegate] = robotPosition;
             OnRobotAdd.Invoke(robotDelegate);
@@ -117,7 +112,6 @@ namespace CodingStrategy.Entities.Board
             {
                 return false;
             }
-
             _robotPositions.Remove(robotDelegate);
             OnRobotRemove.Invoke(robotDelegate);
             return true;
@@ -129,12 +123,10 @@ namespace CodingStrategy.Entities.Board
             {
                 return false;
             }
-
             if (!IsPositionValid(position) || GetBadSectorPosition(position) != null)
             {
                 return false;
             }
-
             BadSectorPosition badSectorPosition = new BadSectorPosition(position);
             _badSectorPositions[badSectorDelegate] = badSectorPosition;
             OnBadSectorAdd.Invoke(badSectorDelegate);
@@ -183,8 +175,7 @@ namespace CodingStrategy.Entities.Board
             return true;
         }
 
-
-        public IRobotDelegate? GetRobotDelegate(Coordinate coordinate)
+        public IRobotDelegate GetRobotDelegate(Coordinate coordinate)
         {
             foreach ((IRobotDelegate robotDelegate, RobotPosition position) in _robotPositions)
             {
@@ -193,11 +184,10 @@ namespace CodingStrategy.Entities.Board
                     return robotDelegate;
                 }
             }
-
             return null;
         }
 
-        public IBadSectorDelegate? GetBadSectorDelegate(Coordinate coordinate)
+        public IBadSectorDelegate GetBadSectorDelegate(Coordinate coordinate)
         {
             foreach ((IBadSectorDelegate badSectorDelegate, BadSectorPosition position) in _badSectorPositions)
             {
@@ -206,14 +196,12 @@ namespace CodingStrategy.Entities.Board
                     return badSectorDelegate;
                 }
             }
-
             return null;
         }
 
         public IList<IPlaceable> GetPlaceables(Coordinate coordinate)
         {
             IList<IPlaceable> placeables = new List<IPlaceable>();
-
             foreach ((IPlaceable placeable, PlaceablePosition position) in _placeablePositions)
             {
                 if (position.Position == coordinate)
@@ -221,7 +209,6 @@ namespace CodingStrategy.Entities.Board
                     placeables.Add(placeable);
                 }
             }
-
             return placeables;
         }
 
@@ -256,16 +243,10 @@ namespace CodingStrategy.Entities.Board
 
         public bool Place(IRobotDelegate robotDelegate, Coordinate position)
         {
-            // if (!IsRobotDelegateExist(robotDelegate))
-            // {
-            //     return false;
-            // }
-
             if (!IsPositionValid(position))
             {
                 return false;
             }
-
             RobotPosition robotPosition = _robotPositions[robotDelegate];
             Coordinate previousPosition = robotPosition.Position;
             robotPosition.Position = position;
@@ -279,12 +260,10 @@ namespace CodingStrategy.Entities.Board
             {
                 return false;
             }
-
             if (!IsPositionValid(position) || GetBadSectorPosition(position) != null)
             {
                 return false;
             }
-
             BadSectorPosition badSectorPosition = _badSectorPositions[badSectorDelegate];
             Coordinate previousPosition = badSectorPosition.Position;
             badSectorPosition.Position = position;
@@ -298,7 +277,6 @@ namespace CodingStrategy.Entities.Board
             {
                 return false;
             }
-
             RobotPosition robotPosition = _robotPositions[robotDelegate];
             RobotDirection previousDirection = robotPosition.Direction;
             robotPosition.Direction = direction;
@@ -332,7 +310,7 @@ namespace CodingStrategy.Entities.Board
         {
             if (!IsRobotDelegateExist(robotDelegate))
             {
-                throw new ArgumentException($"The robot delegate {robotDelegate.Id} is not placed on this board.");
+                throw new ArgumentException($"The robot delegate {robotDelegate.ID} is not placed on this board.");
             }
         }
 
@@ -341,7 +319,7 @@ namespace CodingStrategy.Entities.Board
             if (!IsBadSectorDelegateExist(badSectorDelegate))
             {
                 throw new ArgumentException(
-                    $"The bad sector delegate {badSectorDelegate.Id} is not placed on this board.");
+                    $"The bad sector delegate {badSectorDelegate.ID} is not placed on this board.");
             }
         }
 
@@ -354,17 +332,10 @@ namespace CodingStrategy.Entities.Board
             }
         }
 
-        private BadSectorPosition? GetBadSectorPosition(Coordinate position)
+        private BadSectorPosition GetBadSectorPosition(Coordinate position)
         {
-            foreach (BadSectorPosition badSectorPosition in _badSectorPositions.Values)
-            {
-                if (badSectorPosition.Position == position)
-                {
-                    return badSectorPosition;
-                }
-            }
-
-            return null;
+            return _badSectorPositions.Values
+               .FirstOrDefault(badSectorPosition => badSectorPosition.Position == position);
         }
 
         private ICellDelegate[,] CreateCellArray()
@@ -377,32 +348,28 @@ namespace CodingStrategy.Entities.Board
                     tiles[i, j] = new CellDelegateImpl();
                 }
             }
-
             foreach ((IRobotDelegate robotDelegate, RobotPosition robotPosition) in _robotPositions)
             {
                 Coordinate position = robotPosition.Position;
                 tiles[position.X, position.Y].Placeables.Add(robotDelegate);
             }
-
             foreach ((IBadSectorDelegate badSectorDelegate, BadSectorPosition badSectorPosition) in _badSectorPositions)
             {
                 Coordinate position = badSectorPosition.Position;
                 tiles[position.X, position.Y].Placeables.Add(badSectorDelegate);
             }
-
             foreach ((IPlaceable placeable, PlaceablePosition placeablePosition) in _placeablePositions)
             {
                 Coordinate position = placeablePosition.Position;
                 tiles[position.X, position.Y].Placeables.Add(placeable);
             }
-
             return tiles;
         }
 
         private sealed class RobotPosition
         {
-            public Coordinate Position;
             public RobotDirection Direction;
+            public Coordinate Position;
 
             public RobotPosition(Coordinate position, RobotDirection direction)
             {
@@ -423,7 +390,7 @@ namespace CodingStrategy.Entities.Board
 
         private sealed class PlaceablePosition
         {
-            public Coordinate Position;
+            public readonly Coordinate Position;
 
             public PlaceablePosition(Coordinate position)
             {
@@ -437,14 +404,14 @@ namespace CodingStrategy.Entities.Board
 
             public CellDelegateImpl() : this(null, new HashSet<IRobotDelegate>()) {}
 
-            private CellDelegateImpl(IBadSectorDelegate? badSector, ISet<IRobotDelegate> robotDelegates)
+            private CellDelegateImpl(IBadSectorDelegate badSector, ISet<IRobotDelegate> robotDelegates)
             {
                 BadSector = badSector;
                 _robotDelegates = robotDelegates;
                 Placeables = new List<IPlaceable>();
             }
 
-            public IBadSectorDelegate? BadSector { get; set; }
+            public IBadSectorDelegate BadSector { get; set; }
 
             public ISet<IRobotDelegate> Robot
             {

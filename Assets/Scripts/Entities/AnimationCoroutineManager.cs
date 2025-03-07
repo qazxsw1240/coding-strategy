@@ -1,15 +1,14 @@
 #nullable enable
 
+using System.Collections;
+using System.Collections.Generic;
+
+using UnityEngine;
 
 namespace CodingStrategy.Entities
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
-
     /// <summary>
-    /// 오브젝트의 애니메이션을 관리합니다.
+    ///     오브젝트의 애니메이션을 관리합니다.
     /// </summary>
     public class AnimationCoroutineManager : MonoBehaviour
     {
@@ -34,8 +33,8 @@ namespace CodingStrategy.Entities
         }
 
         /// <summary>
-        /// 코루틴 애니메이션을 큐에 추가합니다. 각 큐는 오브젝트를 기준으로 삼아,
-        /// 한 오브젝트에 할당된 큐는 한 번에 하나의 애니메이션만 실행합니다.
+        ///     코루틴 애니메이션을 큐에 추가합니다. 각 큐는 오브젝트를 기준으로 삼아,
+        ///     한 오브젝트에 할당된 큐는 한 번에 하나의 애니메이션만 실행합니다.
         /// </summary>
         /// <param name="target">애니메이션 큐의 기준이 되는 오브젝트입니다.</param>
         /// <param name="coroutine">큐에 추가할 코루틴 애니메이션입니다.</param>
@@ -61,7 +60,7 @@ namespace CodingStrategy.Entities
         }
 
         /// <summary>
-        /// 큐에 저장된 코루틴 애니메이션을 실행합니다.
+        ///     큐에 저장된 코루틴 애니메이션을 실행합니다.
         /// </summary>
         /// <returns>저장된 애니메이션을 완료하기를 기다리는 코루틴을 반환합니다.</returns>
         public Coroutine ApplyAnimations()
@@ -106,7 +105,6 @@ namespace CodingStrategy.Entities
                     _animationQueues.Remove(target);
                 }
             }
-
 
             _coroutine = null;
         }

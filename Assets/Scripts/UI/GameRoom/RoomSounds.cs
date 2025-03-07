@@ -1,38 +1,39 @@
-using System.Collections;
-using System.Collections.Generic;
+using CodingStrategy.Sound;
+
 using TMPro;
-using UnityEditor;
+
 using UnityEngine;
 using UnityEngine.UI;
 
-
-public class RoomSounds : MonoBehaviour
+namespace CodingStrategy.UI
 {
-    SoundManager soundmanager;
-    SceneChanger sceneChanger;
-
-    public TMP_InputField Chattings;
-
-    public Button ReadyBtn;
-    public Button StartBtn;
-    
-    private void Awake()
+    public class RoomSounds : MonoBehaviour
     {
-        soundmanager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
-        sceneChanger = GameObject.Find("SoundManager").GetComponent<SceneChanger>();
+        [SerializeField] private SoundManager soundManager;
 
-        Chattings = GameObject.Find("ChatInputField").GetComponent<TMP_InputField>();
+        [SerializeField] private SceneChanger sceneChanger;
 
-        ReadyBtn = GameObject.Find("GameReadyBtn").GetComponent<Button>();
-        StartBtn = GameObject.Find("GameStartBtn").GetComponent<Button>();
-    }
+        public TMP_InputField Chattings;
+        public Button ReadyBtn;
+        public Button StartBtn;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        Chattings.onValueChanged.AddListener(soundmanager.OnNicknameChangedSounds);
+        private void Awake()
+        {
+            soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
+            sceneChanger = GameObject.Find("SoundManager").GetComponent<SceneChanger>();
 
-        ReadyBtn.onClick.AddListener(soundmanager.LobbyRoomButtonSound);
-        StartBtn.onClick.AddListener(soundmanager.LobbyRoomButtonSound);
+            Chattings = GameObject.Find("ChatInputField").GetComponent<TMP_InputField>();
+
+            ReadyBtn = GameObject.Find("GameReadyBtn").GetComponent<Button>();
+            StartBtn = GameObject.Find("GameStartBtn").GetComponent<Button>();
+        }
+
+        private void Start()
+        {
+            Chattings.onValueChanged.AddListener(soundManager.OnNicknameChangedSounds);
+
+            ReadyBtn.onClick.AddListener(soundManager.LobbyRoomButtonSound);
+            StartBtn.onClick.AddListener(soundManager.LobbyRoomButtonSound);
+        }
     }
 }

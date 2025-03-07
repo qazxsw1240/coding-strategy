@@ -1,0 +1,51 @@
+#nullable enable
+
+using System.Collections.Generic;
+
+using CodingStrategy.Entities.BadSector;
+using CodingStrategy.Entities.Board;
+using CodingStrategy.Entities.Robot;
+using CodingStrategy.Entities.Runtime.Statement;
+
+namespace CodingStrategy.Entities.Runtime.Command
+{
+    public class PropellerInstallerCommand : AbstractCommand
+    {
+        private static int _installNum;
+
+        private readonly List<Coordinate> _coordinates = new List<Coordinate>();
+
+        public PropellerInstallerCommand(int enhancedLevel = 1)
+            : base(CommandLoader.Load(14), enhancedLevel, 1)
+        {
+        }
+
+        public override ICommand Copy(bool keepStatus = true)
+        {
+            return keepStatus ? new PropellerInstallerCommand(Info.EnhancedLevel) : new PropellerInstallerCommand();
+        }
+
+        private static IBadSectorDelegate CreatePropellerBadSector(
+            IBoardDelegate boardDelegate,
+            IRobotDelegate robotDelegate)
+        {
+            return new PropellerBadSector($"{robotDelegate.ID}-{_installNum++}", boardDelegate, robotDelegate);
+        }
+
+        protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)
+        {
+            _coordinates.Add(new Coordinate(0, 1));
+            _commandBuilder.Append(new PointerStatement(robotDelegate, CreatePropellerBadSector, _coordinates));
+        }
+
+        protected override void AddStatementOnLevel2(IRobotDelegate robotDelegate) {}
+
+        protected override void AddStatementOnLevel3(IRobotDelegate robotDelegate)
+        {
+            _commandBuilder.Clear();
+            _coordinates.Add(new Coordinate(-1, 1));
+            _coordinates.Add(new Coordinate(1, 1));
+            _commandBuilder.Append(new PointerStatement(robotDelegate, CreatePropellerBadSector, _coordinates));
+        }
+    }
+}

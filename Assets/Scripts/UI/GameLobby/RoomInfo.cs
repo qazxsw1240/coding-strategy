@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+
+using UnityEngine;
 
 namespace CodingStrategy.UI.GameLobby
 {
@@ -11,25 +10,19 @@ namespace CodingStrategy.UI.GameLobby
         public TMP_Text roomName;
         public TMP_Text playerCount;
 
-        public void setModeTitle(string modename)
+        public void SetModeTitle(string modeName)
         {
-            modeTitle.SetText(modename);
+            modeTitle.SetText(modeName);
         }
 
-        public void setRoomName(string roomname)
+        public void SetRoomName(string roomName)
         {
-            roomName.SetText(roomname);
+            this.roomName.SetText(roomName);
         }
 
-        public void setPlayerCount(int count)
+        public void SetPlayerCount(int count)
         {
-            playerCount.SetText(count.ToString() + " /4");
+            playerCount.SetText($"{count}/4");
         }
-
-        // Start is called before the first frame update
-        void Start() {}
-
-        // Update is called once per frame
-        void Update() {}
     }
 }

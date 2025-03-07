@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+
+using UnityEngine;
 
 namespace CodingStrategy.UI.GameRoom
 {
@@ -10,19 +9,14 @@ namespace CodingStrategy.UI.GameRoom
         public TMP_Text commandName;
         public TMP_Text commandDetail;
 
-        public void setCommandName(string commandname)
+        public void SetCommandName(string commandName)
         {
-            commandName.SetText(commandname);
+            this.commandName.SetText(commandName);
         }
 
-        public void setCommandDetail(string detail)
+        public void SetCommandDetail(string detail)
         {
             commandDetail.SetText(detail);
         }
-
-        void Start() {}
-
-        // Update is called once per frame
-        void Update() {}
     }
 }

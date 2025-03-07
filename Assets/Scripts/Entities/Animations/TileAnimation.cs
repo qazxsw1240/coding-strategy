@@ -1,16 +1,17 @@
-﻿namespace CodingStrategy.Entities.Animations
-{
-    using System.Collections;
-    using UnityEngine;
+﻿using System.Collections;
 
+using UnityEngine;
+
+namespace CodingStrategy.Entities.Animations
+{
     public class TileAnimation : IEnumerator
     {
         private const float DefaultTimeResolution = 0.01f;
+        private readonly float _depth;
 
         private readonly GameObject _gameObject;
-        private readonly float _depth;
-        private readonly float _time;
         private readonly int _steps;
+        private readonly float _time;
 
         private int _currentStep;
 
@@ -37,9 +38,9 @@
         {
             get
             {
-                float dy = (_depth) / _steps;
+                float dy = _depth / _steps;
                 Vector3 position = _gameObject.transform.position;
-                if ((_currentStep << 1) <= _steps)
+                if (_currentStep << 1 <= _steps)
                 {
                     position.y -= dy;
                 }

@@ -1,37 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+using CodingStrategy.Sound;
+
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameLobbySound: MonoBehaviour
+namespace CodingStrategy.UI.GameLobby
 {
-    SoundManager soundmanager;
-    SceneChanger sceneChanger;
-
-    public GameObject RoomEnterBtn;
-    public GameObject RoomRandomBtn;
-
-    private void Awake()
+    public class GameLobbySound : MonoBehaviour
     {
-        soundmanager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
-        sceneChanger = GameObject.Find("SoundManager").GetComponent<SceneChanger>();
-        //soundmanager.Init();
-    }
+        public GameObject RoomEnterBtn;
+        public GameObject RoomRandomBtn;
+        private SceneChanger sceneChanger;
+        private SoundManager soundManager;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        StartCoroutine(sceneChanger.SoundsVolumesUp("Sound/GameLobby_Sleepy Sunshine"));
+        private void Awake()
+        {
+            soundManager = GameObject.Find("SoundManager").GetComponent<SoundManager>();
+            sceneChanger = GameObject.Find("SoundManager").GetComponent<SceneChanger>();
+        }
 
-        RoomEnterBtn = GameObject.Find("EnterRoom");
+        // Start is called before the first frame update
+        private void Start()
+        {
+            // StartCoroutine(sceneChanger.SoundsVolumesUp("Sound/GameLobby_Sleepy Sunshine"));
 
-        Button EnterBtn = RoomEnterBtn.GetComponent<Button>();
+            RoomEnterBtn = GameObject.Find("EnterRoom");
 
-        EnterBtn.onClick.AddListener(soundmanager.OnStartButtonClickSounds);
+            Button enterButton = RoomEnterBtn.GetComponent<Button>();
 
-        Button RoomRandomBtn = GameObject.Find("RandomEnterBtn").GetComponent<Button>();
+            enterButton.onClick.AddListener(soundManager.OnStartButtonClickSounds);
 
-        RoomRandomBtn.onClick.AddListener(soundmanager.LobbyRoomButtonSound);
+            Button roomRandomButton = GameObject.Find("RandomEnterBtn").GetComponent<Button>();
+
+            roomRandomButton.onClick.AddListener(soundManager.LobbyRoomButtonSound);
+        }
     }
 }

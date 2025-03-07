@@ -1,48 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
+using CodingStrategy.Sound;
+
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 namespace CodingStrategy.UI.GameRoom
 {
     public class CommandInfoLocation : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
-        public Transform command;
-        public GameObject commandInfo;
+        [FormerlySerializedAs("command")]
+        [SerializeField]
+        private Transform _command;
 
-        private SoundManager soundManager;
+        [FormerlySerializedAs("commandInfo")]
+        [SerializeField]
+        private GameObject _commandInfo;
 
-        /*public void OnButtonClick()
-        {
-            Vector3 commandPos = command.position;
-            commandInfo.SetActive(true);
-            commandInfo.transform.position = new Vector3(commandPos.x + 200f, commandPos.y - 100f, commandPos.z);
-        }*/
+        [SerializeField]
+        private ISoundManager _soundManager;
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            soundManager = FindObjectOfType<SoundManager>();
-            soundManager.Init();
-            // Effect sound∏¶ ∫“∑Øø¿∞Ì ¿Áª˝«’¥œ¥Ÿ.
+            _soundManager = SoundManager.Instance;
+            // Effect soundÎ•º Î∂àÎü¨Ïò§Í≥† Ïû¨ÏÉùÌï©ÎãàÎã§.
             AudioClip effectClip = Resources.Load<AudioClip>("Sound/InfoCreateSound");
-            soundManager.Play(effectClip, Sound.Effect, 1.0f);
-            Debug.Log("Command Click Sound is comming out!");
-
-            Vector3 commandPos = command.position;
-            commandInfo.SetActive(true);
-            commandInfo.transform.position = new Vector3(commandPos.x + 200f, commandPos.y - 100f, commandPos.z);
+            _soundManager.Play(effectClip);
+            Vector3 commandPos = _command.position;
+            _commandInfo.SetActive(true);
+            _commandInfo.transform.position = new Vector3(commandPos.x + 200f, commandPos.y - 100f, commandPos.z);
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            commandInfo.SetActive(false);
+            _commandInfo.SetActive(false);
         }
-
-        // Start is called before the first frame update
-        void Start() {}
-
-        // Update is called once per frame
-        void Update() {}
     }
 }

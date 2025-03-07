@@ -1,7 +1,4 @@
-﻿#nullable enable
-
-
-namespace CodingStrategy.Factory
+﻿namespace CodingStrategy.Factory
 {
     public interface IRobotDelegateCreateStrategy
     {

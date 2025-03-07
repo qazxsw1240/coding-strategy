@@ -1,5 +1,3 @@
-#nullable enable
-
 namespace CodingStrategy.Entities
 {
     public interface ILifeCycle

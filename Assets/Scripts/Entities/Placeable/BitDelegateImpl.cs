@@ -1,25 +1,21 @@
-#nullable enable
-
-
 using System;
+
 using CodingStrategy.Entities.Board;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
+
 using UnityEngine.Events;
 
 namespace CodingStrategy.Entities.Placeable
 {
     public class BitDelegateImpl : IBitDelegate
     {
-        private readonly IPlayerPool _playerPool;
         private readonly IBoardDelegate _boardDelegate;
+        private readonly IPlayerPool _playerPool;
 
-        private IRobotDelegate? _taker;
+        private IRobotDelegate _taker;
 
-        public BitDelegateImpl(
-            IPlayerPool playerPool,
-            IBoardDelegate boardDelegate,
-            int amount)
+        public BitDelegateImpl(IPlayerPool playerPool, IBoardDelegate boardDelegate, int amount)
         {
             _playerPool = playerPool;
             _boardDelegate = boardDelegate;
@@ -53,12 +49,11 @@ namespace CodingStrategy.Entities.Placeable
             {
                 return;
             }
-
             if (_taker == null)
             {
                 _taker = robotDelegate;
                 OnRobotTakeInEvents.Invoke(robotDelegate);
-                IPlayerDelegate playerDelegate = _playerPool[robotDelegate.Id];
+                IPlayerDelegate playerDelegate = _playerPool[robotDelegate.ID];
                 ProvidePlayerWithCurrency(playerDelegate, false);
             }
             else
@@ -66,21 +61,15 @@ namespace CodingStrategy.Entities.Placeable
                 IRobotDelegate previousTaker = _taker;
                 _taker = null;
                 OnRobotTakeAwayEvents.Invoke(previousTaker);
-                IPlayerDelegate playerDelegate = _playerPool[robotDelegate.Id];
+                IPlayerDelegate playerDelegate = _playerPool[robotDelegate.ID];
                 ProvidePlayerWithCurrency(playerDelegate, true);
             }
         }
 
         private void ProvidePlayerWithCurrency(IPlayerDelegate playerDelegate, bool rollback)
         {
-            if (rollback)
-            {
-                playerDelegate.Currency -= Amount;
-            }
-            else
-            {
-                playerDelegate.Currency += Amount;
-            }
+            int amount = rollback ? -Amount : Amount;
+            playerDelegate.Currency += amount;
         }
     }
 }

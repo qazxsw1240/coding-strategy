@@ -1,29 +1,39 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
 namespace CodingStrategy.Entities.Shop
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
     public class CommandListImpl : ICommandList
     {
         /// <summary>
-        /// 명령어를 저장하는 실제 리스트입니다.
+        ///     명령어를 저장하는 실제 리스트입니다.
         /// </summary>
         private readonly List<ICommand> _commandList;
-        private Random _random;
+
+        private readonly Random _random;
 
         public CommandListImpl()
         {
             _commandList = new List<ICommand>();
             _random = new Random();
         }
+
         public ICommand this[int index]
         {
-            get => _commandList[index];
-            set => _commandList[index] = value;
+            get { return _commandList[index]; }
+            set { _commandList[index] = value; }
         }
-        public int Count => _commandList.Count;
 
-        public bool IsReadOnly => true;
+        public int Count
+        {
+            get { return _commandList.Count; }
+        }
+
+        public bool IsReadOnly
+        {
+            get { return true; }
+        }
 
         public void Add(ICommand item)
         {
@@ -42,7 +52,7 @@ namespace CodingStrategy.Entities.Shop
 
         public void CopyTo(ICommand[] array, int arrayIndex)
         {
-            _commandList.CopyTo(array,arrayIndex);
+            _commandList.CopyTo(array, arrayIndex);
         }
 
         public IEnumerator<ICommand> GetEnumerator()
@@ -57,7 +67,7 @@ namespace CodingStrategy.Entities.Shop
 
         public void Insert(int index, ICommand item)
         {
-            _commandList.Insert(index,item);
+            _commandList.Insert(index, item);
         }
 
         public bool Remove(ICommand item)
@@ -69,8 +79,9 @@ namespace CodingStrategy.Entities.Shop
         {
             _commandList.RemoveAt(index);
         }
+
         /// <summary>
-        /// 확률에 따라 랜덤으로 명령어를 추출하여 반환합니다.
+        ///     확률에 따라 랜덤으로 명령어를 추출하여 반환합니다.
         /// </summary>
         /// <returns>추출한 명령어를 반환합니다.</returns>
         public ICommand SelectRandomCommand()

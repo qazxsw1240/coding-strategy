@@ -1,36 +1,67 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEngine.Events;
 
-namespace CodingStrategy.UI.InGame
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+
+namespace CodingStrategy.UI.GameScene
 {
     public class PlayerStatusUI : MonoBehaviour
     {
-        [SerializeField]
-        public static readonly Color Red = new Vector4(224, 0, 4, 204) / 255;
-        [SerializeField]
+        public static Color Red = new Vector4(224, 0, 4, 204) / 255;
         public static readonly Color Green = new Vector4(83, 219, 57, 255) / 255;
-        [SerializeField]
         public static readonly Color Blue = new Vector4(78, 149, 217, 255) / 255;
-        [SerializeField]
         public static readonly Color Yellow = new Vector4(245, 184, 0, 255) / 255;
 
-        [SerializeField] private TMP_Text Rank;
-        [SerializeField] private TMP_Text Name;
-        [SerializeField] private TMP_Text Money;
-        [SerializeField] private Image image;
-        [SerializeField] private GameObject robotLife;
-        [SerializeField] private GameObject playerLife;
-        [SerializeField] private string userID;
-		[SerializeField] public Button button, bigButton;
-		[SerializeField] public GameObject status;
-		[SerializeField] public UnityEvent OnPlayerUIClickEvent;
+        [SerializeField]
+        private TMP_Text Rank;
 
-		public string GetUserID()
+        [SerializeField]
+        private TMP_Text Name;
+
+        [SerializeField]
+        private TMP_Text Money;
+
+        [SerializeField]
+        private Image image;
+
+        [SerializeField]
+        private GameObject robotLife;
+
+        [SerializeField]
+        private GameObject playerLife;
+
+        [SerializeField]
+        private string userID;
+
+        [SerializeField]
+        public Button button, bigButton;
+
+        [SerializeField]
+        public GameObject status;
+
+        [SerializeField]
+        public UnityEvent OnPlayerUIClickEvent;
+
+        private void Start()
+        {
+            button = transform.GetChild(transform.childCount - 1).GetComponent<Button>();
+            button.onClick.AddListener(
+                () =>
+                {
+                    status.SetActive(true);
+                    bigButton.gameObject.SetActive(true);
+                    OnPlayerUIClickEvent.Invoke();
+                });
+            bigButton.onClick.AddListener(
+                () =>
+                {
+                    status.SetActive(false);
+                    bigButton.gameObject.SetActive(false);
+                });
+        }
+
+        public string GetUserID()
         {
             return userID;
         }
@@ -52,36 +83,29 @@ namespace CodingStrategy.UI.InGame
 
         public void SetRank(int rank)
         {
-            switch (rank)
+            Rank.text = rank switch
             {
-                case 1:
-                    Rank.text = "1st";
-                    break;
-                case 2:
-                    Rank.text = "2nd";
-                    break;
-                case 3:
-                    Rank.text = "3rd";
-                    break;
-                case 4:
-                    Rank.text = "4th";
-                    break;
-            }
+                1 => "1st",
+                2 => "2nd",
+                3 => "3rd",
+                4 => "4th",
+                var _ => Rank.text
+            };
         }
 
-		public string GetName()
-		{
-			return Name.text;
-		}
+        public string GetName()
+        {
+            return Name.text;
+        }
 
-		public void SetName(string name)
+        public void SetName(string name)
         {
             Name.text = name;
         }
 
         public void SetMoney(int money)
         {
-            Money.text = money.ToString() + " B";
+            Money.text = money + " B";
             if (money < 0)
             {
                 Money.color = Color.red;
@@ -122,21 +146,5 @@ namespace CodingStrategy.UI.InGame
         {
             gameObject.SetActive(visibility);
         }
-
-        // Start is called before the first frame update
-        void Start()
-        {
-            button = transform.GetChild(transform.childCount - 1).GetComponent<Button>();
-            button.onClick.AddListener(() => { 
-                status.SetActive(true); 
-                bigButton.gameObject.SetActive(true);
-                OnPlayerUIClickEvent.Invoke(); });
-            bigButton.onClick.AddListener(() => {
-                status.SetActive(false);
-                bigButton.gameObject.SetActive(false); });
-	}
-
-        // Update is called once per frame
-        void Update() { }
     }
 }

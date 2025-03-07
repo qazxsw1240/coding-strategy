@@ -1,20 +1,18 @@
-﻿#nullable enable
+﻿using System.Collections;
 
+using UnityEngine;
 
 namespace CodingStrategy.Entities.Animations
 {
-    using System.Collections;
-    using UnityEngine;
-
     public class RotateAnimation : IEnumerator
     {
         private const float DefaultTimeResolution = 0.01f;
+        private readonly Quaternion _end;
 
         private readonly GameObject _gameObject;
         private readonly Quaternion _start;
-        private readonly Quaternion _end;
-        private readonly float _time;
         private readonly int _steps;
+        private readonly float _time;
 
         private int _currentStep;
 
@@ -42,7 +40,7 @@ namespace CodingStrategy.Entities.Animations
         {
             get
             {
-                float ratio = ((float) _currentStep) / _steps;
+                float ratio = (float) _currentStep / _steps;
                 _gameObject.transform.rotation = Quaternion.Slerp(_start, _end, ratio);
                 return new WaitForSeconds(DefaultTimeResolution);
             }

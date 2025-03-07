@@ -1,14 +1,27 @@
 ﻿#nullable enable
 
+using System.Collections;
+
+using UnityEngine;
 
 namespace CodingStrategy.Entities
 {
-    using System.Collections;
-    using UnityEngine;
-
     public abstract class LifeCycleMonoBehaviourBase : MonoBehaviour
     {
-        public static IEnumerator AwaitLifeCycleCoroutine<TLifeCycle>(TLifeCycle lifeCycle,
+        private bool _starts;
+
+        public Coroutine? Coroutine { get; private set; }
+
+        public ILifeCycle LifeCycle { get; set; } = null!;
+
+        public void Start()
+        {
+            Coroutine = StartCoroutine(StartLifeCycleCoroutine());
+            _starts = true;
+        }
+
+        public static IEnumerator AwaitLifeCycleCoroutine<TLifeCycle>(
+            TLifeCycle lifeCycle,
             bool removeIfComplete = true)
             where TLifeCycle : LifeCycleMonoBehaviourBase
         {
@@ -26,18 +39,6 @@ namespace CodingStrategy.Entities
 
             yield return null;
         }
-
-        private bool _starts = false;
-
-        public void Start()
-        {
-            Coroutine = StartCoroutine(StartLifeCycleCoroutine());
-            _starts = true;
-        }
-
-        public Coroutine? Coroutine { get; private set; }
-
-        public ILifeCycle LifeCycle { get; set; } = null!;
 
         protected abstract IEnumerator OnAfterInitialization();
 

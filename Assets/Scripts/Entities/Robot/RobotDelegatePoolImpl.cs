@@ -1,20 +1,12 @@
-#nullable enable
-
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace CodingStrategy.Entities.Robot
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-
     public class RobotDelegatePoolImpl : IRobotDelegatePool
     {
-        private readonly IDictionary<string, IRobotDelegate> _pool;
-
-        public RobotDelegatePoolImpl()
-        {
-            _pool = new Dictionary<string, IRobotDelegate>();
-        }
+        private readonly IDictionary<string, IRobotDelegate> _pool = new Dictionary<string, IRobotDelegate>();
 
         public IRobotDelegate this[string id]
         {
@@ -33,12 +25,24 @@ namespace CodingStrategy.Entities.Robot
             return _pool.ContainsKey(id);
         }
 
-        public void Clear() => _pool.Clear();
+        public void Clear()
+        {
+            _pool.Clear();
+        }
 
-        public IEnumerator<IRobotDelegate> GetEnumerator() => _pool.Values.GetEnumerator();
+        public IEnumerator<IRobotDelegate> GetEnumerator()
+        {
+            return _pool.Values.GetEnumerator();
+        }
 
-        public void Remove(string id) => _pool.Remove(id);
+        public void Remove(string id)
+        {
+            _pool.Remove(id);
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

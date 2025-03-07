@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-
 using CodingStrategy.Entities.Player;
 
 namespace CodingStrategy.Factory
@@ -16,7 +15,8 @@ namespace CodingStrategy.Factory
 
         public IPlayerDelegate Build()
         {
-            return new PlayerDelegateImpl(Strategy.Id,
+            return new PlayerDelegateImpl(
+                Strategy.Id,
                 Strategy.HealthPoint,
                 Strategy.Level,
                 Strategy.Exp,

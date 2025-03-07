@@ -1,7 +1,5 @@
-#nullable enable
-
-
 using CodingStrategy.Entities.Robot;
+
 using UnityEngine.Events;
 
 namespace CodingStrategy.Entities.Placeable

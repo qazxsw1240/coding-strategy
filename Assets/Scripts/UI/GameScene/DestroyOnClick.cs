@@ -1,22 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodingStrategy.UI.InGame
+namespace CodingStrategy.UI.GameScene
 {
     public class DestroyOnClick : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
             GetComponent<Button>().onClick.AddListener(() => Destroy(gameObject));
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
         }
     }
 }

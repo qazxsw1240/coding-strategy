@@ -1,34 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
+
 using UnityEngine;
 
-namespace CodingStrategy.UI.InGame
+namespace CodingStrategy.UI.GameScene
 {
     public class SetBadSectorDetail : MonoBehaviour
     {
         public TMP_Text Name;
         public TMP_Text Description;
 
-        public void SetName(string BadSectorName)
+        public void SetName(string badSectorName)
         {
-            Name.text = BadSectorName;
-        }
-        public void SetDescription(string BadSectorDescription)
-        {
-            Description.text = BadSectorDescription;
+            Name.text = badSectorName;
         }
 
-        // Start is called before the first frame update
-        void Start()
+        public void SetDescription(string badSectorDescription)
         {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
+            Description.text = badSectorDescription;
         }
     }
 }

@@ -1,18 +1,11 @@
-#nullable enable
-
+using System;
 
 namespace CodingStrategy.Entities.Runtime
 {
-    using System;
-
     public class ExecutionException : Exception
     {
-        public ExecutionException() : base()
-        {
-        }
+        public ExecutionException() {}
 
-        public ExecutionException(string message) : base(message)
-        {
-        }
+        public ExecutionException(string message) : base(message) {}
     }
 }

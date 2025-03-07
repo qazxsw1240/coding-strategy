@@ -1,22 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace CodingStrategy.UI.InGame
+namespace CodingStrategy.UI.GameScene
 {
     public class UserCommand : MonoBehaviour
     {
-        public GameObject Command;
+        public GameObject command;
 
-        public void setCommand()
+        public void SetCommand()
         {
-            Instantiate(Command);
+            Instantiate(command);
         }
-
-        // Start is called before the first frame update
-        void Start() {}
-
-        // Update is called once per frame
-        void Update() {}
     }
 }

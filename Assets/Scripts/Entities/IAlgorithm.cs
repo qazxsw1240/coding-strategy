@@ -1,10 +1,9 @@
 #nullable enable
 
+using System.Collections.Generic;
 
 namespace CodingStrategy.Entities
 {
-    using System.Collections.Generic;
-
     public interface IAlgorithm : IList<ICommand>
     {
         public abstract int Capacity { get; set; }

@@ -1,15 +1,17 @@
+using System;
+
+using CodingStrategy.Entities.Robot;
+
+using UnityEngine.Events;
+
 namespace CodingStrategy.Entities.Player
 {
-    using System;
-    using UnityEngine.Events;
-    using Robot;
-
     public class PlayerDelegateImpl : IPlayerDelegate
     {
+        private int _currency;
+        private int _exp;
         private int _healthPoint;
         private int _level;
-        private int _exp;
-        private int _currency;
         private IRobotDelegate _robot;
 
         public PlayerDelegateImpl(
@@ -21,7 +23,7 @@ namespace CodingStrategy.Entities.Player
             IRobotDelegate robot,
             IAlgorithm algorithm)
         {
-            Id = id;
+            ID = id;
             _healthPoint = healthPoint;
             _level = level;
             _exp = exp;
@@ -34,7 +36,7 @@ namespace CodingStrategy.Entities.Player
             OnCurrencyChange = new UnityEvent<int, int>();
         }
 
-        public string Id { get; }
+        public string ID { get; }
 
         public int HealthPoint
         {
@@ -98,7 +100,7 @@ namespace CodingStrategy.Entities.Player
 
         public int CompareTo(IGameEntity other)
         {
-            return string.Compare(Id, other.Id, StringComparison.Ordinal);
+            return string.Compare(ID, other.ID, StringComparison.Ordinal);
         }
     }
 }

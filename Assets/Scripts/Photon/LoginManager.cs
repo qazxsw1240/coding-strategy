@@ -1,79 +1,113 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using CodingStrategy.Sound;
+
 using Photon.Pun;
 using Photon.Realtime;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+
 using TMPro;
 
-public class LoginManager : MonoBehaviourPunCallbacks
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+namespace CodingStrategy.Photon
 {
-    public Button startButton;
-    public TextMeshProUGUI connectionStatusText;
-    public InputField nicknameInputField;
-
-    public TMP_Text warningText; // 경고 메시지를 표시할 TextMeshPro 컴포넌트
-    public TMP_Text loadingText; // 로딩 메시지를 표시할 TextMeshPro 컴포넌트
-
-    // private SoundManager soundManager;
-    public SceneChanger sceneChanger;
-
-    void Update()
+    public class LoginManager : MonoBehaviourPunCallbacks
     {
-        //서버의 상태를 좌측 상단 구석에 있는 text로 실시간 갱신되어서 표현합니다.
-        connectionStatusText.text = PhotonNetwork.NetworkClientState.ToString();
-    }
+        [SerializeField]
+        private TextMeshProUGUI clientStateLabel;
 
-    public void OnStartButtonClick()
-    {
-        if (PhotonNetwork.NetworkingClient.State != ClientState.PeerCreated)
+        [SerializeField]
+        private TMP_Text warningMessageLabel;
+
+        [SerializeField]
+        private TMP_Text loadingMessageLabel;
+
+        [SerializeField]
+        private UnityEvent onInvalidNicknameProvide;
+
+        [SerializeField]
+        private UnityEvent onValidConnectionCreate;
+
+        [SerializeField]
+        private TMP_InputField nicknameInputField;
+
+        [SerializeField]
+        private Button connectionButton;
+
+        private string Nickname
         {
-            return;
+            get => nicknameInputField.text;
         }
 
-        if (string.IsNullOrEmpty(nicknameInputField.text))
+        private string ClientStateMessage
         {
-            // 입력 필드가 비어있다면 경고 메시지를 표시하고 함수를 종료합니다.
-            warningText.gameObject.SetActive(true);
-            return;
+            get => clientStateLabel.text;
+            set => clientStateLabel.text = value;
         }
 
-        //닉네임 설정합니다.
-        PhotonNetwork.LocalPlayer.NickName = nicknameInputField.text;
-        PhotonNetwork.AutomaticallySyncScene = true;
-        PhotonNetwork.PhotonServerSettings.AppSettings.EnableLobbyStatistics = false;
-        PhotonNetwork.NetworkingClient.EnableLobbyStatistics = false;
-        PhotonNetwork.IsMessageQueueRunning = true;
-        //방을 연결합니다.
-        PhotonNetwork.ConnectUsingSettings();
+        public void Awake()
+        {
+            SoundManager.Initialize();
+            PhotonNetwork.NetworkingClient.StateChanged += UpdateState;
 
+            AudioClip bgmClip = Resources.Load<AudioClip>("Sound/Game_Play_Ost");
+            AudioClip typingSoundClip = Resources.Load<AudioClip>("Sound/Keyboard_Click_Sound");
+            AudioClip buttonPressClip = Resources.Load<AudioClip>("Sound/Shop_Experience_Up");
+            SoundManager.Instance.Play(bgmClip, SoundType.Bgm, 1.0f, 0.1f);
+            nicknameInputField.onValueChanged.AddListener(
+                _ =>
+                    SoundManager.Instance.Play(typingSoundClip, SoundType.Effect, 3.0f, 0.6f));
+            connectionButton.onClick.AddListener(
+                () =>
+                    SoundManager.Instance.Play(buttonPressClip));
+        }
 
-        //start button과 nicknameInputfield를 비활성화합니다.
-        //그 다음 Loading text를 띄울겁니다. 이로써 유저들은 버튼이 눌린게 직접적으로 볼 수 있겠군요
+        public void Update()
+        {
+            // clientStateLabel.text = PhotonNetwork.NetworkClientState.ToString();
+        }
 
-        startButton.gameObject.SetActive(false);
-        nicknameInputField.gameObject.SetActive(false);
+        public void OnDestroy()
+        {
+            PhotonNetwork.NetworkingClient.StateChanged -= UpdateState;
+            nicknameInputField.onValueChanged.RemoveAllListeners();
+            connectionButton.onClick.RemoveAllListeners();
+        }
 
-        // 로딩 텍스트를 활성화합니다.
-        loadingText.gameObject.SetActive(true);
+        public override void OnConnectedToMaster()
+        {
+            TypedLobby lobby = new TypedLobby("coding-strategy", LobbyType.SqlLobby);
+            PhotonNetwork.JoinLobby(lobby);
+            SceneManager.LoadScene("GameLobby");
+        }
 
-        //이 Login Manager는 다른 씬에서도 남아있도록 합니다.
-        // DontDestroyOnLoad(gameObject);
-        
+        public void CreateConnection()
+        {
+            if (PhotonNetwork.NetworkingClient.State != ClientState.PeerCreated)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Nickname))
+            {
+                onInvalidNicknameProvide.Invoke();
+                return;
+            }
+
+            PhotonNetwork.LocalPlayer.NickName = Nickname;
+            PhotonNetwork.AutomaticallySyncScene = true;
+            PhotonNetwork.PhotonServerSettings.AppSettings.EnableLobbyStatistics = false;
+            PhotonNetwork.NetworkingClient.EnableLobbyStatistics = false;
+            PhotonNetwork.IsMessageQueueRunning = true;
+            PhotonNetwork.ConnectUsingSettings();
+
+            onValidConnectionCreate.Invoke();
+        }
+
+        private void UpdateState(ClientState previous, ClientState next)
+        {
+            ClientStateMessage = next.ToString();
+        }
     }
-
-    //이 함수는 "연결되었을 때" 실행되는 함수를 오버라이드 한것입니다.
-    public override void OnConnectedToMaster()
-    {
-        //로비 씬으로 이동합니다.
-        SceneManager.LoadScene("GameLobby");
-        //sceneChanger.ChangeScene("GamemLobby", "Sound/GameLobby_Sleepy Sunshine");
-        Debug.Log(PhotonNetwork.NickName + "님 환영합니다.");
-
-        TypedLobby lobby = new TypedLobby("coding-strategy", LobbyType.SqlLobby);
-        PhotonNetwork.JoinLobby(lobby);
-    }
-
-    // 닉네임이 변경될 때마다 호출되는 콜백 함수
 }

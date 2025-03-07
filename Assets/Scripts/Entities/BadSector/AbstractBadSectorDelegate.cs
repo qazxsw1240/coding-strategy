@@ -1,30 +1,26 @@
-﻿#nullable enable
+#nullable enable
 
-
+using System;
 using System.Collections.Generic;
+
+using CodingStrategy.Entities.Board;
+using CodingStrategy.Entities.Robot;
 using CodingStrategy.Entities.Runtime;
 
 namespace CodingStrategy.Entities.BadSector
 {
-    using System;
-    using Board;
-    using Runtime.CommandImpl;
-    using Robot;
-
-    public　abstract class AbstractBadSectorDelegate : IBadSectorDelegate
+    public abstract class AbstractBadSectorDelegate : IBadSectorDelegate
     {
-        protected readonly CommandBuilder _commandBuilder;
         private readonly IBoardDelegate _boardDelegate;
 
         protected AbstractBadSectorDelegate(string id, IBoardDelegate boardDelegate, IRobotDelegate installer)
         {
-            Id = id;
+            ID = id;
             Installer = installer;
             _boardDelegate = boardDelegate;
-            _commandBuilder = new();
         }
 
-        public string Id { get; }
+        public string ID { get; }
 
         public IRobotDelegate Installer { get; }
 
@@ -41,7 +37,7 @@ namespace CodingStrategy.Entities.BadSector
 
         public int CompareTo(IGameEntity other)
         {
-            return string.Compare(Id, other.Id, StringComparison.Ordinal);
+            return string.Compare(ID, other.ID, StringComparison.Ordinal);
         }
     }
 }

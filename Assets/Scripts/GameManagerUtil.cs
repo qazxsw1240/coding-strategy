@@ -1,29 +1,68 @@
-#nullable enable
-
-
 using System;
-using System.Linq;
+
 using CodingStrategy.Entities;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
 using CodingStrategy.Factory;
+
 using ExitGames.Client.Photon;
+
 using Photon.Pun;
 using Photon.Realtime;
+
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace CodingStrategy
 {
+    [DisallowMultipleComponent]
     public class GameManagerUtil : MonoBehaviourPunCallbacks
     {
         public readonly IPlayerPool PlayerDelegatePool = new PlayerPoolImpl();
 
-        private IPlayerDelegate? _localPlayerDelegate = null;
-        private IRobotDelegate? _localRobotDelegate = null;
+        private IPlayerDelegate _localPlayerDelegate;
+        private IRobotDelegate _localRobotDelegate;
 
-        public void Awake()
+        public IPlayerDelegate LocalPhotonPlayerDelegate
         {
-            // DontDestroyOnLoad(this);
+            get
+            {
+                if (_localPlayerDelegate != null)
+                {
+                    return _localPlayerDelegate;
+                }
+                Player photonPlayer = PhotonNetwork.LocalPlayer;
+                IPlayerDelegate playerDelegate = new LocalPlayerDelegate(
+                    PlayerDelegatePool[photonPlayer.UserId],
+                    photonPlayer);
+                _localPlayerDelegate = playerDelegate;
+                PlayerDelegatePool[photonPlayer.UserId] = _localPlayerDelegate;
+
+                return _localPlayerDelegate;
+            }
+        }
+
+        public IRobotDelegate LocalPhotonRobotDelegate
+        {
+            get
+            {
+                if (_localRobotDelegate != null)
+                {
+                    return _localRobotDelegate;
+                }
+                _localRobotDelegate = LocalPhotonPlayerDelegate.Robot;
+                _localRobotDelegate.OnHealthPointChange.AddListener(
+                    (_, _, next) =>
+                    {
+                        int validNext = Math.Max(0, Math.Min(5, next));
+                        PhotonNetwork.LocalPlayer.SetCustomProperties(
+                            new Hashtable
+                            {
+                                { GameMangerNetworkProcessor.RobotHpKey, validNext }
+                            });
+                    });
+                return _localRobotDelegate;
+            }
         }
 
         public void InitializePlayersByPhoton()
@@ -39,7 +78,7 @@ namespace CodingStrategy
                 IPlayerDelegateCreateStrategy strategy = new PlayerDelegateCreateStrategy(id);
                 IPlayerDelegateCreateFactory factory = new PlayerDelegateCreateFactory(strategy);
                 IPlayerDelegate playerDelegate = factory.Build();
-                PlayerDelegatePool[playerDelegate.Id] = playerDelegate;
+                PlayerDelegatePool[playerDelegate.ID] = playerDelegate;
             }
         }
 
@@ -54,44 +93,6 @@ namespace CodingStrategy
             }
 
             PlayerDelegatePool.Clear();
-        }
-
-        public IPlayerDelegate LocalPhotonPlayerDelegate
-        {
-            get
-            {
-                if (_localPlayerDelegate == null)
-                {
-                    Player photonPlayer = PhotonNetwork.LocalPlayer;
-                    IPlayerDelegate playerDelegate = new LocalPlayerDelegate(PlayerDelegatePool[photonPlayer.UserId],
-                        photonPlayer);
-                    _localPlayerDelegate = playerDelegate;
-                    PlayerDelegatePool[photonPlayer.UserId] = _localPlayerDelegate;
-                }
-
-                return _localPlayerDelegate;
-            }
-        }
-
-        public IRobotDelegate LocalPhotonRobotDelegate
-        {
-            get
-            {
-                if (_localRobotDelegate == null)
-                {
-                    _localRobotDelegate = LocalPhotonPlayerDelegate.Robot;
-                    _localRobotDelegate.OnHealthPointChange.AddListener((_, _, next) =>
-                    {
-                        int validNext = Math.Max(0, Math.Min(5, next));
-                        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable
-                        {
-                            { GameMangerNetworkProcessor.RobotHpKey, validNext }
-                        });
-                    });
-                }
-
-                return _localRobotDelegate;
-            }
         }
 
         public bool HasRobotDelegate(string id)
@@ -132,8 +133,8 @@ namespace CodingStrategy
 
         private class LocalPlayerDelegate : IPlayerDelegate
         {
-            private readonly IPlayerDelegate _playerDelegate;
             private readonly Player _photonPlayer;
+            private readonly IPlayerDelegate _playerDelegate;
 
             public LocalPlayerDelegate(IPlayerDelegate playerDelegate, Player photonPlayer)
             {
@@ -141,7 +142,7 @@ namespace CodingStrategy
                 _photonPlayer = photonPlayer;
             }
 
-            public string Id => _playerDelegate.Id;
+            public string ID => _playerDelegate.ID;
 
             public int HealthPoint
             {
@@ -149,10 +150,11 @@ namespace CodingStrategy
                 set
                 {
                     _playerDelegate.HealthPoint = value;
-                    _photonPlayer.SetCustomProperties(new Hashtable
-                    {
-                        { GameMangerNetworkProcessor.PlayerHpKey, value }
-                    });
+                    _photonPlayer.SetCustomProperties(
+                        new Hashtable
+                        {
+                            { GameMangerNetworkProcessor.PlayerHpKey, value }
+                        });
                 }
             }
 
@@ -162,10 +164,11 @@ namespace CodingStrategy
                 set
                 {
                     _playerDelegate.Level = value;
-                    _photonPlayer.SetCustomProperties(new Hashtable
-                    {
-                        { GameMangerNetworkProcessor.LevelKey, value }
-                    });
+                    _photonPlayer.SetCustomProperties(
+                        new Hashtable
+                        {
+                            { GameMangerNetworkProcessor.LevelKey, value }
+                        });
                 }
             }
 
@@ -175,10 +178,11 @@ namespace CodingStrategy
                 set
                 {
                     _playerDelegate.Exp = value;
-                    _photonPlayer.SetCustomProperties(new Hashtable
-                    {
-                        { GameMangerNetworkProcessor.ExpKey, value }
-                    });
+                    _photonPlayer.SetCustomProperties(
+                        new Hashtable
+                        {
+                            { GameMangerNetworkProcessor.ExpKey, value }
+                        });
                 }
             }
 
@@ -188,10 +192,11 @@ namespace CodingStrategy
                 set
                 {
                     _playerDelegate.Currency = value;
-                    _photonPlayer.SetCustomProperties(new Hashtable
-                    {
-                        { GameMangerNetworkProcessor.CurrencyKey, value }
-                    });
+                    _photonPlayer.SetCustomProperties(
+                        new Hashtable
+                        {
+                            { GameMangerNetworkProcessor.CurrencyKey, value }
+                        });
                 }
             }
 

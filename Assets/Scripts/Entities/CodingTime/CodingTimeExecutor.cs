@@ -1,21 +1,23 @@
-﻿#nullable enable
-
-
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using CodingStrategy.Entities.Player;
-using CodingStrategy.Entities.Runtime.CommandImpl;
+using CodingStrategy.Entities.Runtime.Command;
 using CodingStrategy.Entities.Shop;
 using CodingStrategy.Network;
-using CodingStrategy.UI.InGame;
+using CodingStrategy.Sound;
+using CodingStrategy.UI.GameScene;
+
 using Photon.Pun;
+
+using UnityEngine;
 using UnityEngine.Events;
+
+using Random = System.Random;
 
 namespace CodingStrategy.Entities.CodingTime
 {
-    using UnityEngine;
-    using System.Collections;
-
     public class CodingTimeExecutor : LifeCycleMonoBehaviourBase, ILifeCycle
     {
         public static readonly IRerollProbability RerollProbability = new RerollProbabilityImpl();
@@ -23,26 +25,29 @@ namespace CodingStrategy.Entities.CodingTime
 
         public int countdown = 20;
 
-        private int _current = 0;
-
-        public GameManagerUtil Util { get; set; } = null!;
-        public GameMangerNetworkProcessor NetworkProcessor { get; set; } = null!;
-        public InGameUI InGameUI { get; set; } = null!;
-        public IPlayerPool PlayerPool { get; set; } = null!;
-        public IPlayerCommandNetworkDelegate NetworkDelegate { get; set; } = null!;
-        public IPlayerCommandCache CommandCache { get; set; } = null!;
-
         private IList<ICommand> _commands = new List<ICommand>();
 
+        private int _current;
+
         private InGameSoundManager _soundManager = null!;
+
+        public GameManagerUtil Util { get; set; } = null!;
+
+        public GameMangerNetworkProcessor NetworkProcessor { get; set; } = null!;
+
+        public InGameUI InGameUI { get; set; } = null!;
+
+        public IPlayerPool PlayerPool { get; set; } = null!;
+
+        public IPlayerCommandCache CommandCache { get; set; } = null!;
+
+        public UnityEvent<int, int> OnCountdownChange { get; } = new UnityEvent<int, int>();
 
         public void Awake()
         {
             LifeCycle = this;
-            _soundManager = FindObjectOfType<InGameSoundManager>();
+            _soundManager = FindAnyObjectByType<InGameSoundManager>();
         }
-
-        public UnityEvent<int, int> OnCountdownChange { get; } = new UnityEvent<int, int>();
 
         public void Initialize()
         {
@@ -57,13 +62,6 @@ namespace CodingStrategy.Entities.CodingTime
             DispenseLevelGuarantee();
             RerollCommands(true);
             UpdatePlayerAlgorithm();
-        }
-
-        private void DispenseLevelGuarantee()
-        {
-            IPlayerDelegate playerDelegate = Util.LocalPhotonPlayerDelegate;
-            int roundBonus = playerDelegate.Currency / 10;
-            playerDelegate.Currency += roundBonus + 3;
         }
 
         public bool MoveNext()
@@ -98,6 +96,13 @@ namespace CodingStrategy.Entities.CodingTime
             {
                 CommandCache.Sell(command);
             }
+        }
+
+        private void DispenseLevelGuarantee()
+        {
+            IPlayerDelegate playerDelegate = Util.LocalPhotonPlayerDelegate;
+            int roundBonus = playerDelegate.Currency / 10;
+            playerDelegate.Currency += roundBonus + 3;
         }
 
         protected override IEnumerator OnAfterInitialization()
@@ -155,7 +160,6 @@ namespace CodingStrategy.Entities.CodingTime
                 playerDelegate.Currency -= 3;
             }
 
-
             if (_commands.Count != 0)
             {
                 foreach (ICommand command in _commands)
@@ -164,8 +168,7 @@ namespace CodingStrategy.Entities.CodingTime
                 }
             }
 
-            System.Random random = new System.Random();
-            int grade = RerollProbability.GetRandomGradeFromLevel(playerDelegate.Level);
+            Random random = new Random();
             int count = 0;
             IList<ICommand> commands = new List<ICommand>
             {
@@ -173,7 +176,7 @@ namespace CodingStrategy.Entities.CodingTime
                 new EmptyCommand(),
                 new EmptyCommand(),
                 new EmptyCommand(),
-                new EmptyCommand(),
+                new EmptyCommand()
             };
             foreach ((string _, ICommand value) in PhotonPlayerCommandCache.GetCachedCommands())
             {
@@ -191,12 +194,12 @@ namespace CodingStrategy.Entities.CodingTime
 
             foreach (ICommand command in commands)
             {
-                if (command.Id == "0")
+                if (command.ID == "0")
                 {
                     continue;
                 }
 
-                CommandCache.Buy(command.Id, 1);
+                CommandCache.Buy(command.ID, 1);
             }
 
             _commands = commands;
@@ -231,7 +234,7 @@ namespace CodingStrategy.Entities.CodingTime
             ICommand command = _commands[shopIndex];
             _commands.RemoveAt(shopIndex);
             ICommand previousCommand = playerDelegate.Algorithm[algorithmIndex];
-            if (previousCommand.Id != "0")
+            if (previousCommand.ID != "0")
             {
                 CommandCache.Sell(previousCommand);
             }
@@ -248,15 +251,12 @@ namespace CodingStrategy.Entities.CodingTime
             IPlayerDelegate playerDelegate = Util.LocalPhotonPlayerDelegate;
             IAlgorithm algorithm = playerDelegate.Algorithm;
             ICommand command = algorithm[algorithmIndex];
-
-            if (command.Id == "0")
+            if (command.ID == "0")
             {
                 //  ignore if the command to sell is emtpy.
                 return;
             }
-
             playerDelegate.Currency += 1;
-
             algorithm[algorithmIndex] = new EmptyCommand();
             UpdatePlayerAlgorithm();
             NetworkProcessor.NotifyLocalPlayerDelegateAlgorithmChange();
@@ -281,7 +281,6 @@ namespace CodingStrategy.Entities.CodingTime
                 Debug.Log("not enough currency");
                 return;
             }
-
             playerDelegate.Currency -= 4;
             playerDelegate.Exp += 4;
         }

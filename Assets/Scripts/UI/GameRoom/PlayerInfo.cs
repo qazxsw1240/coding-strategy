@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+
+using UnityEngine;
 
 namespace CodingStrategy.UI.GameRoom
 {
@@ -10,14 +9,14 @@ namespace CodingStrategy.UI.GameRoom
         public TMP_Text Name;
         public TMP_Text ReadyState;
 
-        public void setName(string name)
+        public void SetName(string name)
         {
             Name.SetText(name);
         }
 
-        public void setReady(bool ready)
+        public void SetReady(bool ready)
         {
-            if (ready == true)
+            if (ready)
             {
                 ReadyState.SetText("준비 완료");
             }
@@ -26,11 +25,5 @@ namespace CodingStrategy.UI.GameRoom
                 ReadyState.SetText("준비 중");
             }
         }
-
-        // Start is called before the first frame update
-        void Start() {}
-
-        // Update is called once per frame
-        void Update() {}
     }
 }
