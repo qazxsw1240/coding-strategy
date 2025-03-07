@@ -10,7 +10,6 @@ using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Robot;
 using CodingStrategy.Network;
 using CodingStrategy.UI.GameScene;
-using CodingStrategy.UI.InGame;
 
 using Photon.Pun;
 using Photon.Realtime;
@@ -56,7 +55,7 @@ namespace CodingStrategy
                     {
                         Player photonPlayer = PhotonNetwork.CurrentRoom.Players
                            .Select(pair => pair.Value)
-                           .First(player => player.UserId == playerDelegate.Id);
+                           .First(player => player.UserId == playerDelegate.ID);
                         IRobotDelegate robotDelegate = playerDelegate.Robot;
                         RobotStatusUI robotStatusUI = GameManager.inGameUI.statusUI.GetComponent<RobotStatusUI>();
                         robotStatusUI.SetCameraTexture(GameManager.PlayerIndexMap[photonPlayer.UserId]);
@@ -70,7 +69,7 @@ namespace CodingStrategy
                             string.Join(
                                 ",  ",
                                 GameManager.GetAbnormalities()
-                                   .Where(pair => pair.Key.StartsWith(playerDelegate.Id))
+                                   .Where(pair => pair.Key.StartsWith(playerDelegate.ID))
                                    .Select(pair => pair.Value)
                                    .Select(abnormality => abnormality.Name)));
                         robotStatusUI.SetCommandList(playerDelegate.Algorithm.AsArray());
@@ -112,7 +111,7 @@ namespace CodingStrategy
 
         private void AttachPlayerStatusSynchronizer(IPlayerDelegate playerDelegate, PlayerStatusUI statusUI)
         {
-            IRobotDelegate robotDelegate = GameManager.RobotDelegatePool[playerDelegate.Id];
+            IRobotDelegate robotDelegate = GameManager.RobotDelegatePool[playerDelegate.ID];
 
             playerDelegate.OnCurrencyChange.AddListener(GetPlayerCurrencyUpdater(playerDelegate, statusUI));
             playerDelegate.OnExpChange.AddListener(GetPlayerExpUpdater(playerDelegate, statusUI));
@@ -127,12 +126,12 @@ namespace CodingStrategy
         {
             return (previous, next) =>
             {
-                if (playerDelegate.Id != GameManagerUtil.LocalPhotonPlayerDelegate.Id)
+                if (playerDelegate.ID != GameManagerUtil.LocalPhotonPlayerDelegate.ID)
                 {
                     return;
                 }
 
-                Debug.LogFormat("{2} currency change event occurred: {0}->{1}", previous, next, playerDelegate.Id);
+                Debug.LogFormat("{2} currency change event occurred: {0}->{1}", previous, next, playerDelegate.ID);
                 playerStatusUI.SetMoney(next);
                 GameManager.inGameUI.shopUi.SetBit(next);
             };
@@ -144,12 +143,12 @@ namespace CodingStrategy
         {
             return (previous, next) =>
             {
-                if (playerDelegate.Id != GameManagerUtil.LocalPhotonPlayerDelegate.Id)
+                if (playerDelegate.ID != GameManagerUtil.LocalPhotonPlayerDelegate.ID)
                 {
                     return;
                 }
 
-                Debug.LogFormat("{2} HP change event occurred: {0}->{1}", previous, next, playerDelegate.Id);
+                Debug.LogFormat("{2} HP change event occurred: {0}->{1}", previous, next, playerDelegate.ID);
                 int validPlayerHp = GetValidPlayerHp(next);
                 playerStatusUI.SetPlayerHP(validPlayerHp);
             };
@@ -159,7 +158,7 @@ namespace CodingStrategy
         {
             return (previous, next) =>
             {
-                if (playerDelegate.Id != GameManagerUtil.LocalPhotonPlayerDelegate.Id)
+                if (playerDelegate.ID != GameManagerUtil.LocalPhotonPlayerDelegate.ID)
                 {
                     return;
                 }
@@ -176,7 +175,7 @@ namespace CodingStrategy
                     return;
                 }
 
-                Debug.LogFormat("{2} exp change event occurred: {0}->{1}", previous, next, playerDelegate.Id);
+                Debug.LogFormat("{2} exp change event occurred: {0}->{1}", previous, next, playerDelegate.ID);
                 GameManager.inGameUI.shopUi.SetExp(next, RequiredExp[playerDelegate.Level]);
             };
         }
@@ -185,7 +184,7 @@ namespace CodingStrategy
         {
             return (previous, next) =>
             {
-                if (playerDelegate.Id != GameManagerUtil.LocalPhotonPlayerDelegate.Id)
+                if (playerDelegate.ID != GameManagerUtil.LocalPhotonPlayerDelegate.ID)
                 {
                     return;
                 }
@@ -197,7 +196,7 @@ namespace CodingStrategy
                 GameManager.inGameUI.shopUi.SetShopLevel(next);
                 ICommand[] commands = algorithm.AsArray();
                 Debug.Log(string.Join(", ", (IEnumerable<ICommand>) commands));
-                Debug.LogFormat("{2} level change event occurred: {0}->{1}", previous, next, playerDelegate.Id);
+                Debug.LogFormat("{2} level change event occurred: {0}->{1}", previous, next, playerDelegate.ID);
                 GameManager.inGameUI.shopUi.SetMyCommandList(commands);
                 NetworkProcessor.NotifyLocalPlayerDelegateAlgorithmChange();
             };
@@ -207,10 +206,10 @@ namespace CodingStrategy
         {
             return (robotDelegate, _, next) =>
             {
-                if (GameManagerUtil.PlayerDelegatePool.Contains(robotDelegate.Id))
+                if (GameManagerUtil.PlayerDelegatePool.Contains(robotDelegate.ID))
                 {
-                    IPlayerDelegate playerDelegate = GameManagerUtil.GetPlayerDelegateById(robotDelegate.Id);
-                    if (playerDelegate.Id != GameManagerUtil.LocalPhotonPlayerDelegate.Id)
+                    IPlayerDelegate playerDelegate = GameManagerUtil.GetPlayerDelegateById(robotDelegate.ID);
+                    if (playerDelegate.ID != GameManagerUtil.LocalPhotonPlayerDelegate.ID)
                     {
                         return;
                     }

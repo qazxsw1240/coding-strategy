@@ -12,7 +12,7 @@ namespace CodingStrategy.Entities
         /// <summary>
         ///     IGameEntity의 고유한 ID입니다.
         /// </summary>
-        public abstract string Id { get; }
+        public abstract string ID { get; }
 
         /// <summary>
         ///     하위 IGameEntity로 타입을 변환합니다. 타입 변환에 실패하면 예외가 발생합니다.
@@ -23,16 +23,6 @@ namespace CodingStrategy.Entities
         public TEntity As<TEntity>() where TEntity : class, IGameEntity
         {
             return this as TEntity ?? throw new InvalidCastException();
-        }
-
-        /// <summary>
-        ///     기본적으로 구현된 비교 메서드입니다. ID로 구분합니다.
-        /// </summary>
-        /// <param name="other">비교할 다른 IGameEntity입니다.</param>
-        /// <returns></returns>
-        public new int CompareTo(IGameEntity other)
-        {
-            return string.Compare(Id, other.Id, StringComparison.Ordinal);
         }
     }
 }

@@ -1,18 +1,23 @@
-using CodingStrategy.Entities.Runtime;
+using System;
+using System.Collections;
 
 using ExitGames.Client.Photon;
 
 using Photon.Chat;
 using Photon.Pun;
+using Photon.Realtime;
 
 using TMPro;
 
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CodingStrategy.Photon
 {
-    public class ChatManager : MonoBehaviour, IChatClientListener
+    public class ChatManager : MonoBehaviourPunCallbacks, IOnEventCallback
     {
+        private const byte EventCode = 198;
+
         private const string _announceChannel = "Announce";
         private static readonly string _roomChannel = "Room";
 
@@ -31,41 +36,51 @@ namespace CodingStrategy.Photon
         [SerializeField]
         private string[] currentChannels;
 
+        [Obsolete]
         private readonly string privateReceiver = "";
 
+        [Obsolete]
         private ChatClient _chatClient;
+
         private bool _isConnected;
         private string currentChat;
 
         public void Awake()
         {
-            if (!PhotonNetwork.NetworkingClient.InRoom)
+            if (!chatField)
             {
-                throw new RuntimeException("Client must be in a room.");
+                throw new UnassignedReferenceException(nameof(chatField));
             }
-
-            _chatClient = new ChatClient(this) { ChatRegion = "kr" };
-            currentAnnounceChannel = _announceChannel + PhotonNetwork.NetworkingClient.CurrentRoom;
-            currentRoomChannel = _roomChannel + PhotonNetwork.NetworkingClient.CurrentRoom;
-            currentChannels = new[] { currentAnnounceChannel, currentRoomChannel };
+            if (!chatDisplay)
+            {
+                throw new UnassignedReferenceException(nameof(chatDisplay));
+            }
+            chatField.onValueChanged.AddListener(TypeChatOnValueChange);
+            Button button = gameObject.GetComponentInChildren<Button>();
+            if (!button)
+            {
+                throw new UnassignedReferenceException(nameof(button));
+            }
+            button.onClick.AddListener(SubmitPublicChatOnClick);
         }
 
-        public void Start()
+        public IEnumerator Start()
         {
-            string appIdChat = PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat;
-            string appVersion = PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion;
-            AuthenticationValues authenticationValues =
-                new AuthenticationValues(PhotonNetwork.NetworkingClient.NickName);
-            _chatClient.Connect(appIdChat, appVersion, authenticationValues);
+            yield return new WaitUntil(() => !PhotonNetwork.InRoom);
+
+            // _chatClient = new ChatClient(this) { ChatRegion = "kr" };
+            // currentAnnounceChannel = _announceChannel + PhotonNetwork.NetworkingClient.CurrentRoom;
+            // currentRoomChannel = _roomChannel + PhotonNetwork.NetworkingClient.CurrentRoom;
+            // currentChannels = new[] { currentAnnounceChannel, currentRoomChannel };
+            // string appIdChat = PhotonNetwork.PhotonServerSettings.AppSettings.AppIdChat;
+            // string appVersion = PhotonNetwork.PhotonServerSettings.AppSettings.AppVersion;
+            // AuthenticationValues authenticationValues =
+            //     new AuthenticationValues(PhotonNetwork.NetworkingClient.NickName);
+            // _chatClient.Connect(appIdChat, appVersion, authenticationValues);
         }
 
         public void Update()
         {
-            if (_isConnected)
-            {
-                _chatClient.Service();
-            }
-
             if (chatField.text != "" && Input.GetKey(KeyCode.Return))
             {
                 SubmitPublicChatOnClick();
@@ -82,59 +97,72 @@ namespace CodingStrategy.Photon
             }
         }
 
-        public void OnConnected()
-        {
-            Debug.Log("Connected");
-            _isConnected = true;
-            _chatClient.Subscribe(currentChannels);
-        }
-
-        public void OnDisconnected()
-        {
-            _isConnected = false;
-            _chatClient.Unsubscribe(currentChannels);
-        }
-
-        public void OnGetMessages(string channelName, string[] senders, object[] messages)
-        {
-            for (int i = 0; i < senders.Length; i++)
-            {
-                string msgs = $"{(channelName == _announceChannel ? "시스템" : senders[i])}: {messages[i]}";
-                chatDisplay.text += "\n" + msgs;
-                Debug.Log(msgs);
-            }
-        }
-
-        public void OnPrivateMessage(string sender, object message, string channelName) {}
-
-        public void OnStatusUpdate(string user, int status, bool gotMessage, object message) {}
-
-        public void OnSubscribed(string[] channels, bool[] results) {}
-
-        public void OnUnsubscribed(string[] channels) {}
-
-        public void OnUserSubscribed(string channel, string user) {}
-
-        public void OnUserUnsubscribed(string channel, string user) {}
-
         public void Announce(string message)
         {
-            _chatClient.PublishMessage(_announceChannel, message);
+            // _chatClient.PublishMessage(_announceChannel, message);
+            SendMessage("시스템", message);
         }
 
         public void SubmitPublicChatOnClick()
         {
-            if (privateReceiver == "")
+            // if (privateReceiver == "")
+            // {
+            //     // _chatClient.PublishMessage(_roomChannel, currentChat);
+            // }
+            if (!PhotonNetwork.InRoom)
             {
-                _chatClient.PublishMessage(_roomChannel, currentChat);
-                chatField.text = "";
-                currentChat = "";
+                return;
             }
+            SendMessage(PhotonNetwork.LocalPlayer.NickName, currentChat);
+            chatField.text = "";
+            currentChat = "";
         }
 
         public void TypeChatOnValueChange(string valueIn)
         {
             currentChat = valueIn;
+        }
+
+        public void OnEvent(EventData photonEvent)
+        {
+            if (photonEvent.Code != EventCode)
+            {
+                return;
+            }
+            (string sender, string message) = ParseMessage(photonEvent.CustomData);
+            Debug.LogFormat("Received Message from {1}: {0}", message, sender);
+            string chat = $"{sender}: {message}";
+            chatDisplay.text += "\n" + chat;
+        }
+
+        private static void SendMessage(string sender, string message)
+        {
+            PhotonNetwork.RaiseEvent(
+                EventCode,
+                new object[] { sender, message },
+                new RaiseEventOptions
+                {
+                    Flags = WebFlags.Default,
+                    Receivers = ReceiverGroup.All
+                },
+                SendOptions.SendReliable);
+        }
+
+        private static (string, string) ParseMessage(object data)
+        {
+            if (data is not object[] tuple)
+            {
+                throw new ArgumentException();
+            }
+            if (tuple.Length != 2)
+            {
+                throw new ArgumentException();
+            }
+            if (tuple[0] is not string sender || tuple[1] is not string message)
+            {
+                throw new ArgumentException();
+            }
+            return (sender, message);
         }
     }
 }

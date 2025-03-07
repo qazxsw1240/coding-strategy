@@ -38,7 +38,6 @@ namespace CodingStrategy.UI.Shop
             _soundManager = SoundManager.Instance;
             AudioClip effectClip = Resources.Load<AudioClip>("Sound/Shop_CommandClick_Sound");
             _soundManager.Play(effectClip);
-            Debug.Log("Command clicked sound is comming out!");
 
             _image.raycastTarget = false;
             _oldParent = transform.parent;
@@ -59,7 +58,6 @@ namespace CodingStrategy.UI.Shop
             _soundManager = SoundManager.Instance;
             AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_CommandPutdown_Sound");
             _soundManager.Play(effectClip);
-            Debug.Log("Commnad put down sound is comming out!");
         }
 
         public int GetIndex()

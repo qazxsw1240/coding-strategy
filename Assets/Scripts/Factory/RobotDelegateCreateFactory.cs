@@ -26,7 +26,7 @@ namespace CodingStrategy.Factory
         public IRobotDelegate Build()
         {
             IRobotDelegate robotDelegate = new RobotDelegateImpl(
-                _playerDelegate.Id,
+                _playerDelegate.ID,
                 _boardDelegate,
                 _playerDelegate.Algorithm,
                 Strategy.HealthPoint,

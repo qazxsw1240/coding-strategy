@@ -15,7 +15,7 @@ namespace CodingStrategy.Entities.Runtime
 
         public IList<IExecutionValidator> Validators
         {
-            get { return _validators; }
+            get => _validators;
             set
             {
                 _validators = value;

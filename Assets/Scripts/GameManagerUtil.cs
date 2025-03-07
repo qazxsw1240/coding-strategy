@@ -10,10 +10,12 @@ using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace CodingStrategy
 {
+    [DisallowMultipleComponent]
     public class GameManagerUtil : MonoBehaviourPunCallbacks
     {
         public readonly IPlayerPool PlayerDelegatePool = new PlayerPoolImpl();
@@ -25,15 +27,16 @@ namespace CodingStrategy
         {
             get
             {
-                if (_localPlayerDelegate == null)
+                if (_localPlayerDelegate != null)
                 {
-                    Player photonPlayer = PhotonNetwork.LocalPlayer;
-                    IPlayerDelegate playerDelegate = new LocalPlayerDelegate(
-                        PlayerDelegatePool[photonPlayer.UserId],
-                        photonPlayer);
-                    _localPlayerDelegate = playerDelegate;
-                    PlayerDelegatePool[photonPlayer.UserId] = _localPlayerDelegate;
+                    return _localPlayerDelegate;
                 }
+                Player photonPlayer = PhotonNetwork.LocalPlayer;
+                IPlayerDelegate playerDelegate = new LocalPlayerDelegate(
+                    PlayerDelegatePool[photonPlayer.UserId],
+                    photonPlayer);
+                _localPlayerDelegate = playerDelegate;
+                PlayerDelegatePool[photonPlayer.UserId] = _localPlayerDelegate;
 
                 return _localPlayerDelegate;
             }
@@ -43,21 +46,21 @@ namespace CodingStrategy
         {
             get
             {
-                if (_localRobotDelegate == null)
+                if (_localRobotDelegate != null)
                 {
-                    _localRobotDelegate = LocalPhotonPlayerDelegate.Robot;
-                    _localRobotDelegate.OnHealthPointChange.AddListener(
-                        (_, _, next) =>
-                        {
-                            int validNext = Math.Max(0, Math.Min(5, next));
-                            PhotonNetwork.LocalPlayer.SetCustomProperties(
-                                new Hashtable
-                                {
-                                    { GameMangerNetworkProcessor.RobotHpKey, validNext }
-                                });
-                        });
+                    return _localRobotDelegate;
                 }
-
+                _localRobotDelegate = LocalPhotonPlayerDelegate.Robot;
+                _localRobotDelegate.OnHealthPointChange.AddListener(
+                    (_, _, next) =>
+                    {
+                        int validNext = Math.Max(0, Math.Min(5, next));
+                        PhotonNetwork.LocalPlayer.SetCustomProperties(
+                            new Hashtable
+                            {
+                                { GameMangerNetworkProcessor.RobotHpKey, validNext }
+                            });
+                    });
                 return _localRobotDelegate;
             }
         }
@@ -75,7 +78,7 @@ namespace CodingStrategy
                 IPlayerDelegateCreateStrategy strategy = new PlayerDelegateCreateStrategy(id);
                 IPlayerDelegateCreateFactory factory = new PlayerDelegateCreateFactory(strategy);
                 IPlayerDelegate playerDelegate = factory.Build();
-                PlayerDelegatePool[playerDelegate.Id] = playerDelegate;
+                PlayerDelegatePool[playerDelegate.ID] = playerDelegate;
             }
         }
 
@@ -139,14 +142,11 @@ namespace CodingStrategy
                 _photonPlayer = photonPlayer;
             }
 
-            public string Id
-            {
-                get { return _playerDelegate.Id; }
-            }
+            public string ID => _playerDelegate.ID;
 
             public int HealthPoint
             {
-                get { return _playerDelegate.HealthPoint; }
+                get => _playerDelegate.HealthPoint;
                 set
                 {
                     _playerDelegate.HealthPoint = value;
@@ -160,7 +160,7 @@ namespace CodingStrategy
 
             public int Level
             {
-                get { return _playerDelegate.Level; }
+                get => _playerDelegate.Level;
                 set
                 {
                     _playerDelegate.Level = value;
@@ -174,7 +174,7 @@ namespace CodingStrategy
 
             public int Exp
             {
-                get { return _playerDelegate.Exp; }
+                get => _playerDelegate.Exp;
                 set
                 {
                     _playerDelegate.Exp = value;
@@ -188,7 +188,7 @@ namespace CodingStrategy
 
             public int Currency
             {
-                get { return _playerDelegate.Currency; }
+                get => _playerDelegate.Currency;
                 set
                 {
                     _playerDelegate.Currency = value;
@@ -202,34 +202,19 @@ namespace CodingStrategy
 
             public IRobotDelegate Robot
             {
-                get { return _playerDelegate.Robot; }
-                set { _playerDelegate.Robot = value; }
+                get => _playerDelegate.Robot;
+                set => _playerDelegate.Robot = value;
             }
 
-            public IAlgorithm Algorithm
-            {
-                get { return _playerDelegate.Algorithm; }
-            }
+            public IAlgorithm Algorithm => _playerDelegate.Algorithm;
 
-            public UnityEvent<int, int> OnHealthPointChange
-            {
-                get { return _playerDelegate.OnHealthPointChange; }
-            }
+            public UnityEvent<int, int> OnHealthPointChange => _playerDelegate.OnHealthPointChange;
 
-            public UnityEvent<int, int> OnLevelChange
-            {
-                get { return _playerDelegate.OnLevelChange; }
-            }
+            public UnityEvent<int, int> OnLevelChange => _playerDelegate.OnLevelChange;
 
-            public UnityEvent<int, int> OnExpChange
-            {
-                get { return _playerDelegate.OnExpChange; }
-            }
+            public UnityEvent<int, int> OnExpChange => _playerDelegate.OnExpChange;
 
-            public UnityEvent<int, int> OnCurrencyChange
-            {
-                get { return _playerDelegate.OnCurrencyChange; }
-            }
+            public UnityEvent<int, int> OnCurrencyChange => _playerDelegate.OnCurrencyChange;
 
             public int CompareTo(IGameEntity other)
             {

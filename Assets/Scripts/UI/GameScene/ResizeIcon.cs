@@ -5,13 +5,16 @@ namespace CodingStrategy.UI.GameScene
 {
     public class ResizeIcon : MonoBehaviour
     {
-        // Start is called before the first frame update
+        private static readonly Vector2 DefaultScale = new Vector2(200f, 200f);
+
         private void Start()
         {
+            Transform parentTransform = transform.parent;
+            GridLayoutGroup gridLayoutGroup = parentTransform.GetComponent<GridLayoutGroup>();
             foreach (Transform child in transform)
             {
-                child.GetComponent<RectTransform>().sizeDelta *=
-                    transform.parent.GetComponent<GridLayoutGroup>().cellSize / new Vector2(200.0f, 200.0f);
+                RectTransform rectTransform = child.GetComponent<RectTransform>();
+                rectTransform.sizeDelta *= gridLayoutGroup.cellSize / DefaultScale;
             }
         }
     }

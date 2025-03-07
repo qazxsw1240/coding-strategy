@@ -1,8 +1,6 @@
-using CodingStrategy.UI.GameScene;
-
 using UnityEngine;
 
-namespace CodingStrategy.UI.InGame
+namespace CodingStrategy.UI.GameScene
 {
     public class InvokeBadSectorClickEvent : MonoBehaviour
     {
@@ -11,11 +9,16 @@ namespace CodingStrategy.UI.InGame
             GameObject activeChild = null;
             foreach (Transform child in transform)
             {
-                if (child.gameObject.activeSelf)
+                if (!child.gameObject.activeSelf)
                 {
-                    activeChild = child.gameObject;
-                    break;
+                    continue;
                 }
+                activeChild = child.gameObject;
+                break;
+            }
+            if (!activeChild)
+            {
+                return;
             }
             BadSectorClickEvent badSectorClickEvent =
                 GameObject.Find("AlwaysOnTop").GetComponent<BadSectorClickEvent>();

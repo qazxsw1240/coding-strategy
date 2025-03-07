@@ -27,10 +27,10 @@ namespace CodingStrategy.Entities.Runtime.Command
             return keepStatus ? new CoinMiningCommand(Info.EnhancedLevel) : new CoinMiningCommand();
         }
 
-        public override IList<IStatement> GetCommandStatements(IRobotDelegate robot)
+        public override IList<IStatement> GetCommandStatements(ICommandContext context, IRobotDelegate robot)
         {
-            _target[0] = Context?.PlayerDelegate!;
-            return base.GetCommandStatements(robot);
+            _target[0] = context.PlayerDelegate;
+            return base.GetCommandStatements(context, robot);
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)

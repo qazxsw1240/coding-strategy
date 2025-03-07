@@ -28,7 +28,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public override void Execute(RuntimeExecutorContext context)
         {
-            Debug.LogFormat("Robot {1} Tries to move to {0}", _direction, _robotDelegate.Id);
+            Debug.LogFormat("Robot {1} Tries to move to {0}", _direction, _robotDelegate.ID);
             _isEdge = !_robotDelegate.Move(_direction);
             if (_isEdge)
             {

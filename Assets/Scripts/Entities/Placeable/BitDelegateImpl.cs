@@ -26,17 +26,11 @@ namespace CodingStrategy.Entities.Placeable
             _boardDelegate.OnRobotChangePosition.AddListener(InvokeRobotTakeBitEvents);
         }
 
-        public Coordinate Position
-        {
-            get => _boardDelegate.GetPosition(this);
-        }
+        public Coordinate Position => _boardDelegate.GetPosition(this);
 
         public int Amount { get; }
 
-        public bool IsTaken
-        {
-            get => _taker != null;
-        }
+        public bool IsTaken => _taker != null;
 
         public UnityEvent<IRobotDelegate> OnRobotTakeInEvents { get; }
 
@@ -55,12 +49,11 @@ namespace CodingStrategy.Entities.Placeable
             {
                 return;
             }
-
             if (_taker == null)
             {
                 _taker = robotDelegate;
                 OnRobotTakeInEvents.Invoke(robotDelegate);
-                IPlayerDelegate playerDelegate = _playerPool[robotDelegate.Id];
+                IPlayerDelegate playerDelegate = _playerPool[robotDelegate.ID];
                 ProvidePlayerWithCurrency(playerDelegate, false);
             }
             else
@@ -68,21 +61,15 @@ namespace CodingStrategy.Entities.Placeable
                 IRobotDelegate previousTaker = _taker;
                 _taker = null;
                 OnRobotTakeAwayEvents.Invoke(previousTaker);
-                IPlayerDelegate playerDelegate = _playerPool[robotDelegate.Id];
+                IPlayerDelegate playerDelegate = _playerPool[robotDelegate.ID];
                 ProvidePlayerWithCurrency(playerDelegate, true);
             }
         }
 
         private void ProvidePlayerWithCurrency(IPlayerDelegate playerDelegate, bool rollback)
         {
-            if (rollback)
-            {
-                playerDelegate.Currency -= Amount;
-            }
-            else
-            {
-                playerDelegate.Currency += Amount;
-            }
+            int amount = rollback ? -Amount : Amount;
+            playerDelegate.Currency += amount;
         }
     }
 }

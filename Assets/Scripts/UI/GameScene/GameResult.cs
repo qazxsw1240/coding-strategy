@@ -59,13 +59,9 @@ namespace CodingStrategy.UI.GameScene
             }
 
             Sequence sequence = DOTween.Sequence();
-
             Vector3 endPosition = EndCard.transform.position;
-
             EndCard.transform.position += new Vector3(0, 1000, 0);
-
             sequence.Insert(0, EndCard.transform.DOMove(endPosition, 3).SetEase(Ease.OutCubic));
-
             yield return sequence.WaitForCompletion();
         }
     }

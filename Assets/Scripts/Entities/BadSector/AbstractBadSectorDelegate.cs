@@ -15,19 +15,16 @@ namespace CodingStrategy.Entities.BadSector
 
         protected AbstractBadSectorDelegate(string id, IBoardDelegate boardDelegate, IRobotDelegate installer)
         {
-            Id = id;
+            ID = id;
             Installer = installer;
             _boardDelegate = boardDelegate;
         }
 
-        public string Id { get; }
+        public string ID { get; }
 
         public IRobotDelegate Installer { get; }
 
-        public Coordinate Position
-        {
-            get => _boardDelegate.GetPosition(this);
-        }
+        public Coordinate Position => _boardDelegate.GetPosition(this);
 
         public abstract string Explanation { get; }
 
@@ -40,7 +37,7 @@ namespace CodingStrategy.Entities.BadSector
 
         public int CompareTo(IGameEntity other)
         {
-            return string.Compare(Id, other.Id, StringComparison.Ordinal);
+            return string.Compare(ID, other.ID, StringComparison.Ordinal);
         }
     }
 }

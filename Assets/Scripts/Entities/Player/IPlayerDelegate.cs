@@ -12,7 +12,7 @@ namespace CodingStrategy.Entities.Player
         /// <summary>
         ///     플레이어의 아이디입니다.
         /// </summary>
-        public new abstract string Id { get; }
+        public new abstract string ID { get; }
 
         /// <summary>
         ///     플레이어의 현재 체력입니다.

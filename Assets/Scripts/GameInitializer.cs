@@ -14,7 +14,7 @@ namespace CodingStrategy
 
         public static void AddCommand(ICommand command, int count)
         {
-            string id = command.Id;
+            string id = command.ID;
 
             PhotonPlayerCommandCache.AttachCommand(command);
             PhotonPlayerCommandNetworkDelegate.AttachCommandIdCount(id, count);

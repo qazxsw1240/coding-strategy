@@ -14,10 +14,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-using Hashtable = ExitGames.Client.Photon.Hashtable;
-
 namespace CodingStrategy.Photon
 {
+    using Hashtable = ExitGames.Client.Photon.Hashtable;
+
     public class RoomManager : MonoBehaviourPunCallbacks
     {
         public TextMeshProUGUI[] playerNicknames; // 플레이어 닉네임 텍스트 배열
@@ -33,15 +33,13 @@ namespace CodingStrategy.Photon
 
         public readonly Color ReadyGreen = new Vector4(51, 164, 49, 255) / 255;
 
-        // public InGameStatusSynchronizer statusSynchronizer;
-
         private void Start()
         {
             GameInitializer.Initialize();
 
             StartCoroutine(AwaitJoiningRoom());
 
-            CommandDetailEvent commandDetailEvent = FindObjectOfType<CommandDetailEvent>();
+            CommandDetailEvent commandDetailEvent = FindAnyObjectByType<CommandDetailEvent>();
             commandDetailEvent.OnCommandClickEvent.AddListener(
                 id =>
                 {

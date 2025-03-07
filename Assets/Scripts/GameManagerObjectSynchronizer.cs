@@ -88,11 +88,11 @@ namespace CodingStrategy
             Quaternion quaternion = Quaternion.Euler(0, (int) direction * 90f, 0);
             GameObject prefab = FindRobotPrefab(robotDelegate);
             GameObject robotObject = Instantiate(prefab, vectorPosition, quaternion, transform);
-            robotObject.name = robotDelegate.Id;
+            robotObject.name = robotDelegate.ID;
             robotObject.transform.localScale = new Vector3(1.25f, 1.25f, 1.25f);
             LilbotAnimation lilbotAnimation = robotObject.AddComponent<LilbotAnimation>();
             lilbotAnimation.animator = robotObject.GetComponent<Animator>();
-            if (robotDelegate.Id == PhotonNetwork.LocalPlayer.UserId)
+            if (robotDelegate.ID == PhotonNetwork.LocalPlayer.UserId)
             {
                 lilbotAnimation.playerCamera = Camera.main;
             }
@@ -206,7 +206,7 @@ namespace CodingStrategy
         public void AddBadSectorObject(IBadSectorDelegate badSectorDelegate)
         {
             IRobotDelegate robotDelegate = badSectorDelegate.Installer;
-            int index = GameManager.PlayerIndexMap[robotDelegate.Id];
+            int index = GameManager.PlayerIndexMap[robotDelegate.ID];
             (RobotDirection _, Coordinate _, Color color) = GameManager.StartPositions[index];
             color = new Color(color.r, color.g, color.b, color.a * 0.75f);
             Coordinate position = badSectorDelegate.Position;
@@ -215,8 +215,8 @@ namespace CodingStrategy
                 Instantiate(GameManager.badSectorPrefab, vectorPosition, Quaternion.identity, transform);
             BadSectorAnimation badSectorAnimation = badSectorObject.GetComponent<BadSectorAnimation>();
             EnableBadSectorPrefab(badSectorObject, badSectorDelegate, badSectorAnimation);
-            badSectorAnimation.camera = Camera.main;
-            badSectorObject.name = badSectorDelegate.Id;
+            badSectorAnimation.Camera = Camera.main;
+            badSectorObject.name = badSectorDelegate.ID;
             badSectorAnimation.ChangeBadSectorColor(color);
             _badSectorDelegateObjects[badSectorDelegate] = badSectorObject;
             GameManager.AnimationCoroutineManager.AddAnimation(badSectorDelegate, badSectorAnimation.AnimateItem());
@@ -269,7 +269,7 @@ namespace CodingStrategy
                 _ =>
                 {
                     bitGameObject.SetActive(false);
-                    InGameSoundManager soundManager = FindObjectOfType<InGameSoundManager>();
+                    InGameSoundManager soundManager = FindAnyObjectByType<InGameSoundManager>();
                     StartCoroutine(soundManager.GetCoinSound(0f));
                 });
             bitDelegate.OnRobotTakeAwayEvents.AddListener(_ => bitGameObject.SetActive(true));
@@ -312,7 +312,7 @@ namespace CodingStrategy
         {
             foreach (Player photonPlayer in PhotonNetwork.PlayerList)
             {
-                if (photonPlayer.UserId == robotDelegate.Id)
+                if (photonPlayer.UserId == robotDelegate.ID)
                 {
                     return GameManager.robotPrefabs[GameManager.PlayerIndexMap[photonPlayer.UserId]];
                 }

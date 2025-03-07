@@ -19,7 +19,8 @@ namespace CodingStrategy.Animation
         public float shakeStrength = 0.2f;
         public int shakeVibrato = 1;
 
-        public Camera camera;
+        [SerializeField]
+        private Camera _camera;
 
         public Shader shader;
         public Material newMaterial;
@@ -30,12 +31,13 @@ namespace CodingStrategy.Animation
         [SerializeField]
         private SpriteRenderer[] childSprites;
 
-        [SerializeReference]
-        private ISoundManager soundManager;
+        public Camera Camera
+        {
+            set => _camera = value;
+        }
 
         private void Awake()
         {
-            soundManager = SoundManager.Instance;
             newMaterial = gameObject.GetComponent<Renderer>().material;
             newMaterial.SetFloat(Surface, 1f);
             itemRenderer = gameObject.GetComponent<Renderer>();
@@ -54,9 +56,8 @@ namespace CodingStrategy.Animation
             sequence.Insert(0, itemRenderer.material.DOFade(0.5f, fadeInDuration));
             yield return sequence.WaitForCompletion();
             AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_BadSctor_Sound");
-            soundManager.Play(effectClip);
-            Debug.Log("Badsector landed sound is comming out!");
-            yield return camera.DOShakePosition(shakeDuration, shakeStrength, shakeVibrato).WaitForCompletion();
+            SoundManager.Instance.Play(effectClip);
+            yield return _camera.DOShakePosition(shakeDuration, shakeStrength, shakeVibrato).WaitForCompletion();
             Debug.Log("Bad sector install animation ended.");
         }
 
@@ -84,7 +85,7 @@ namespace CodingStrategy.Animation
             sequence.Append(transform.DOPunchRotation(punchAmount, duration));
             GetComponent<MeshRenderer>().material.DOFade(0, duration).SetEase(Ease.OutCubic);
             AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameScene_BadscetorActivate_Sound");
-            soundManager.Play(effectClip);
+            SoundManager.Instance.Play(effectClip);
             Debug.Log("Bad sector activate sound is coming out!");
             foreach (SpriteRenderer sprite in childSprites)
             {

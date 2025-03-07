@@ -69,6 +69,7 @@ namespace CodingStrategy.Sound
             return _audioSources[(int) SoundType.Bgm];
         }
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void Initialize()
         {
             if (_initialized)
@@ -97,6 +98,7 @@ namespace CodingStrategy.Sound
 
         public void LobbyRoomButtonSound()
         {
+            return;
             AudioClip effectClip = Resources.Load<AudioClip>("Sound/GameLobby_UI_ClickSound");
             Play(effectClip);
 

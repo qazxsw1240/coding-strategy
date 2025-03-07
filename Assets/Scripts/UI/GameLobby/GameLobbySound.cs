@@ -21,7 +21,7 @@ namespace CodingStrategy.UI.GameLobby
         // Start is called before the first frame update
         private void Start()
         {
-            StartCoroutine(sceneChanger.SoundsVolumesUp("Sound/GameLobby_Sleepy Sunshine"));
+            // StartCoroutine(sceneChanger.SoundsVolumesUp("Sound/GameLobby_Sleepy Sunshine"));
 
             RoomEnterBtn = GameObject.Find("EnterRoom");
 

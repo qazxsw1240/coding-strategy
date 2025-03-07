@@ -23,7 +23,7 @@ namespace CodingStrategy.Entities.Player
             IRobotDelegate robot,
             IAlgorithm algorithm)
         {
-            Id = id;
+            ID = id;
             _healthPoint = healthPoint;
             _level = level;
             _exp = exp;
@@ -36,7 +36,7 @@ namespace CodingStrategy.Entities.Player
             OnCurrencyChange = new UnityEvent<int, int>();
         }
 
-        public string Id { get; }
+        public string ID { get; }
 
         public int HealthPoint
         {
@@ -100,7 +100,7 @@ namespace CodingStrategy.Entities.Player
 
         public int CompareTo(IGameEntity other)
         {
-            return string.Compare(Id, other.Id, StringComparison.Ordinal);
+            return string.Compare(ID, other.ID, StringComparison.Ordinal);
         }
     }
 }

@@ -22,18 +22,14 @@ namespace CodingStrategy.Entities.Runtime.Command
 
         public override ICommand Copy(bool keepStatus = true)
         {
-            if (!keepStatus)
-            {
-                return new SchanzeInstallerCommand();
-            }
-            return new SchanzeInstallerCommand(Info.EnhancedLevel);
+            return keepStatus ? new SchanzeInstallerCommand(Info.EnhancedLevel) : new SchanzeInstallerCommand();
         }
 
         private static IBadSectorDelegate CreateJumpBadSector(
             IBoardDelegate boardDelegate,
             IRobotDelegate robotDelegate)
         {
-            return new JumpBadSector($"{robotDelegate.Id}-{_installNum++}", boardDelegate, robotDelegate);
+            return new JumpBadSector($"{robotDelegate.ID}-{_installNum++}", boardDelegate, robotDelegate);
         }
 
         protected override void AddStatementOnLevel1(IRobotDelegate robotDelegate)

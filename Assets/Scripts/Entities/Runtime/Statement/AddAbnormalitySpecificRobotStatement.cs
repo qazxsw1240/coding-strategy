@@ -27,13 +27,13 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public override void Execute(RuntimeExecutorContext context)
         {
-            IAbnormality? abnormality = GameManager.GetAbnormalityValue(_robotDelegate.Id + "-" + _abnormality.Name);
+            IAbnormality? abnormality = GameManager.GetAbnormalityValue(_robotDelegate.ID + "-" + _abnormality.Name);
             if (abnormality == null)
             {
                 GameManager.SetAbnormalityValue(
-                    $"{_robotDelegate.Id}-{_abnormality.Name}",
+                    $"{_robotDelegate.ID}-{_abnormality.Name}",
                     _abnormality.Copy(_robotDelegate));
-                _abnormality.PlayerDelegate = context.PlayerPool[_robotDelegate.Id];
+                _abnormality.PlayerDelegate = context.PlayerPool[_robotDelegate.ID];
                 _abnormality.Value = _value;
                 return;
             }

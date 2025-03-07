@@ -48,10 +48,7 @@ namespace CodingStrategy.Entities.Board
 
         public int Height { get; }
 
-        public IReadOnlyList<IRobotDelegate> Robots
-        {
-            get => _robotPositions.Keys.ToList();
-        }
+        public IReadOnlyList<IRobotDelegate> Robots => _robotPositions.Keys.ToList();
 
         public UnityEvent<IRobotDelegate> OnRobotAdd { get; }
 
@@ -81,16 +78,14 @@ namespace CodingStrategy.Entities.Board
                         cellDelegate.Placeables.Add(robotDelegate);
                     }
                 }
-
-                foreach ((IBadSectorDelegate badSectorDelegate, BadSectorPosition badSectorPosition) in
-                         _badSectorPositions)
+                foreach ((IBadSectorDelegate badSectorDelegate, BadSectorPosition badSectorPosition)
+                         in _badSectorPositions)
                 {
                     if (badSectorPosition.Position == coordinate)
                     {
                         cellDelegate.Placeables.Add(badSectorDelegate);
                     }
                 }
-
                 return cellDelegate;
             }
         }
@@ -101,12 +96,10 @@ namespace CodingStrategy.Entities.Board
             {
                 return false;
             }
-
             if (!IsPositionValid(position))
             {
                 return false;
             }
-
             RobotPosition robotPosition = new RobotPosition(position, direction);
             _robotPositions[robotDelegate] = robotPosition;
             OnRobotAdd.Invoke(robotDelegate);
@@ -119,7 +112,6 @@ namespace CodingStrategy.Entities.Board
             {
                 return false;
             }
-
             _robotPositions.Remove(robotDelegate);
             OnRobotRemove.Invoke(robotDelegate);
             return true;
@@ -131,12 +123,10 @@ namespace CodingStrategy.Entities.Board
             {
                 return false;
             }
-
             if (!IsPositionValid(position) || GetBadSectorPosition(position) != null)
             {
                 return false;
             }
-
             BadSectorPosition badSectorPosition = new BadSectorPosition(position);
             _badSectorPositions[badSectorDelegate] = badSectorPosition;
             OnBadSectorAdd.Invoke(badSectorDelegate);
@@ -320,7 +310,7 @@ namespace CodingStrategy.Entities.Board
         {
             if (!IsRobotDelegateExist(robotDelegate))
             {
-                throw new ArgumentException($"The robot delegate {robotDelegate.Id} is not placed on this board.");
+                throw new ArgumentException($"The robot delegate {robotDelegate.ID} is not placed on this board.");
             }
         }
 
@@ -329,7 +319,7 @@ namespace CodingStrategy.Entities.Board
             if (!IsBadSectorDelegateExist(badSectorDelegate))
             {
                 throw new ArgumentException(
-                    $"The bad sector delegate {badSectorDelegate.Id} is not placed on this board.");
+                    $"The bad sector delegate {badSectorDelegate.ID} is not placed on this board.");
             }
         }
 
@@ -358,25 +348,21 @@ namespace CodingStrategy.Entities.Board
                     tiles[i, j] = new CellDelegateImpl();
                 }
             }
-
             foreach ((IRobotDelegate robotDelegate, RobotPosition robotPosition) in _robotPositions)
             {
                 Coordinate position = robotPosition.Position;
                 tiles[position.X, position.Y].Placeables.Add(robotDelegate);
             }
-
             foreach ((IBadSectorDelegate badSectorDelegate, BadSectorPosition badSectorPosition) in _badSectorPositions)
             {
                 Coordinate position = badSectorPosition.Position;
                 tiles[position.X, position.Y].Placeables.Add(badSectorDelegate);
             }
-
             foreach ((IPlaceable placeable, PlaceablePosition placeablePosition) in _placeablePositions)
             {
                 Coordinate position = placeablePosition.Position;
                 tiles[position.X, position.Y].Placeables.Add(placeable);
             }
-
             return tiles;
         }
 

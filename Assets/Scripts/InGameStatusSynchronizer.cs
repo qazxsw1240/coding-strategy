@@ -12,10 +12,10 @@ using Unity.VisualScripting;
 
 using UnityEngine;
 
-using Hashtable = ExitGames.Client.Photon.Hashtable;
-
 namespace CodingStrategy
 {
+    using Hashtable = ExitGames.Client.Photon.Hashtable;
+
     public class InGameStatusSynchronizer : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         private const byte StateSynchronizationRequestCode = 100;

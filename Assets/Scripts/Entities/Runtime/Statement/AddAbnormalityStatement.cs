@@ -26,13 +26,13 @@ namespace CodingStrategy.Entities.Runtime.Statement
         {
             foreach (IRobotDelegate robotDelegate in context.RobotDelegatePool)
             {
-                IAbnormality? abnormality = GameManager.GetAbnormalityValue(robotDelegate.Id + "-" + _abnormality.Name);
+                IAbnormality? abnormality = GameManager.GetAbnormalityValue(robotDelegate.ID + "-" + _abnormality.Name);
                 if (abnormality == null)
                 {
                     GameManager.SetAbnormalityValue(
-                        $"{robotDelegate.Id}-{_abnormality.Name}",
+                        $"{robotDelegate.ID}-{_abnormality.Name}",
                         _abnormality.Copy(robotDelegate));
-                    _abnormality.PlayerDelegate = context.PlayerPool[_robotDelegate.Id];
+                    _abnormality.PlayerDelegate = context.PlayerPool[_robotDelegate.ID];
                     _abnormality.Value = _value;
                     continue;
                 }

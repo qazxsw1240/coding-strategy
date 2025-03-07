@@ -2,23 +2,29 @@ using System;
 
 using UnityEngine;
 
-public class LookAtCamera : MonoBehaviour
+namespace CodingStrategy.Animation.Statement_Animation
 {
-    [SerializeField] private RectTransform canvas;
-    [SerializeField] private Camera mainCamera;
-
-    public void Awake()
+    public class LookAtCamera : MonoBehaviour
     {
-        if (Camera.main is null)
+        [SerializeField]
+        private RectTransform canvas;
+
+        [SerializeField]
+        private Camera mainCamera;
+
+        public void Awake()
         {
-            throw new NullReferenceException("main camera is null.");
+            if (Camera.main is null)
+            {
+                throw new NullReferenceException("main camera is null.");
+            }
+            mainCamera = Camera.main;
+            canvas = GetComponent<RectTransform>();
         }
-        mainCamera = Camera.main;
-        canvas = GetComponent<RectTransform>();
-    }
 
-    public void Update()
-    {
-        canvas.LookAt(mainCamera.transform);
+        public void Update()
+        {
+            canvas.LookAt(mainCamera.transform);
+        }
     }
 }

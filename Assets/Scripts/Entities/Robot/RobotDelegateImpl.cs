@@ -47,7 +47,7 @@ namespace CodingStrategy.Entities.Robot
             int maxArmorPoint = 5,
             int maxAttackPoint = 5)
         {
-            Id = id;
+            ID = id;
             _boardDelegate = boardDelegate;
             Algorithm = algorithm;
             _healthPoint = healthPoint;
@@ -74,30 +74,27 @@ namespace CodingStrategy.Entities.Robot
             _boardDelegate.OnRobotChangeDirection.AddListener(InvokeRobotChangeDirectionEvents);
         }
 
-        public Coordinate[] Vectors
-        {
-            get { return DirectionVectors; }
-        }
+        public Coordinate[] Vectors => DirectionVectors;
 
-        public string Id { get; }
+        public string ID { get; }
 
         public IAlgorithm Algorithm { get; }
 
         public Coordinate Position
         {
-            get { return _boardDelegate.GetPosition(this); }
-            set { _boardDelegate.Place(this, value); }
+            get => _boardDelegate.GetPosition(this);
+            set => _boardDelegate.Place(this, value);
         }
 
         public RobotDirection Direction
         {
-            get { return _boardDelegate.GetDirection(this); }
-            set { _boardDelegate.Rotate(this, value); }
+            get => _boardDelegate.GetDirection(this);
+            set => _boardDelegate.Rotate(this, value);
         }
 
         public int HealthPoint
         {
-            get { return _healthPoint; }
+            get => _healthPoint;
             set
             {
                 int previousHealthPoint = _healthPoint;
@@ -112,7 +109,7 @@ namespace CodingStrategy.Entities.Robot
 
         public int MaxHealthPoint
         {
-            get { return _maxHealthPoint; }
+            get => _maxHealthPoint;
             set
             {
                 int previousMaxHealthPoint = _maxHealthPoint;
@@ -123,7 +120,7 @@ namespace CodingStrategy.Entities.Robot
 
         public int EnergyPoint
         {
-            get { return _energyPoint; }
+            get => _energyPoint;
             set
             {
                 int previousEnergyPoint = _energyPoint;
@@ -138,7 +135,7 @@ namespace CodingStrategy.Entities.Robot
 
         public int MaxEnergyPoint
         {
-            get { return _maxEnergyPoint; }
+            get => _maxEnergyPoint;
             set
             {
                 int previousMaxEnergyPoint = _maxEnergyPoint;
@@ -149,7 +146,7 @@ namespace CodingStrategy.Entities.Robot
 
         public int ArmorPoint
         {
-            get { return _armorPoint; }
+            get => _armorPoint;
             set
             {
                 int previousArmorPoint = _armorPoint;
@@ -164,7 +161,7 @@ namespace CodingStrategy.Entities.Robot
 
         public int MaxArmorPoint
         {
-            get { return _maxArmorPoint; }
+            get => _maxArmorPoint;
             set
             {
                 int previousMaxArmorPoint = _maxArmorPoint;
@@ -175,7 +172,7 @@ namespace CodingStrategy.Entities.Robot
 
         public int AttackPoint
         {
-            get { return _attackPoint; }
+            get => _attackPoint;
             set
             {
                 int previousAttackPoint = _attackPoint;
@@ -190,7 +187,7 @@ namespace CodingStrategy.Entities.Robot
 
         public int MaxAttackPoint
         {
-            get { return _maxAttackPoint; }
+            get => _maxAttackPoint;
             set
             {
                 int previousMaxAttackPoint = _maxAttackPoint;
@@ -241,7 +238,7 @@ namespace CodingStrategy.Entities.Robot
                 targetPositions.Add(targetPosition);
                 ICellDelegate cellDelegate = _boardDelegate[targetPosition];
                 foreach (IRobotDelegate robotDelegate in cellDelegate.Placeables.Where(p => p is IRobotDelegate)
-                             .Cast<IRobotDelegate>())
+                            .Cast<IRobotDelegate>())
                 {
                     robotDelegates.Add(robotDelegate);
                     checksum++;
@@ -261,7 +258,7 @@ namespace CodingStrategy.Entities.Robot
 
         public int CompareTo(IGameEntity other)
         {
-            return Id.CompareTo(other);
+            return ID.CompareTo(other);
         }
 
         public UnityEvent<IRobotDelegate, Coordinate, Coordinate> OnRobotChangePosition { get; }
@@ -284,15 +281,14 @@ namespace CodingStrategy.Entities.Robot
 
         public UnityEvent<IRobotDelegate, int, int> OnAttackPointChange { get; }
 
-        public UnityEvent<IRobotDelegate, int, int> OnMaxAttackPointChange
-        {
-            get { return OnMaxArmorPointChange; }
-        }
+        public UnityEvent<IRobotDelegate, int, int> OnMaxAttackPointChange => OnMaxArmorPointChange;
 
         private bool IsValidCoordinate(Coordinate coordinate)
         {
-            return coordinate.X >= 0 && coordinate.X < _boardDelegate.Width &&
-                   coordinate.Y >= 0 && coordinate.Y < _boardDelegate.Height;
+            return coordinate.X >= 0
+                && coordinate.X < _boardDelegate.Width
+                && coordinate.Y >= 0
+                && coordinate.Y < _boardDelegate.Height;
         }
 
         private void InvokeRobotChangePositionEvents(

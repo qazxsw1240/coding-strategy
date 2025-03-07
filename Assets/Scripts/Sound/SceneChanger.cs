@@ -6,11 +6,12 @@ namespace CodingStrategy.Sound
 {
     public class SceneChanger : MonoBehaviour
     {
-        [SerializeField] private SoundManager soundManager;
+        [SerializeField]
+        private SoundManager soundManager;
 
         public void Start()
         {
-            soundManager = FindObjectOfType<SoundManager>();
+            soundManager = FindAnyObjectByType<SoundManager>();
             if (soundManager == null)
             {
                 Debug.LogError("SoundManager is not found!");

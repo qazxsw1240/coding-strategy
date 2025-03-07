@@ -1,5 +1,3 @@
-using CodingStrategy.UI.InGame;
-
 using UnityEngine;
 using UnityEngine.Events;
 

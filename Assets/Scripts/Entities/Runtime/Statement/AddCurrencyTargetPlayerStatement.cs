@@ -33,7 +33,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
         {
             foreach (IPlayerDelegate playerDelegate in _target)
             {
-                IAbnormality? abnormality = GameManager.GetAbnormalityValue($"{playerDelegate.Id}-{_abnormalityName}");
+                IAbnormality? abnormality = GameManager.GetAbnormalityValue($"{playerDelegate.ID}-{_abnormalityName}");
                 if (abnormality == null)
                 {
                     return;

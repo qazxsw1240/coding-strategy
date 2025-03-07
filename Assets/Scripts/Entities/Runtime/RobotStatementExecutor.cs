@@ -59,9 +59,9 @@ namespace CodingStrategy.Entities.Runtime
                 Stack<IStatement> statements = _statements[robotDelegate];
                 try
                 {
-                    statements.Push(statement!);
-                    statement!.Execute(Context);
-                    IPlayerDelegate playerDelegate = Context.PlayerPool[robotDelegate.Id];
+                    statements.Push(statement);
+                    statement.Execute(Context);
+                    IPlayerDelegate playerDelegate = Context.PlayerPool[robotDelegate.ID];
                     OnStatementExecuteEvents.Invoke(robotDelegate, playerDelegate, statement);
                 }
                 catch (ExecutionException)
@@ -81,8 +81,8 @@ namespace CodingStrategy.Entities.Runtime
                 Stack<IStatement> statements = _statements[robotDelegate];
                 IBadSectorDelegate? badSectorDelegate =
                     Context.BoardDelegate.GetBadSectorDelegate(robotDelegate.Position);
-                Debug.LogErrorFormat("bad sector {0} found", badSectorDelegate?.Id);
-                if (!ReferenceEquals(badSectorDelegate, null) && badSectorDelegate.Installer.Id != robotDelegate.Id)
+                Debug.LogErrorFormat("bad sector {0} found", badSectorDelegate?.ID);
+                if (!ReferenceEquals(badSectorDelegate, null) && badSectorDelegate.Installer.ID != robotDelegate.ID)
                 {
                     if (executionQueue.IsProtected)
                     {
@@ -104,7 +104,7 @@ namespace CodingStrategy.Entities.Runtime
                 statements.Clear();
                 executionQueue.Clear();
                 Context.AnimationCoroutineManager.ClearAnimationQueue(robotDelegate);
-                if (robotDelegate.Id == GameManager.util.LocalPhotonPlayerDelegate.Id)
+                if (robotDelegate.ID == GameManager.util.LocalPhotonPlayerDelegate.ID)
                 {
                     GameManager.util.LocalPhotonPlayerDelegate.HealthPoint -= 1;
                 }
@@ -148,8 +148,8 @@ namespace CodingStrategy.Entities.Runtime
 
         private bool IsQueueEmpty()
         {
-            return Context.ExecutionQueuePool.Count == 0 ||
-                   Context.ExecutionQueuePool.Values.All(executionQueue => executionQueue.Count == 0);
+            return Context.ExecutionQueuePool.Count == 0
+                || Context.ExecutionQueuePool.Values.All(executionQueue => executionQueue.Count == 0);
         }
 
         private void CheckExecutionQueueValidity()
@@ -179,29 +179,30 @@ namespace CodingStrategy.Entities.Runtime
 
         protected override IEnumerator OnAfterInitialization()
         {
-            yield return null;
+            yield break;
         }
 
         protected override IEnumerator OnBeforeExecution()
         {
-            yield return null;
+            yield break;
         }
 
         protected override IEnumerator OnAfterFailExecution()
         {
-            yield return null;
+            yield break;
         }
 
         protected override IEnumerator OnAfterExecution()
         {
             foreach (IRobotDelegate problematicRobot in _problematicRobots)
             {
-                if (Context.ExecutionQueuePool.TryGetValue(problematicRobot, out IExecutionQueue executionQueue))
+                if (!Context.ExecutionQueuePool.TryGetValue(problematicRobot, out IExecutionQueue executionQueue))
                 {
-                    if (executionQueue.Count == 0)
-                    {
-                        Context.ExecutionQueuePool.Remove(problematicRobot);
-                    }
+                    continue;
+                }
+                if (executionQueue.Count == 0)
+                {
+                    Context.ExecutionQueuePool.Remove(problematicRobot);
                 }
             }
 
@@ -210,7 +211,7 @@ namespace CodingStrategy.Entities.Runtime
 
         protected override IEnumerator OnAfterTermination()
         {
-            yield return null;
+            yield break;
         }
     }
 }

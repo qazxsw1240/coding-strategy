@@ -1,6 +1,9 @@
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CodingStrategy.Entities.Runtime
 {
@@ -22,15 +25,9 @@ namespace CodingStrategy.Entities.Runtime
             }
         }
 
-        public int Count
-        {
-            get => _statements.Count;
-        }
+        public int Count => _statements.Count;
 
-        public bool IsReadOnly
-        {
-            get => false;
-        }
+        public bool IsReadOnly => false;
 
         public void Add(IStatement item)
         {
@@ -55,12 +52,12 @@ namespace CodingStrategy.Entities.Runtime
 
         public IStatement Dequeue()
         {
-            if (!TryDequeue(out IStatement statement))
+            if (!TryDequeue(out IStatement? statement))
             {
                 throw new Exception();
             }
 
-            return statement!;
+            return statement;
         }
 
         public void EnqueueFirst(IStatement statement)
@@ -77,7 +74,7 @@ namespace CodingStrategy.Entities.Runtime
             return _statements.Remove(item);
         }
 
-        public bool TryDequeue(out IStatement statement)
+        public bool TryDequeue([MaybeNullWhen(false)] out IStatement statement)
         {
             if (_statements.Count == 0)
             {

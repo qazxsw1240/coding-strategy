@@ -16,7 +16,6 @@ using CodingStrategy.Entities.Runtime.Abnormality;
 using CodingStrategy.Factory;
 using CodingStrategy.Network;
 using CodingStrategy.UI.GameScene;
-using CodingStrategy.UI.InGame;
 using CodingStrategy.Utility;
 
 using ExitGames.Client.Photon;
@@ -67,7 +66,7 @@ namespace CodingStrategy
         public GameResult gameResult = null!;
         public QuitButtonManager quitButtonManager = null!;
 
-        public InGameStatusSynchronizer statusSynchronizer = null!;
+        // public InGameStatusSynchronizer statusSynchronizer = null!;
 
         public bool awaitLobby;
 
@@ -110,9 +109,9 @@ namespace CodingStrategy
             _bitDispenser = new BitDispenser(BoardDelegate, util.PlayerDelegatePool);
             networkProcessor = gameObject.GetOrAddComponent<GameMangerNetworkProcessor>();
             networkProcessor.GameManagerUtil = util;
-            gameResult = FindObjectOfType<GameResult>();
-            quitButtonManager = FindObjectOfType<QuitButtonManager>();
-            statusSynchronizer = gameObject.GetOrAddComponent<InGameStatusSynchronizer>();
+            gameResult = FindAnyObjectByType<GameResult>();
+            quitButtonManager = FindAnyObjectByType<QuitButtonManager>();
+            // statusSynchronizer = gameObject.GetOrAddComponent<InGameStatusSynchronizer>();
         }
 
         public void Start()
@@ -175,11 +174,7 @@ namespace CodingStrategy
 
                         Debug.Log("All player has placed all bits");
                         _responsePlayers.Clear();
-                        PhotonNetwork.LocalPlayer.SetCustomProperties(
-                            new Hashtable
-                            {
-                                { "status", PlaceablePlaceStatus }
-                            });
+                        PhotonNetwork.LocalPlayer.SetCustomProperties(("status", PlaceablePlaceStatus));
                     });
                 return;
             }
@@ -221,12 +216,7 @@ namespace CodingStrategy
 
         public static IAbnormality? GetAbnormalityValue(string key)
         {
-            if (AbnormalityDictionary.TryGetValue(key, out IAbnormality value))
-            {
-                return value;
-            }
-
-            return null;
+            return AbnormalityDictionary.TryGetValue(key, out IAbnormality value) ? value : null;
         }
 
         public static IPlayerDelegate BuildPlayerDelegate(string id)
@@ -279,6 +269,8 @@ namespace CodingStrategy
         {
             Debug.LogFormat("Connected to Room {0}", PhotonNetwork.CurrentRoom.Name);
 
+            RoomEventMessageChannel.Create(PhotonNetwork.CurrentRoom);
+
             foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
             {
                 string id = player.UserId;
@@ -304,7 +296,7 @@ namespace CodingStrategy
         public override void OnLeftRoom()
         {
             PlayerStatusUI playerStatus = FindPlayerStatusUI(util.LocalPhotonPlayerDelegate)!;
-            StartCoroutine(gameResult.ResultUIAnimation(int.Parse(playerStatus.GetRank().Substring(0, 1))));
+            StartCoroutine(gameResult.ResultUIAnimation(int.Parse(playerStatus.GetRank()[..1])));
             awaitLobby = true;
         }
 
@@ -325,10 +317,7 @@ namespace CodingStrategy
 
         private IEnumerator StartGameManagerCoroutine()
         {
-            while (PhotonNetwork.NetworkingClient.State != ClientState.Joined)
-            {
-                yield return null;
-            }
+            yield return new WaitUntil(() => PhotonNetwork.NetworkingClient.State == ClientState.Joined);
 
             _networkDelegate = new PhotonPlayerCommandNetworkDelegate();
             _commandCache = new PhotonPlayerCommandCache(_networkDelegate);
@@ -341,7 +330,7 @@ namespace CodingStrategy
                 IPlayerDelegate playerDelegate = util.GetPlayerDelegate(photonPlayer);
                 IRobotDelegate robotDelegate = BuildRobotDelegate(BoardDelegate, playerDelegate);
                 playerDelegate.Robot = robotDelegate;
-                RobotDelegatePool[playerDelegate.Id] = robotDelegate;
+                RobotDelegatePool[playerDelegate.ID] = robotDelegate;
                 (RobotDirection _, Coordinate _, Color color) = StartPositions[index];
                 PreparePlayerUI(photonPlayer, inGameUI.playerStatusUI[index], color);
                 Debug.LogWarningFormat("Initialize PlayerDelegate {0}", photonPlayer.UserId);
@@ -350,8 +339,6 @@ namespace CodingStrategy
             _objectSynchronizer.InitializeCells();
 
             SetUpPlayerStatusSynchronizer();
-
-            yield return null;
 
 #region ITERATION
 
@@ -366,7 +353,7 @@ namespace CodingStrategy
                     break;
                 }
 
-                yield return StartCoroutine(statusSynchronizer.AwaitAllPlayersStatus(ReadyStatus, CodingTimeStatus));
+                yield return StartCoroutine(RoomEventMessageChannel.Instance.AwaitClientMessageAsync(ReadyStatus));
 
 #region INITIALIZATION
 
@@ -382,7 +369,7 @@ namespace CodingStrategy
                 {
                     if (PhotonNetwork.CurrentRoom.Players
                        .Select(pair => pair.Value)
-                       .Any(player => player.UserId == playerDelegate.Id))
+                       .Any(player => player.UserId == playerDelegate.ID))
                     {
                         continue;
                     }
@@ -392,8 +379,8 @@ namespace CodingStrategy
 
                 foreach (IPlayerDelegate disconnectedPlayer in disconnectedPlayers)
                 {
-                    Debug.LogFormat("Player {0} has disconnected", disconnectedPlayer.Id);
-                    util.PlayerDelegatePool.Remove(disconnectedPlayer.Id);
+                    Debug.LogFormat("Player {0} has disconnected", disconnectedPlayer.ID);
+                    util.PlayerDelegatePool.Remove(disconnectedPlayer.ID);
                 }
 
 #endregion
@@ -402,9 +389,9 @@ namespace CodingStrategy
 
                 foreach (IPlayerDelegate playerDelegate in util.PlayerDelegatePool)
                 {
-                    int index = PlayerIndexMap[playerDelegate.Id];
+                    int index = PlayerIndexMap[playerDelegate.ID];
                     (RobotDirection direction, Coordinate position, Color _) = StartPositions[index];
-                    IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
+                    IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.ID];
 
                     if (!BoardDelegate.Robots.Contains(robotDelegate))
                     {
@@ -423,7 +410,7 @@ namespace CodingStrategy
 
 #region CODING_TIME
 
-                yield return StartCoroutine(statusSynchronizer.AwaitAllPlayersStatus(CodingTimeStatus, RuntimeStatus));
+                yield return StartCoroutine(RoomEventMessageChannel.Instance.AwaitClientMessageAsync(CodingTimeStatus));
 
                 yield return new WaitForSeconds(1.0f);
 
@@ -437,7 +424,7 @@ namespace CodingStrategy
 
 #region RUNTIME
 
-                yield return StartCoroutine(statusSynchronizer.AwaitAllPlayersStatus(RuntimeStatus, "turn1"));
+                yield return StartCoroutine(RoomEventMessageChannel.Instance.AwaitClientMessageAsync(RuntimeStatus));
                 yield return new WaitForSeconds(1.0f);
 
                 RuntimeExecutor runtimeExecutor = gameObject.GetOrAddComponent<RuntimeExecutor>();
@@ -475,8 +462,8 @@ namespace CodingStrategy
         private void PreparePlayerUI(Player photonPlayer, PlayerStatusUI playerStatusUI, Color color)
         {
             IPlayerDelegate playerDelegate = util.GetPlayerDelegate(photonPlayer);
-            IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
-            playerStatusUI.SetUserID(playerDelegate.Id);
+            IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.ID];
+            playerStatusUI.SetUserID(playerDelegate.ID);
             playerStatusUI.SetColor(color);
             playerStatusUI.SetName(photonPlayer.NickName);
             playerStatusUI.SetRank(1);
@@ -519,7 +506,7 @@ namespace CodingStrategy
         public PlayerStatusUI? FindPlayerStatusUI(IPlayerDelegate playerDelegate)
         {
             return inGameUI.playerStatusUI.FirstOrDefault(
-                playerStatusUI => playerStatusUI.GetUserID() == playerDelegate.Id);
+                playerStatusUI => playerStatusUI.GetUserID() == playerDelegate.ID);
         }
 
         public void UpdatePlayerRanks()

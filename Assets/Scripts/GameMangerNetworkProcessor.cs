@@ -3,10 +3,12 @@ using System.Linq;
 
 using CodingStrategy.Entities;
 using CodingStrategy.Entities.Player;
-using CodingStrategy.Entities.Runtime.CommandImpl;
+using CodingStrategy.Entities.Runtime.Command;
 using CodingStrategy.Network;
 
 using ExitGames.Client.Photon;
+
+using CodingStrategy.Utility;
 
 using Photon.Pun;
 using Photon.Realtime;
@@ -33,7 +35,7 @@ namespace CodingStrategy
         {
             GameManagerUtil gameManagerUtil = GetGameManagerUtilAssert();
 
-            if (targetPlayer.UserId == gameManagerUtil.LocalPhotonPlayerDelegate.Id)
+            if (targetPlayer.UserId == gameManagerUtil.LocalPhotonPlayerDelegate.ID)
             {
                 // duplicate event handling
                 return;
@@ -93,12 +95,9 @@ namespace CodingStrategy
             IAlgorithm algorithm = playerDelegate.Algorithm;
             string algorithmRequest = string.Join(
                 ',',
-                algorithm.Select(command => $"{command.Id}-{command.Info.EnhancedLevel}"));
+                algorithm.Select(command => $"{command.ID}-{command.Info.EnhancedLevel}"));
             PhotonNetwork.LocalPlayer.SetCustomProperties(
-                new Hashtable
-                {
-                    { AlgorithmUpdateKey, new object[] { playerDelegate.Id, algorithmRequest } }
-                });
+                (AlgorithmUpdateKey, new object[] { playerDelegate.ID, algorithmRequest }));
         }
 
         private static ICommand[] ParseCommands(string algorithmResponse)

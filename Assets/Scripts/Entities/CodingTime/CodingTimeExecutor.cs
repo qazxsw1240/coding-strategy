@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using CodingStrategy.Entities.Player;
-using CodingStrategy.Entities.Runtime.CommandImpl;
+using CodingStrategy.Entities.Runtime.Command;
 using CodingStrategy.Entities.Shop;
 using CodingStrategy.Network;
 using CodingStrategy.Sound;
@@ -194,12 +194,12 @@ namespace CodingStrategy.Entities.CodingTime
 
             foreach (ICommand command in commands)
             {
-                if (command.Id == "0")
+                if (command.ID == "0")
                 {
                     continue;
                 }
 
-                CommandCache.Buy(command.Id, 1);
+                CommandCache.Buy(command.ID, 1);
             }
 
             _commands = commands;
@@ -234,7 +234,7 @@ namespace CodingStrategy.Entities.CodingTime
             ICommand command = _commands[shopIndex];
             _commands.RemoveAt(shopIndex);
             ICommand previousCommand = playerDelegate.Algorithm[algorithmIndex];
-            if (previousCommand.Id != "0")
+            if (previousCommand.ID != "0")
             {
                 CommandCache.Sell(previousCommand);
             }
@@ -251,7 +251,7 @@ namespace CodingStrategy.Entities.CodingTime
             IPlayerDelegate playerDelegate = Util.LocalPhotonPlayerDelegate;
             IAlgorithm algorithm = playerDelegate.Algorithm;
             ICommand command = algorithm[algorithmIndex];
-            if (command.Id == "0")
+            if (command.ID == "0")
             {
                 //  ignore if the command to sell is emtpy.
                 return;

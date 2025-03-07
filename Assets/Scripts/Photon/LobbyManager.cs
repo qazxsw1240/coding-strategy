@@ -1,7 +1,11 @@
 ﻿using System.Collections.Generic;
 
+using CodingStrategy.Network;
+
 using Photon.Pun;
 using Photon.Realtime;
+
+using CodingStrategy.Utility;
 
 using TMPro;
 
@@ -92,7 +96,9 @@ namespace CodingStrategy.Photon
 
         public override void OnJoinedRoom()
         {
-            Debug.Log("Successfully joined room");
+            Debug.LogFormat("Successfully joined room in {0}", PhotonNetwork.CurrentRoom);
+
+            RoomEventMessageChannel.Create(PhotonNetwork.CurrentRoom);
 
             if (PhotonNetwork.IsMasterClient)
             {
@@ -112,11 +118,7 @@ namespace CodingStrategy.Photon
                 Debug.LogFormat("Server delay is {0}ms", delay);
             }
 
-            PhotonNetwork.LocalPlayer.SetCustomProperties(
-                new Hashtable
-                {
-                    { "isReady", PhotonNetwork.IsMasterClient ? 1 : 0 }
-                });
+            PhotonNetwork.LocalPlayer.SetCustomProperties(("isReady", PhotonNetwork.IsMasterClient ? 1 : 0));
 
             SceneManager.LoadScene("GameRoom");
         }

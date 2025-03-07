@@ -41,7 +41,7 @@ namespace CodingStrategy.Network
 
         public bool Sell(ICommand command)
         {
-            string id = command.Id;
+            string id = command.ID;
             if (!_networkDelegate.GetCachedCommandCount().ContainsKey(id))
             {
                 return false;
@@ -61,7 +61,7 @@ namespace CodingStrategy.Network
 
         public static void AttachCommand(ICommand command)
         {
-            CommandCache[command.Id] = command;
+            CommandCache[command.ID] = command;
         }
 
         public static void AttachCommands(IDictionary<string, ICommand> commands)
@@ -76,7 +76,7 @@ namespace CodingStrategy.Network
         {
             foreach (ICommand command in commands)
             {
-                CommandCache[command.Id] = command;
+                CommandCache[command.ID] = command;
             }
         }
     }

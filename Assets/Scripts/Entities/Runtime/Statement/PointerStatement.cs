@@ -37,7 +37,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
             foreach (Coordinate coordinate in _coordinates)
             {
                 IBadSectorDelegate badSectorDelegate = _generator(_boardDelegate, _robotDelegate);
-                Debug.LogFormat("Robot {0} Tries to put bad sector {1}", _robotDelegate.Id, badSectorDelegate.Id);
+                Debug.LogFormat("Robot {0} Tries to put bad sector {1}", _robotDelegate.ID, badSectorDelegate.ID);
                 Coordinate installCoordinate = _robotDelegate.Position
                                              + RotateMatrix.Rotate((int) _robotDelegate.Direction) * coordinate;
                 if (_boardDelegate.Add(badSectorDelegate, installCoordinate))

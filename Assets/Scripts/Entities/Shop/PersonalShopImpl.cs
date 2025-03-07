@@ -46,7 +46,7 @@ namespace CodingStrategy.Entities.Shop
         )
         {
             _player = player;
-            _id = player.Id;
+            _id = player.ID;
             _algorithm = player.Algorithm;
             _sharedShop = sharedShop;
             SellList = new ICommand[5];

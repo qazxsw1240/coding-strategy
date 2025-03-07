@@ -83,21 +83,14 @@ namespace CodingStrategy.UI.GameScene
 
         public void SetRank(int rank)
         {
-            switch (rank)
+            Rank.text = rank switch
             {
-                case 1:
-                    Rank.text = "1st";
-                    break;
-                case 2:
-                    Rank.text = "2nd";
-                    break;
-                case 3:
-                    Rank.text = "3rd";
-                    break;
-                case 4:
-                    Rank.text = "4th";
-                    break;
-            }
+                1 => "1st",
+                2 => "2nd",
+                3 => "3rd",
+                4 => "4th",
+                var _ => Rank.text
+            };
         }
 
         public string GetName()

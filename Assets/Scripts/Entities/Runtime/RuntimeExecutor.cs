@@ -10,6 +10,7 @@ using CodingStrategy.Entities.Robot;
 using CodingStrategy.Entities.Runtime.Abnormality;
 using CodingStrategy.Entities.Runtime.Statement;
 using CodingStrategy.Entities.Runtime.Validator;
+using CodingStrategy.Network;
 
 using Unity.VisualScripting;
 
@@ -63,7 +64,7 @@ namespace CodingStrategy.Entities.Runtime
 
             foreach (IPlayerDelegate playerDelegate in PlayerPool)
             {
-                IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.Id];
+                IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.ID];
                 _executionQueuePool[robotDelegate] = new ExecutionQueueImpl();
             }
 
@@ -102,10 +103,7 @@ namespace CodingStrategy.Entities.Runtime
 
                 ICommand command = algorithm[(_currentCountdown - 1) % algorithm.Count];
                 ICommandContext commandContext = BuildCommandContext(robotDelegate);
-
-                command.Context = commandContext;
-
-                foreach (IStatement statement in command.GetCommandStatements(robotDelegate))
+                foreach (IStatement statement in command.GetCommandStatements(commandContext, robotDelegate))
                 {
                     executionQueue.Add(statement);
                 }
@@ -174,10 +172,7 @@ namespace CodingStrategy.Entities.Runtime
                 BitDispenser.ClearTakenBits();
             }
 
-            yield return GameManager.statusSynchronizer.AwaitAllPlayersStatus(
-                "turn" + _currentCountdown,
-                "ready",
-                "turn" + (_currentCountdown + 1));
+            yield return RoomEventMessageChannel.Instance.AwaitClientMessageAsync($"turn{_currentCountdown}");
         }
 
         protected override IEnumerator OnAfterTermination()
@@ -199,7 +194,7 @@ namespace CodingStrategy.Entities.Runtime
 
         private ICommandContext BuildCommandContext(IRobotDelegate robotDelegate)
         {
-            IPlayerDelegate playerDelegate = PlayerPool[robotDelegate.Id];
+            IPlayerDelegate playerDelegate = PlayerPool[robotDelegate.ID];
             return new CommandContextImpl(
                 BoardDelegate,
                 RobotDelegatePool,

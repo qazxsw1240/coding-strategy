@@ -26,7 +26,7 @@ namespace CodingStrategy.Entities.Runtime.Statement
 
         public override void Execute(RuntimeExecutorContext context)
         {
-            Debug.LogFormat("Robot {1} Tries to move to {0}", _coordinate.X + "," + _coordinate.Y, _robotDelegate.Id);
+            Debug.LogFormat("Robot {1} Tries to move to {0}", _coordinate.X + "," + _coordinate.Y, _robotDelegate.ID);
 
             Coordinate destination = _robotDelegate.Position
                                    + RotateMatrix.Rotate((int) _robotDelegate.Direction) * _coordinate;

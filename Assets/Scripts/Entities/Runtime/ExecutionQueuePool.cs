@@ -14,29 +14,17 @@ namespace CodingStrategy.Entities.Runtime
 
         public IExecutionQueue this[IRobotDelegate key]
         {
-            get { return _executionQueues[key]; }
-            set { _executionQueues[key] = value; }
+            get => _executionQueues[key];
+            set => _executionQueues[key] = value;
         }
 
-        public ICollection<IRobotDelegate> Keys
-        {
-            get { return _executionQueues.Keys; }
-        }
+        public ICollection<IRobotDelegate> Keys => _executionQueues.Keys;
 
-        public ICollection<IExecutionQueue> Values
-        {
-            get { return _executionQueues.Values; }
-        }
+        public ICollection<IExecutionQueue> Values => _executionQueues.Values;
 
-        public int Count
-        {
-            get { return _executionQueues.Count; }
-        }
+        public int Count => _executionQueues.Count;
 
-        public bool IsReadOnly
-        {
-            get { return _executionQueues.IsReadOnly; }
-        }
+        public bool IsReadOnly => _executionQueues.IsReadOnly;
 
         public void Add(IRobotDelegate key, IExecutionQueue value)
         {

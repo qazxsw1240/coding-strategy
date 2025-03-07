@@ -53,7 +53,7 @@ namespace CodingStrategy.UI.GameScene
             DestroyChildren(CommandList);
             foreach (ICommand command in commandList)
             {
-                GameObject _object = Instantiate(shopUi.iconList[int.Parse(command.Id)], CommandList);
+                GameObject _object = Instantiate(shopUi.iconList[int.Parse(command.ID)], CommandList);
                 Image image;
                 switch (command.Info.EnhancedLevel)
                 {
