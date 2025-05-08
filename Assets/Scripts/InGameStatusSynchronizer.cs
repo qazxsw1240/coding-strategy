@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ namespace CodingStrategy
 {
     using Hashtable = ExitGames.Client.Photon.Hashtable;
 
+    [Obsolete]
     public class InGameStatusSynchronizer : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         private const byte StateSynchronizationRequestCode = 100;
