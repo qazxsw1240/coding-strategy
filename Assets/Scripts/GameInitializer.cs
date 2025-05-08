@@ -30,7 +30,7 @@ namespace CodingStrategy
 
         public static void Initialize()
         {
-            foreach (ICommand command in CommandListFactory.GetCommands)
+            foreach (ICommand command in CommandListFactory.Commands)
             {
                 AddCommand(command);
             }

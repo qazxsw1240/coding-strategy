@@ -7,7 +7,7 @@ namespace CodingStrategy
 {
     public static class CommandListFactory
     {
-        public static IEnumerable<ICommand> GetCommands => new List<ICommand> {
+        public static IEnumerable<ICommand> Commands => new List<ICommand> {
             new ForwardMoveCommand(),
             new LeftMoveCommand(),
             new RightRightCommand(),
