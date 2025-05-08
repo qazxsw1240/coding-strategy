@@ -2,24 +2,12 @@
 {
     public class RobotDelegateCreateStrategy : IRobotDelegateCreateStrategy
     {
-        public int HealthPoint
-        {
-            get { return 3; }
-        }
+        public int HealthPoint => 3;
 
-        public int EnergyPoint
-        {
-            get { return 3; }
-        }
+        public int EnergyPoint => 3;
 
-        public int ArmorPoint
-        {
-            get { return 0; }
-        }
+        public int ArmorPoint => 0;
 
-        public int AttackPoint
-        {
-            get { return 0; }
-        }
+        public int AttackPoint => 0;
     }
 }
