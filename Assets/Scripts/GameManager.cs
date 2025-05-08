@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 
 using System;
 using System.Collections;
@@ -41,12 +41,12 @@ namespace CodingStrategy
         private const byte BitPlaceRequestCode = 128;
         private const byte BitPlaceResponseCode = 129;
 
-        public static readonly (RobotDirection, Coordinate, Color)[] StartPositions =
+        public static readonly PlayerPosition[] StartPositions =
         {
-            (RobotDirection.North, new Coordinate(4, 0), PlayerStatusUI.Red),
-            (RobotDirection.East, new Coordinate(0, 4), PlayerStatusUI.Yellow),
-            (RobotDirection.South, new Coordinate(4, 8), PlayerStatusUI.Green),
-            (RobotDirection.West, new Coordinate(8, 4), PlayerStatusUI.Blue)
+            new PlayerPosition(RobotDirection.North, new Coordinate(4, 0), PlayerStatusUI.Red),
+            new PlayerPosition(RobotDirection.East, new Coordinate(0, 4), PlayerStatusUI.Yellow),
+            new PlayerPosition(RobotDirection.South, new Coordinate(4, 8), PlayerStatusUI.Green),
+            new PlayerPosition(RobotDirection.West, new Coordinate(8, 4), PlayerStatusUI.Blue)
         };
 
         private static readonly IDictionary<string, IAbnormality> AbnormalityDictionary =
@@ -66,8 +66,6 @@ namespace CodingStrategy
         public GameResult gameResult = null!;
         public QuitButtonManager quitButtonManager = null!;
 
-        // public InGameStatusSynchronizer statusSynchronizer = null!;
-
         public bool awaitLobby;
 
         private readonly ConcurrentQueue<Action> _actions = new ConcurrentQueue<Action>();
@@ -75,26 +73,21 @@ namespace CodingStrategy
         private readonly HashSet<Player> _responsePlayers = new HashSet<Player>();
 
         public readonly IDictionary<string, int> PlayerIndexMap = new Dictionary<string, int>();
-        private string? _actualStatus;
 
         private BitDispenser _bitDispenser = null!;
         private IPlayerCommandCache _commandCache = null!;
 
         private Coroutine? _coroutine;
 
-        private string? _expectedStatus;
-        private int _expectedStatusTimestamp;
-
-        private CustomYieldInstruction? _lastStatusSync;
         private IPlayerCommandNetworkDelegate _networkDelegate = null!;
 
         private GameManagerObjectSynchronizer _objectSynchronizer = null!;
 
-        public IBoardDelegate BoardDelegate { get; private set; } = null!;
+        public IBoardDelegate BoardDelegate { get; private set; }
 
-        public IRobotDelegatePool RobotDelegatePool { get; private set; } = null!;
+        public IRobotDelegatePool RobotDelegatePool { get; private set; }
 
-        public AnimationCoroutineManager AnimationCoroutineManager { get; private set; } = null!;
+        public AnimationCoroutineManager AnimationCoroutineManager { get; private set; }
 
         public void Awake()
         {
@@ -111,7 +104,6 @@ namespace CodingStrategy
             networkProcessor.GameManagerUtil = util;
             gameResult = FindAnyObjectByType<GameResult>();
             quitButtonManager = FindAnyObjectByType<QuitButtonManager>();
-            // statusSynchronizer = gameObject.GetOrAddComponent<InGameStatusSynchronizer>();
         }
 
         public void Start()
@@ -248,7 +240,6 @@ namespace CodingStrategy
             }
 
             Debug.LogFormat("Connected to Master {0}", PhotonNetwork.CurrentLobby);
-            // PhotonNetwork.GetCustomRoomList(PhotonNetwork.CurrentLobby, "C0='coding-strategy'");
             PhotonNetwork.NickName = "asdf";
             PhotonNetwork.CreateRoom(
                 "debug",
@@ -286,11 +277,6 @@ namespace CodingStrategy
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
             DetachPlayerUI(otherPlayer);
-        }
-
-        public override void OnRoomListUpdate(List<RoomInfo> roomList)
-        {
-            Debug.LogFormat("Room list count: {0}", roomList.Count);
         }
 
         public override void OnLeftRoom()
@@ -331,8 +317,8 @@ namespace CodingStrategy
                 IRobotDelegate robotDelegate = BuildRobotDelegate(BoardDelegate, playerDelegate);
                 playerDelegate.Robot = robotDelegate;
                 RobotDelegatePool[playerDelegate.ID] = robotDelegate;
-                (RobotDirection _, Coordinate _, Color color) = StartPositions[index];
-                PreparePlayerUI(photonPlayer, inGameUI.playerStatusUI[index], color);
+                PlayerPosition playerPosition = StartPositions[index];
+                PreparePlayerUI(photonPlayer, inGameUI.playerStatusUI[index], playerPosition.Color);
                 Debug.LogWarningFormat("Initialize PlayerDelegate {0}", photonPlayer.UserId);
             }
 
@@ -340,7 +326,7 @@ namespace CodingStrategy
 
             SetUpPlayerStatusSynchronizer();
 
-#region ITERATION
+            #region ITERATION
 
             currentRound = 0;
 
@@ -355,13 +341,13 @@ namespace CodingStrategy
 
                 yield return StartCoroutine(RoomEventMessageChannel.Instance.AwaitClientMessageAsync(ReadyStatus));
 
-#region INITIALIZATION
+                #region INITIALIZATION
 
                 inGameUI.gameturn.SetTurn(20);
 
                 _networkDelegate.RequestRefresh();
 
-#region CHECK_DISCONNECTED_PLAYERS
+                #region CHECK_DISCONNECTED_PLAYERS
 
                 System.Collections.Generic.ISet<IPlayerDelegate> disconnectedPlayers = new HashSet<IPlayerDelegate>();
 
@@ -383,19 +369,20 @@ namespace CodingStrategy
                     util.PlayerDelegatePool.Remove(disconnectedPlayer.ID);
                 }
 
-#endregion
+                #endregion
 
                 inGameUI.SetCameraPosition(PlayerIndexMap[PhotonNetwork.LocalPlayer.UserId]);
 
                 foreach (IPlayerDelegate playerDelegate in util.PlayerDelegatePool)
                 {
                     int index = PlayerIndexMap[playerDelegate.ID];
-                    (RobotDirection direction, Coordinate position, Color _) = StartPositions[index];
+                    PlayerPosition playerPosition = StartPositions[index];
+                    //(RobotDirection direction, Coordinate position, Color _) = StartPositions[index];
                     IRobotDelegate robotDelegate = RobotDelegatePool[playerDelegate.ID];
 
                     if (!BoardDelegate.Robots.Contains(robotDelegate))
                     {
-                        BoardDelegate.Add(robotDelegate, position, direction);
+                        BoardDelegate.Add(robotDelegate, playerPosition.Position, playerPosition.Direction);
                     }
 
                     if (robotDelegate.HealthPoint <= 0)
@@ -406,9 +393,9 @@ namespace CodingStrategy
 
                 NotifyDispatchBits();
 
-#endregion
+                #endregion
 
-#region CODING_TIME
+                #region CODING_TIME
 
                 yield return StartCoroutine(RoomEventMessageChannel.Instance.AwaitClientMessageAsync(CodingTimeStatus));
 
@@ -420,9 +407,9 @@ namespace CodingStrategy
 
                 yield return LifeCycleMonoBehaviourBase.AwaitLifeCycleCoroutine(codingTimeExecutor);
 
-#endregion
+                #endregion
 
-#region RUNTIME
+                #region RUNTIME
 
                 yield return StartCoroutine(RoomEventMessageChannel.Instance.AwaitClientMessageAsync(RuntimeStatus));
                 yield return new WaitForSeconds(1.0f);
@@ -435,7 +422,7 @@ namespace CodingStrategy
 
                 _bitDispenser.Clear();
 
-#endregion
+                #endregion
 
                 if (util.LocalPhotonPlayerDelegate.HealthPoint > 0)
                 {
@@ -456,7 +443,7 @@ namespace CodingStrategy
                 StopCoroutine(_coroutine);
             }
 
-#endregion
+            #endregion
         }
 
         private void PreparePlayerUI(Player photonPlayer, PlayerStatusUI playerStatusUI, Color color)

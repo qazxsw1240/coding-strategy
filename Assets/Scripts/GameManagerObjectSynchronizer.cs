@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 
 using System;
 using System.Collections;
@@ -207,7 +207,9 @@ namespace CodingStrategy
         {
             IRobotDelegate robotDelegate = badSectorDelegate.Installer;
             int index = GameManager.PlayerIndexMap[robotDelegate.ID];
-            (RobotDirection _, Coordinate _, Color color) = GameManager.StartPositions[index];
+            PlayerPosition playerPosition = GameManager.StartPositions[index];
+            Color color = playerPosition.Color;
+            //(RobotDirection _, Coordinate _, Color color) = GameManager.StartPositions[index];
             color = new Color(color.r, color.g, color.b, color.a * 0.75f);
             Coordinate position = badSectorDelegate.Position;
             Vector3 vectorPosition = ConvertToVector(position, 0.1f);
@@ -225,7 +227,7 @@ namespace CodingStrategy
         private void EnableBadSectorPrefab(
             GameObject badSectorObject,
             IBadSectorDelegate badSectorDelegate,
-            BadSectorAnimation badSectorAnimation)
+            BadSectorAnimation _)
         {
             if (badSectorDelegate is MalwareBadSector)
             {

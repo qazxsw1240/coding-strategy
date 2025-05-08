@@ -1,14 +1,13 @@
-using System;
+﻿using System;
 using System.Linq;
 
 using CodingStrategy.Entities;
 using CodingStrategy.Entities.Player;
 using CodingStrategy.Entities.Runtime.Command;
 using CodingStrategy.Network;
+using CodingStrategy.Utility;
 
 using ExitGames.Client.Photon;
-
-using CodingStrategy.Utility;
 
 using Photon.Pun;
 using Photon.Realtime;
